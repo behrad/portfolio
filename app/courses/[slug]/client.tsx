@@ -478,7 +478,7 @@ function ConsultationForm({ onClose }: { onClose: () => void }) {
   )
 }
 
-export default function CoursePageClient({ course }: { course: Course | undefined }) {
+export default function CoursePageClient({ course, slug }: { course: Course | undefined; slug: string }) {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
   const [showConsultationForm, setShowConsultationForm] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
@@ -486,6 +486,9 @@ export default function CoursePageClient({ course }: { course: Course | undefine
   if (!course) {
     notFound()
   }
+
+  // Hide companies section for these courses
+  const shouldShowCompanies = slug !== "backend-nodejs" && slug !== "art-of-coding"
 
   // Added structured data for SEO
   const jsonLd = {
@@ -659,30 +662,32 @@ export default function CoursePageClient({ course }: { course: Course | undefine
             </div>
           </section>
 
-          <section className="bg-muted/30 py-12 border-y">
-            <div className="container mx-auto px-4">
-              <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
-                <Building2 className="w-5 h-5 text-primary" />
-                شرکت‌هایی که کارکنانشان در این دوره شرکت کرده‌اند
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
-                {companies.map((company, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
-                  >
-                    <Image
-                      src={company.logo || "/placeholder.svg"}
-                      alt={company.name}
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
+          {shouldShowCompanies && (
+            <section className="bg-muted/30 py-12 border-y">
+              <div className="container mx-auto px-4">
+                <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  شرکت‌هایی که کارکنانشان در این دوره شرکت کرده‌اند
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
+                  {companies.map((company, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
+                    >
+                      <Image
+                        src={company.logo || "/placeholder.svg"}
+                        alt={company.name}
+                        width={120}
+                        height={60}
+                        className="object-contain"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           <div className="container mx-auto px-4 py-12">
             <div className="grid lg:grid-cols-3 gap-8">

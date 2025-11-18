@@ -62,5 +62,5 @@ export function generateStaticParams() {
 export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const course = coursesData[slug as keyof typeof coursesData]
-  return <CoursePageClient course={course} />
+  return <CoursePageClient course={course} slug={slug} />
 }
