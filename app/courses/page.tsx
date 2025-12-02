@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
 export const metadata: Metadata = {
@@ -12,10 +12,20 @@ const courses = [
   {
     slug: 'system-design',
     title: 'طراحی سیستم‌های مقیاس‌پذیر',
-    description: 'آموزش کامل طراحی سیستم‌های بزرگ و مقیاس‌پذیر',
+    description: 'آموزش کامل طراحی سیستم‌های بزرگ و مقیاض‌پذیر',
     level: 'پیشرفته',
     duration: '40 ساعت',
-    image: '/system-design-1.jpg'
+    image: '/system-design-1.jpg',
+    isFull: false
+  },
+  {
+    slug: 'system-design-1',
+    title: 'سیستم دیزاین ۱',
+    description: 'Foundations & Monolith Mastery',
+    level: 'مقدماتی تا متوسط',
+    duration: '۱۵ ساعت',
+    image: '/sd1.jpeg',
+    isFull: true
   },
   {
     slug: 'backend-nodejs',
@@ -23,7 +33,8 @@ const courses = [
     description: 'آموزش کامل توسعه سرور با Node.js و Express',
     level: 'متوسط',
     duration: '30 ساعت',
-    image: '/backend-nodejs.jpg'
+    image: '/backend-nodejs.jpg',
+    isFull: false
   },
   {
     slug: 'art-of-coding',
@@ -31,7 +42,8 @@ const courses = [
     description: 'اصول و تکنیک‌های نوشتن کد تمیز و قابل نگهداری',
     level: 'مبتدی',
     duration: '25 ساعت',
-    image: '/art-of-coding.jpg'
+    image: '/art-of-coding.jpg',
+    isFull: true
   }
 ]
 
@@ -55,6 +67,13 @@ export default function CoursesPage() {
                   alt={course.title}
                   className="object-cover w-full h-full"
                 />
+                {course.isFull && (
+                  <div className="absolute top-3 right-3">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-500 text-white shadow-lg">
+                      تکمیل ظرفیت
+                    </span>
+                  </div>
+                )}
               </div>
               <CardHeader>
                 <div className="flex justify-between items-start mb-2">

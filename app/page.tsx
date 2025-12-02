@@ -45,6 +45,7 @@ export default function HomePage() {
       duration: coursesData["system-design-1"].duration,
       price: coursesData["system-design-1"].price + " تومان",
       highlights: ["مفاهیم پایه", "ماژولار مونولیت کلود نیتیو", "پیاده سازی یک سرویس مالتی تننت واقعی"],
+      isFull: coursesData["system-design-1"].isFull,
     },
     {
       id: "system-design-2",
@@ -54,6 +55,7 @@ export default function HomePage() {
       duration: coursesData["system-design-2"].duration,
       price: coursesData["system-design-2"].price + " تومان",
       highlights: ["الگوهای تاب آوری", "پردازش غیرهمزمان", "معماری چند دیتابیسی"],
+      isFull: coursesData["system-design-2"].isFull,
     },
     {
       id: "system-design-3",
@@ -63,6 +65,7 @@ export default function HomePage() {
       duration: coursesData["system-design-3"].duration,
       price: coursesData["system-design-3"].price + " تومان",
       highlights: ["معماری میکروسرویس", "پیاده‌سازی معماری میکروسرویس در مقیاس بزرگ", "مطالعه مثال‌های بزرگ"],
+      isFull: coursesData["system-design-3"].isFull,
     },
     {
       id: "art-of-coding",
@@ -72,6 +75,7 @@ export default function HomePage() {
       duration: coursesData["art-of-coding"].duration,
       price: coursesData["art-of-coding"].price + " تومان",
       highlights: ["مفاهیم مهندسی نرم افزار", "طراحی لایه‌ای و ماژولار", "چک لیست پروژه اماده پروداکشن"],
+      isFull: coursesData["art-of-coding"].isFull,
     },
     {
       id: "backend-nodejs",
@@ -81,6 +85,7 @@ export default function HomePage() {
       duration: coursesData["backend-nodejs"].duration,
       price: coursesData["backend-nodejs"].price + " تومان",
       highlights: ["مقدمات Node.js", "Express & API Design", "Database Integration"],
+      isFull: coursesData["backend-nodejs"].isFull,
     },
   ]
 
@@ -115,6 +120,13 @@ export default function HomePage() {
                 {/* Course Image */}
                 <div className="relative h-48 w-full bg-gradient-to-br from-blue-100 to-blue-50 p-4">
                   <Image src={course.image || "/placeholder.svg"} alt={course.title} fill className="object-contain p-4" />
+                  {course.isFull && (
+                    <div className="absolute top-3 right-3">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-500 text-white shadow-lg">
+                        تکمیل ظرفیت
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <CardHeader className="pb-3">

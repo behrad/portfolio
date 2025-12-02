@@ -59,6 +59,7 @@ export type Course = {
   videoUrl: string
   rating?: number
   reviewCount?: number
+  isFull?: boolean
   instructor: {
     name: string
     title: string
@@ -486,6 +487,133 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
   )
 }
 
+// Reserve Form Component
+function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course }) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
+      mobile: formData.get("mobile"),
+      email: formData.get("email"),
+      company: formData.get("company"),
+      courseName: course?.title || "",
+      courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
+      formType: "reserve",
+    }
+
+    try {
+      const response = await fetch("https://n8n.sazito.com/webhook/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (response.ok) {
+        trackClarityEvent("reserve_form_submitted")
+        alert("پیش ثبت‌نام شما با موفقیت ثبت شد!")
+        onClose()
+      } else {
+        alert("خطا در ارسال فرم. لطفا دوباره تلاش کنید.")
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      alert("خطا در ارسال فرم. لطفا دوباره تلاش کنید.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">پیش ثبت‌نام در دوره {course?.title}</h2>
+            <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm leading-relaxed">
+              با پر کردن این فرم، شما به لیست رزرو دوره اضافه می‌شوید. این دوره در زمستان ۱۴۰۴ برگزار خواهد شد و زمان دقیق برگزاری به شما اطلاع داده می‌شود.
+            </p>
+          </div>
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">نام</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="نام خود را وارد کنید"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">نام خانوادگی</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="نام خانوادگی خود را وارد کنید"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">شماره موبایل</label>
+              <input
+                type="tel"
+                name="mobile"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="09123456789"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">ایمیل</label>
+              <input
+                type="email"
+                name="email"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="email@example.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">شرکت / سازمان (اختیاری)</label>
+              <input
+                type="text"
+                name="company"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="نام شرکت یا سازمان"
+              />
+            </div>
+
+            <Button type="submit" className="w-full cursor-pointer" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? "در حال ارسال..." : "ثبت پیش ثبت‌نام"}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Consultation Form Component
 function ConsultationForm({ onClose, course }: { onClose: () => void; course?: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -733,6 +861,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
 
 export default function CoursePageClient({ course, slug }: { course: Course | undefined; slug?: string }) {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
+  const [showReserveForm, setShowReserveForm] = useState(false)
   const [showConsultationForm, setShowConsultationForm] = useState(false)
   const [showCorporateTrainingForm, setShowCorporateTrainingForm] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
@@ -829,6 +958,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {showRegistrationForm && <RegistrationForm onClose={() => setShowRegistrationForm(false)} course={course} />}
+      {showReserveForm && <ReserveForm onClose={() => setShowReserveForm(false)} course={course} />}
       {showConsultationForm && <ConsultationForm onClose={() => setShowConsultationForm(false)} course={course} />}
       {showCorporateTrainingForm && <CorporateTrainingForm onClose={() => setShowCorporateTrainingForm(false)} course={course} />}
 
@@ -861,7 +991,14 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
               <div className="grid lg:grid-cols-2 gap-8 items-start">
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance leading-tight">{course.title}</h1>
+                  <div className="flex items-center gap-3 mb-4">
+                    <h1 className="text-4xl md:text-5xl font-bold text-balance leading-tight">{course.title}</h1>
+                    {course.isFull && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-500 text-white whitespace-nowrap">
+                        تکمیل ظرفیت
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xl mb-6 opacity-90 leading-relaxed">{course.subtitle}</p>
                   <p className="text-xl font-semibold mb-6 opacity-95 leading-relaxed">{course.shortDescription}</p>
 
@@ -1296,11 +1433,16 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           size="lg"
                           className="w-full text-lg cursor-pointer hover:bg-primary/90"
                           onClick={() => {
-                            trackClarityEvent("registration_button_clicked")
-                            setShowRegistrationForm(true)
+                            if (course.isFull) {
+                              trackClarityEvent("reserve_button_clicked")
+                              setShowReserveForm(true)
+                            } else {
+                              trackClarityEvent("registration_button_clicked")
+                              setShowRegistrationForm(true)
+                            }
                           }}
                         >
-                          ثبت‌نام در دوره
+                          {course.isFull ? "پیش ثبت‌نام" : "ثبت‌نام در دوره"}
                         </Button>
                       </div>
 
@@ -1415,11 +1557,16 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   size="lg"
                   className="bg-white text-primary hover:bg-white/90 text-lg px-8 cursor-pointer"
                   onClick={() => {
-                    trackClarityEvent("final_cta_registration_clicked")
-                    setShowRegistrationForm(true)
+                    if (course.isFull) {
+                      trackClarityEvent("reserve_button_clicked")
+                      setShowReserveForm(true)
+                    } else {
+                      trackClarityEvent("final_cta_registration_clicked")
+                      setShowRegistrationForm(true)
+                    }
                   }}
                 >
-                  ثبت‌نام در این دوره
+                  {course.isFull ? "پیش ثبت‌نام" : "ثبت‌نام در این دوره"}
                 </Button>
                 <Button
                   asChild
