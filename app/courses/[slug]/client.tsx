@@ -940,16 +940,16 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
     { name: "آروان کلود", logo: "https://www.arvancloud.ir/images/v6/svg/logo-header-desktop-v6.svg" },
     {
       name: "دیجی کالا",
-      logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/digikala%20logo-e-h-RMcvc5Rl5AoB3uPyufmQ5h5oEajSGB.png",
+      logo: "https://www.digikala.com/brand/full-horizontal.svg",
     },
     {
       name: "زرین پال",
-      logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ZarinPal_Horizontal_Black-xaubJVaxs9ZJLVF4IwQpJyfXf7SaYz.png",
+      logo: "https://www.zarinpal.com/header/zarinpal-logo.svg",
     },
-    { name: "فیلیا", logo: "https://fa.philia.vip/assets/img/logo-philia-fa.svg" },
+    { name: "فیلیا", logo: "https://web-cdn.snapp.ir/snapp-website/icons/snappTextLogo.svg" },
     {
       name: "سازیتو",
-      logo: "https://sazito.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.f87ce97d.png&w=384&q=75",
+      logo: "<svg width=\"52\" height=\"32\" viewBox=\"0 0 52 32\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M27.4266 2.90918H30.0105V29.4027C30.0105 30.8372 28.8536 32.0001 27.4266 32.0001H24.8427V5.50658C24.8427 4.07208 25.9996 2.90918 27.4266 2.90918ZM39.3123 13.4025V23.2726C39.3123 25.4543 40.9211 27.1168 43.0331 27.1168C45.124 27.1168 46.7539 25.4541 46.7533 23.3362L46.7537 13.4025C46.7539 11.968 47.9107 10.8052 49.3377 10.8051H51.9216V23.0649C51.9216 27.9996 47.9421 31.9999 43.0331 31.9999C38.1241 31.9999 34.1446 27.9996 34.1446 23.0649V10.8051H36.7285C38.1555 10.8051 39.3123 11.968 39.3123 13.4025ZM5.20532 12.7729L5.20544 2.9098H2.62158C1.20794 2.9098 0.0377197 4.06383 0.0377197 5.5072V21.6111L0.0420235 21.6112C0.201377 27.3772 4.76578 32.0007 10.3732 32.0007C16.0813 32.0007 20.7078 27.3772 20.7086 21.2994C20.7086 21.2575 20.7084 21.2157 20.7078 21.1741C20.7083 21.1293 20.7086 21.0845 20.7086 21.0397C20.7086 15.1582 16.4514 10.3903 11.2 10.3903C8.92741 10.3903 6.84105 11.2832 5.20532 12.7729ZM4.89537 21.1436C4.89537 17.8442 7.30158 15.1695 10.2698 15.1695C13.238 15.1695 15.6442 17.8442 15.6442 21.1436C15.6442 24.4429 13.238 27.1176 10.2698 27.1176C7.30158 27.1176 4.89537 24.4429 4.89537 21.1436Z\" fill=\"#4E91E6\"></path><path d=\"M12.4403 4.15584C13.5819 4.15584 14.5073 3.22553 14.5073 2.07792C14.5073 0.930317 13.5819 0 12.4403 0C11.2986 0 10.3732 0.930317 10.3732 2.07792C10.3732 3.22553 11.2986 4.15584 12.4403 4.15584Z\" fill=\"#0C1011\"></path></svg>",
     },
     { name: "فناپ", logo: "https://fanap-infra.com/wp-content/uploads/2023/09/Fanap-infra-logo-2.svg" },
   ]
@@ -1076,13 +1076,20 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       key={index}
                       className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
                     >
-                      <Image
-                        src={company.logo || "/placeholder.svg"}
-                        alt={company.name}
-                        width={120}
-                        height={60}
-                        className="object-contain"
-                      />
+                      {company.logo.includes("<svg") ? (
+                        <div
+                          className="w-[120px] h-[60px] flex items-center justify-center"
+                          dangerouslySetInnerHTML={{ __html: company.logo }}
+                        />
+                      ) : (
+                        <Image
+                          src={company.logo || "/placeholder.svg"}
+                          alt={company.name}
+                          width={120}
+                          height={60}
+                          className="object-contain"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
