@@ -1,12 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Vazirmatn } from "next/font/google"
+import { Vazirmatn, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script"
 import "./globals.css"
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
+  display: "swap",
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  weight: ["400", "500", "600"],
   display: "swap",
 })
 
@@ -99,7 +106,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fa" dir="rtl">
+    <html lang="fa" dir="rtl" className={`dark ${jetbrainsMono.variable}`}>
       <head>
         <Script id="clarity-script" strategy="afterInteractive">
           {`

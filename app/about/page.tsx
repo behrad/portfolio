@@ -123,33 +123,46 @@ export default function AboutPage() {
 
       <main className="flex-1">
         {/* Header Section */}
-        <section className="bg-primary text-primary-foreground py-16">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center gap-8">
+        <section className="relative overflow-hidden border-b border-border">
+          <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-70"
+            style={{
+              background:
+                "radial-gradient(50% 100% at 70% 0%, var(--accent-soft), transparent 70%)",
+            }}
+          />
+          <div className="container relative mx-auto px-4 py-20">
+            <div className="flex flex-col items-center gap-8 md:flex-row">
               <div className="flex-shrink-0">
-                <div className="relative w-48 h-48 rounded-full overflow-hidden shadow-xl border-4 border-primary-foreground/20">
-                  <Image
-                    src="/images/behrad.jpg"
-                    alt="بهراد زاری"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative h-44 w-44 overflow-hidden rounded-full ring-1 ring-[var(--accent-border)] ring-offset-4 ring-offset-background">
+                  <Image src="/images/behrad.jpg" alt="بهراد زاری" fill className="object-cover" />
                 </div>
               </div>
               <div className="flex-1 text-center md:text-right">
-                <h1 className="text-4xl font-bold mb-4">بهراد زاری</h1>
-                <p className="text-xl mb-2">مهندس نرم‌افزار
-                  
-                </p>
-
-                <div className="flex flex-col gap-2 text-sm opacity-90">
-                  <Link href="https://www.linkedin.com/in/behradz/" target="_blank" className="hover:underline">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-border)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-medium text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+                  مهندس نرم‌افزار
+                </span>
+                <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+                  بهراد زاری
+                </h1>
+                <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm md:justify-start">
+                  <Link
+                    href="https://www.linkedin.com/in/behradz/"
+                    target="_blank"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     پروفایل لینکدین
                   </Link>
-                  <Link href="https://github.com/behrad" target="_blank" className="hover:underline">
+                  <Link
+                    href="https://github.com/behrad"
+                    target="_blank"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
                     پروفایل گیت‌هاب
                   </Link>
-                  
                 </div>
               </div>
             </div>
@@ -291,18 +304,35 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">سوال یا نیاز به مشاوره دارید؟</h2>
-            <p className="text-base md:text-lg opacity-90 mb-8">
+        <section className="relative overflow-hidden border-t border-border bg-card">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-48 opacity-50"
+            style={{
+              background:
+                "radial-gradient(60% 100% at 50% 100%, var(--accent-soft), transparent 70%)",
+            }}
+          />
+          <div className="container relative mx-auto max-w-2xl px-4 py-20 text-center">
+            <h2 className="mb-4 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+              سوال یا نیاز به مشاوره دارید؟
+            </h2>
+            <p className="mx-auto mb-8 max-w-[60ch] text-base leading-8 text-muted-foreground">
               برای اطلاعات بیشتر با من تماس بگیرید
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Button asChild size="lg" className="rounded-lg px-8 shadow-none">
                 <Link href="mailto:behradz@gmail.com">تماس از طریق ایمیل</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary">
-                <Link href="https://t.me/bzari" target="_blank">تماس از طریق تلگرام</Link>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-foreground hover:border-primary hover:text-primary"
+              >
+                <Link href="https://t.me/bzari" target="_blank">
+                  تماس از طریق تلگرام
+                </Link>
               </Button>
             </div>
           </div>

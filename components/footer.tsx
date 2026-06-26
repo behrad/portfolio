@@ -2,13 +2,14 @@ import Link from "next/link"
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-white mt-20">
+    <footer className="mt-20 border-t border-border bg-card">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} بهراد زاری. تمامی حقوق محفوظ است.
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-[3px] bg-primary" aria-hidden="true" />
+            <span className="mono ltr">© {new Date().getFullYear()}</span> بهراد زاری. تمامی حقوق محفوظ است.
           </div>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             <Link
               href="https://t.me/mindfulsoft"
               target="_blank"

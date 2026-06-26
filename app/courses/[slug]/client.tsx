@@ -60,6 +60,7 @@ export type Course = {
   image: string
   heroImage?: string
   descriptionImage?: string
+  descriptionVideoId?: string
   videoUrl: string
   rating?: number
   reviewCount?: number
@@ -366,8 +367,8 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">{isWebinar ? "فرم ثبت‌نام در وبینار" : "فرم ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
@@ -378,7 +379,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             {isWebinar && (
-              <p className="text-sm text-muted-foreground mb-4 bg-blue-50 p-3 rounded-lg">
+              <p className="mb-4 rounded-lg border border-[var(--accent-border)] bg-[var(--accent-soft)] p-3 text-sm text-muted-foreground">
                 لینک وبینار از طریق گروه بله <a href="https://ble.ir/join/A6HiDuie9S">@system-design </a>
                 یا با پر کردن این فرم و از طریق پیامک برای شما ارسال خواهد شد
               </p>
@@ -389,7 +390,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
                 <input
                   type="text"
                   name="firstName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   placeholder="نام خود را وارد کنید"
                   required
                 />
@@ -399,7 +400,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
                 <input
                   type="text"
                   name="lastName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   placeholder="نام خانوادگی خود را وارد کنید"
                   required
                 />
@@ -411,7 +412,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
               <input
                 type="tel"
                 name="mobile"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="09123456789"
                 required
               />
@@ -422,7 +423,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
               <input
                 type="email"
                 name="email"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="email@example.com"
                 required
               />
@@ -433,7 +434,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
               <input
                 type="text"
                 name="company"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="نام شرکت یا سازمان"
               />
             </div>
@@ -576,8 +577,8 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">{isWebinar ? "پیش ثبت‌نام در وبینار" : "پیش ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
@@ -586,7 +587,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
             </button>
           </div>
 
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 rounded-lg border border-[var(--accent-border)] bg-[var(--accent-soft)] p-4">
             <p className="text-sm leading-relaxed">
               با پر کردن این فرم، شما به لیست رزرو {isWebinar ? "وبینار" : "دوره"} اضافه می‌شوید. {isWebinar ? "وبینار" : "این دوره"} در زمستان ۱۴۰۴ برگزار خواهد شد و زمان دقیق برگزاری به شما اطلاع داده می‌شود.
             </p>
@@ -599,7 +600,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
                 <input
                   type="text"
                   name="firstName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   placeholder="نام خود را وارد کنید"
                   required
                 />
@@ -609,7 +610,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
                 <input
                   type="text"
                   name="lastName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   placeholder="نام خانوادگی خود را وارد کنید"
                   required
                 />
@@ -621,7 +622,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
               <input
                 type="tel"
                 name="mobile"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="09123456789"
                 required
               />
@@ -632,7 +633,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
               <input
                 type="email"
                 name="email"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="email@example.com"
                 required
               />
@@ -643,7 +644,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
               <input
                 type="text"
                 name="company"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="نام شرکت یا سازمان"
               />
             </div>
@@ -702,8 +703,8 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">درخواست مشاوره</h2>
@@ -713,18 +714,18 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
           </div>
 
           {/* Telegram Option */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 rounded-lg border border-[var(--accent-border)] bg-[var(--accent-soft)] p-4">
             <p className="text-sm text-center mb-3">
               می‌تونید مستقیماً از طریق بله یا تلگرام با من در ارتباط باشید یا فرم زیر رو پر کنید
             </p>
             <div className="flex flex-col gap-3">
-              <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-white" variant="outline">
+              <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-primary-foreground" variant="outline">
                 <Link href="https://t.me/bzari" target="_blank" className="flex items-center justify-center gap-2">
                   <Send className="w-4 h-4" />
                   ارسال پیام در تلگرام
                 </Link>
               </Button>
-              <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-white" variant="outline">
+              <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-primary-foreground" variant="outline">
                 <Link href="https://ble.ir/behradz62" target="_blank" className="flex items-center justify-center gap-2">
                   <Send className="w-4 h-4" />
                   ارسال پیام در بله
@@ -738,7 +739,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-muted-foreground">یا</span>
+              <span className="bg-card px-2 text-muted-foreground">یا</span>
             </div>
           </div>
 
@@ -749,7 +750,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
                 <input
                   type="text"
                   name="firstName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   required
                 />
               </div>
@@ -758,7 +759,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
                 <input
                   type="text"
                   name="lastName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   required
                 />
               </div>
@@ -769,7 +770,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
               <input
                 type="email"
                 name="email"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 required
               />
             </div>
@@ -779,7 +780,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
               <input
                 type="tel"
                 name="mobile"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 required
               />
             </div>
@@ -840,8 +841,8 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">{isWebinar ? "برگزاری وبینار" : "برگزاری دوره"} برای تیم/شرکت شما</h2>
@@ -857,7 +858,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
                 <input
                   type="text"
                   name="firstName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   required
                 />
               </div>
@@ -866,7 +867,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
                 <input
                   type="text"
                   name="lastName"
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                   required
                 />
               </div>
@@ -877,7 +878,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
               <input
                 type="email"
                 name="email"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 required
               />
             </div>
@@ -887,7 +888,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
               <input
                 type="tel"
                 name="mobile"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 required
               />
             </div>
@@ -897,7 +898,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
               <input
                 type="text"
                 name="company"
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
                 required
               />
             </div>
@@ -1128,11 +1129,12 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   {companies.map((company, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
+                      title={company.name}
+                      className="flex items-center justify-center opacity-70 transition-[filter,opacity] duration-300 [filter:brightness(0)_invert(1)] hover:opacity-100 hover:[filter:none]"
                     >
                       {company.logo.includes("<svg") ? (
                         <div
-                          className="w-[120px] h-[60px] flex items-center justify-center"
+                          className="flex h-[60px] w-[120px] items-center justify-center"
                           dangerouslySetInnerHTML={{ __html: company.logo }}
                         />
                       ) : (
@@ -1152,9 +1154,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           )}
 
           <div className="container mx-auto px-4 py-12">
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className={`grid gap-8 ${course.descriptionVideoId ? "lg:grid-cols-1" : "lg:grid-cols-3"}`}>
               {/* Main content area */}
-              <div className="lg:col-span-2 space-y-12">
+              <div className={`space-y-12 ${course.descriptionVideoId ? "" : "lg:col-span-2"}`}>
                 <section>
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <Target className="w-6 h-6 text-primary" />
@@ -1189,9 +1191,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         <AccordionItem
                           key={index}
                           value={`module-${index}`}
-                          className="border rounded-lg overflow-hidden bg-white/60 backdrop-blur-sm shadow-sm"
+                          className="overflow-hidden rounded-xl border border-border bg-card shadow-none transition-colors hover:border-[var(--border-strong)]"
                         >
-                          <AccordionTrigger className="px-6 py-5 hover:bg-blue-50/50 text-right [&[data-state=open]]:bg-blue-50 transition-colors group">
+                          <AccordionTrigger className="group px-6 py-5 text-right transition-colors hover:bg-muted/40 [&[data-state=open]]:bg-muted/40">
                             <div className="flex items-start justify-between w-full gap-4">
                               <div className="text-right flex-1">
                                 <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
@@ -1228,7 +1230,19 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     شرح {isWebinar ? "وبینار" : "دوره"}
                   </h2>
 
-                  {course.descriptionImage && (
+                  {course.descriptionVideoId ? (
+                    <div className="mb-8">
+                      <div className="relative w-full overflow-hidden rounded-lg shadow-md" style={{ aspectRatio: "16 / 9" }}>
+                        <iframe
+                          src={`https://www.aparat.com/video/video/embed/videohash/${course.descriptionVideoId}/vt/frame`}
+                          title={`ویدیو ${course.title}`}
+                          allowFullScreen
+                          allow="autoplay; fullscreen; picture-in-picture"
+                          className="absolute inset-0 w-full h-full border-0"
+                        />
+                      </div>
+                    </div>
+                  ) : course.descriptionImage && (
                     <div className="mb-8">
                       <Image
                         src={course.descriptionImage}
@@ -1237,7 +1251,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         height={400}
                         className="w-full rounded-lg shadow-md"
                       />
-                    
+
                     </div>
                   )}
 
@@ -1399,21 +1413,21 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       </CardContent>
                     </Card>
 
-                    <Card className="border-2 border-[#dfbc92]/30 bg-[#dfbc92]/10 shadow-sm">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-full bg-[#dfbc92]/20 flex items-center justify-center flex-shrink-0">
-                            <Gift className="w-6 h-6 text-[#dfbc92]" />
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-lg mb-2">جلسه اول رایگان</h3>
-                            <p className="text-sm text-foreground leading-relaxed">
-                              اگر معرف ندارید یا من رو نمیشناسید یا به هر دلیلی دودل هستید که این {isWebinar ? "وبینار" : "دوره"} بدردتون می‌خوره یا نه، می‌تونید جلسه اول رو رایگان ولی با پر کردن فرم ثبت نام شرکت کنید. 
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    {/*<Card className="border-2 border-[#dfbc92]/30 bg-[#dfbc92]/10 shadow-sm">*/}
+                    {/*  <CardContent className="pt-6">*/}
+                    {/*    <div className="flex items-start gap-4">*/}
+                    {/*      <div className="w-12 h-12 rounded-full bg-[#dfbc92]/20 flex items-center justify-center flex-shrink-0">*/}
+                    {/*        <Gift className="w-6 h-6 text-[#dfbc92]" />*/}
+                    {/*      </div>*/}
+                    {/*      <div>*/}
+                    {/*        <h3 className="font-bold text-lg mb-2">جلسه اول رایگان</h3>*/}
+                    {/*        <p className="text-sm text-foreground leading-relaxed">*/}
+                    {/*          اگر معرف ندارید یا من رو نمیشناسید یا به هر دلیلی دودل هستید که این {isWebinar ? "وبینار" : "دوره"} بدردتون می‌خوره یا نه، می‌تونید جلسه اول رو رایگان ولی با پر کردن فرم ثبت نام شرکت کنید. */}
+                    {/*        </p>*/}
+                    {/*      </div>*/}
+                    {/*    </div>*/}
+                    {/*  </CardContent>*/}
+                    {/*</Card>*/}
                   </div>
                 </section>
               )}
@@ -1429,12 +1443,12 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         <AccordionItem
                           key={index}
                           value={`faq-${index}`}
-                          className="border rounded-lg px-6 bg-white/60 backdrop-blur-sm shadow-sm"
+                          className="rounded-xl border border-border bg-card px-6 shadow-none transition-colors hover:border-[var(--border-strong)]"
                         >
-                          <AccordionTrigger className="text-right text-lg font-semibold hover:text-primary py-4 cursor-pointer">
+                          <AccordionTrigger className="cursor-pointer py-4 text-right text-lg font-semibold hover:text-primary [&[data-state=open]]:text-primary">
                             {faq.question}
                           </AccordionTrigger>
-                          <AccordionContent className="text-muted-foreground leading-relaxed pb-4 border-t border-border pt-4">
+                          <AccordionContent className="border-t border-border pb-4 pt-4 leading-relaxed text-muted-foreground">
                             {faq.answer}
                           </AccordionContent>
                         </AccordionItem>
@@ -1450,25 +1464,34 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       {course.relatedCourses.map((relatedCourse, index) => (
                         <Card
                           key={index}
-                          className="border-2 shadow-md hover:shadow-lg transition-all hover:-translate-y-1"
+                          className="card-hover-lift group gap-0 overflow-hidden rounded-xl border border-border bg-card p-0 shadow-none hover:border-[var(--border-strong)]"
                         >
-                          <div className="relative h-48 bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+                          <div className="relative h-48 overflow-hidden border-b border-border bg-card">
                             <Image
                               src={relatedCourse.image || "/placeholder.svg"}
                               alt={relatedCourse.title}
                               fill
-                              className="object-contain rounded-t-lg p-4"
+                              sizes="(min-width: 768px) 50vw, 100vw"
+                              className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                            />
+                            <div
+                              aria-hidden="true"
+                              className="pointer-events-none absolute inset-0"
+                              style={{
+                                background:
+                                  "linear-gradient(to top, var(--card) 2%, transparent 38%)",
+                              }}
                             />
                           </div>
-                          <CardHeader>
-                            <CardTitle className="text-xl">{relatedCourse.title}</CardTitle>
+                          <CardHeader className="px-5 pt-5">
+                            <CardTitle className="text-lg font-bold tracking-tight">{relatedCourse.title}</CardTitle>
                           </CardHeader>
-                          <CardContent>
-                            <p className="text-muted-foreground mb-4 leading-relaxed">{relatedCourse.description}</p>
+                          <CardContent className="px-5 pb-5 pt-4">
+                            <p className="mb-5 leading-7 text-muted-foreground">{relatedCourse.description}</p>
                             <Button
                               asChild
                               variant="outline"
-                              className="w-full bg-transparent cursor-pointer hover:bg-primary hover:text-white"
+                              className="w-full cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent hover:border-primary hover:text-primary"
                             >
                               <Link href={`/courses/${relatedCourse.slug}`}>{isWebinar ? "مشاهده وبینار" : "مشاهده دوره"}</Link>
                             </Button>
@@ -1480,6 +1503,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 )}
               </div>
 
+              {!course.descriptionVideoId && (
               <div className="lg:col-span-1">
                 <div className="sticky top-4 space-y-4">
                   <Card className="border-2 shadow-lg">
@@ -1617,19 +1641,33 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   </Card>
                 </div>
               </div>
+              )}
             </div>
           </div>
 
-          <section className="bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white py-20">
-            <div className="container mx-auto px-4 text-center">
-              <h2 className="text-4xl font-bold mb-4">به شما قول میدم</h2>
-              <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto leading-relaxed">
-                بعد از این {isWebinar ? "وبینار" : "دوره"} نگاه و طرز فکرتون نسبت به کارهایی که تا الان میکردید تغییر می‌کنه
+          <section className="relative overflow-hidden border-t border-border bg-card">
+            <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-70"
+              style={{
+                background:
+                  "radial-gradient(55% 100% at 50% 0%, var(--accent-soft), transparent 70%)",
+              }}
+            />
+            <div className="container relative mx-auto px-4 py-20 text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-border)] bg-[var(--accent-soft)] px-3.5 py-1.5 text-xs font-medium text-primary">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+                قول می‌دم
+              </span>
+              <p className="mx-auto mb-8 mt-5 max-w-[60ch] text-lg leading-8 text-muted-foreground">
+                بعد از این {isWebinar ? "وبینار" : "دوره"} نگاه و طرز فکرتون نسبت به کارهایی که تا الان
+                میکردید تغییر می‌کنه
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col justify-center gap-3 sm:flex-row">
                 <Button
                   size="lg"
-                  className="bg-white text-primary hover:bg-white/90 text-lg px-8 cursor-pointer"
+                  className="cursor-pointer rounded-lg px-8 text-lg shadow-none"
                   onClick={() => {
                     if (course.isFull) {
                       trackClarityEvent("reserve_button_clicked")
@@ -1640,13 +1678,13 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     }
                   }}
                 >
-                  {course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${isWebinar ? "وبینار" : "این دوره"}`}
+                  {course.descriptionVideoId ? "مشاهده آنلاین" : course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${isWebinar ? "وبینار" : "این دوره"}`}
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 cursor-pointer"
+                  className="cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-lg text-foreground hover:border-primary hover:text-primary"
                 >
                   <Link href="/" onClick={() => trackClarityEvent("view_other_courses_clicked")}>
                     {isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}

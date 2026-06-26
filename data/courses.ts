@@ -480,6 +480,7 @@ export const coursesData: { [key: string]: Course } = {
     isFull: false,
     image: "/sd-interview.png",
     descriptionImage: "/classroom-whiteboard-system-design-training.jpg",
+    descriptionVideoId: "iuxsk3v",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     instructor: {
       name: "بهراد زاری",
