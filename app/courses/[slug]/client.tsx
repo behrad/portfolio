@@ -493,7 +493,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
             {!isFree && (
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  مبلغ <span className="font-bold text-primary">{course?.discount && course.priceNumber ? Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR") : course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۳۶۲۱۴۱۰۸۲۴۴۳۶۱۶</span> بنام بهراد زاری بانک ملی (آینده سابق) واریز نموده و عکس فیش بانکی رو ارسال کنید
+                  مبلغ <span className="font-bold text-primary">{course?.discount && course.priceNumber ? Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR") : course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۲۲۱۰۶۱۰۵۲۸۸۴۱۹۶</span> بنام بهراد زاری بانک پارسیان واریز نموده و عکس فیش بانکی رو ارسال کنید
                 </label>
                 <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer block">
                   <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
