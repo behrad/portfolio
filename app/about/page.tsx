@@ -102,7 +102,8 @@ export default function AboutPage() {
     { year: "2021–2024", title: "Technical Mentorship & Advisory", description: "Served as a technical mentor and advisor for multiple software companies, helping engineering teams improve system design, scalability, delivery processes, and architectural decision-making." },
     { year: "2024", title: "TechTalk Conference", description: "Delivered a technical talk on 'Architectural Patterns for Scalability', covering resilient distributed systems, high‑traffic handling, and modernization strategies." },
     { year: "2021", title: "Martech Podcast", description: "Featured as a guest on the MarTech Podcast discussing the state of Marketing Automation in Iran, ecosystem maturity, and growth patterns." },
-    { year: "2020", title: "Dehban Digital Marketing Program", description: "Invited as a guest lecturer teaching Marketing Automation and customer‑lifecycle strategies." },
+    { year: "2014–2019", title: "Github Open Source Contribution", description: "Active contributor to multiple open‑source projects on GitHub, delivering bug fixes and architectural improvements. Engaged with international developer communities through pull requests, issue discussions, and collaborative code reviews." },
+    { year: "2020", title: "Dehban Digital Marketing Program", description: "Invited as a guest lecturer teaching Marketing Automation and customer‑lifecycle strategies." },    
     { year: "2019", title: "Sharif University — Growth Leaders Summit", description: "Speaker presenting 'Advantages of Mobile Marketing Automation for Scaling Apps'." },
     { year: "2019", title: "Sharif University — Mobile Marketing Course", description: "Instructor for the Mobile Marketing Program, teaching mobile growth strategies, analytics, and automation frameworks." },
     { year: "2019", title: "Startup House of Karaj", description: "Conducted a workshop on Mobile App Growth & Marketing, focusing on acquisition, retention, and engagement loops." },
@@ -137,13 +138,18 @@ export default function AboutPage() {
               </div>
               <div className="flex-1 text-center md:text-right">
                 <h1 className="text-4xl font-bold mb-4">بهراد زاری</h1>
-                <p className="text-xl mb-2">مهندس نرم‌افزار</p>
+                <p className="text-xl mb-2">مهندس نرم‌افزار
+                  
+                </p>
+
                 <div className="flex flex-col gap-2 text-sm opacity-90">
-                  <p>تلفن: ۰۹۱۲ ۵۳۳ ۶۳۸۳</p>
-                  <p>ایمیل: behradz@gmail.com</p>
                   <Link href="https://www.linkedin.com/in/behradz/" target="_blank" className="hover:underline">
-                    linkedin.com/in/behradz
+                    پروفایل لینکدین
                   </Link>
+                  <Link href="https://github.com/behrad" target="_blank" className="hover:underline">
+                    پروفایل گیت‌هاب
+                  </Link>
+                  
                 </div>
               </div>
             </div>

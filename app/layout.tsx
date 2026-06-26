@@ -11,7 +11,7 @@ const vazirmatn = Vazirmatn({
 })
 
 export const metadata: Metadata = {
-  title: "آموزش برنامه نویسی، طراحی سیستم و سیستم دیزاین | مسیر رشد تفکر مهندسی نرم افزار",
+  title: "آموزش برنامه نویسی، طراحی سیستم و سیستم دیزاین | مسیر رشد مهندسی نرم‌افزار",
   description: "دوره‌های آموزش برنامه نویسی، هنر کد نویسی، کد نویسی تمیز، طراحی سیستم، سیستم دیزاین و تفکر سیستمی با بهراد زاری. یاد بگیرید چطور سیستم‌های مقیاس‌پذیر بسازید و کد تمیز بنویسید.",
   keywords: [
     "آموزش برنامه نویسی",
@@ -19,12 +19,14 @@ export const metadata: Metadata = {
     "کد نویسی تمیز",
     "طراحی سیستم",
     "سیستم دیزاین",
-    "system design",
     "تفکر سیستمی",
     "معماری نرم افزار",
+    "مهندسی نرم افزار",
     "میکروسرویس",
     "مقیاس پذیری",
     "آموزش Node.js",
+    "آموزش تایپ اسکریپت",
+    "دوره تایپ اسکریپت",
     "دوره برنامه نویسی",
     "بهراد زاری",
     "clean code",
@@ -32,13 +34,13 @@ export const metadata: Metadata = {
     "scalability",
     "microservices",
     "backend development",
-    "تفکر مهندسی نرم افزار",
+    "system design",
   ],
   authors: [{ name: "بهراد زاری", url: "https://www.linkedin.com/in/behradz/" }],
   creator: "بهراد زاری",
   publisher: "بهراد زاری",
   generator: "v0.app",
-  applicationName: "مسیر رشد تفکر مهندسی نرم افزار",
+  applicationName: "مسیر رشد مهندسی نرم‌افزار",
   referrer: "origin-when-cross-origin",
   robots: {
     index: true,
@@ -68,7 +70,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'fa_IR',
     url: 'https://behrad.tech',
-    siteName: 'مسیر رشد تفکر مهندسی نرم افزار',
+    siteName: 'مسیر رشد مهندسی نرم‌افزار',
     title: 'آموزش برنامه نویسی، طراحی سیستم و سیستم دیزاین',
     description: 'دوره‌های آموزش برنامه نویسی، هنر کد نویسی، کد نویسی تمیز، طراحی سیستم و سیستم دیزاین با بهراد زاری',
     images: [
@@ -76,7 +78,7 @@ export const metadata: Metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'مسیر رشد تفکر مهندسی نرم افزار',
+        alt: 'مسیر رشد مهندسی نرم‌افزار',
       },
     ],
   },

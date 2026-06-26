@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   ]
 
   return {
-    title: `${course.title} | مسیر رشد تفکر مهندسی نرم افزار - بهراد زاری`,
+    title: `${course.title} | مسیر رشد مهندسی نرم‌افزار - بهراد زاری`,
     description: course.shortDescription,
     keywords: keywords.join(", "),
     authors: [{ name: "بهراد زاری" }],

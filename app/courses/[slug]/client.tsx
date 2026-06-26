@@ -40,11 +40,15 @@ import { notFound } from "next/navigation"
 // Define the Course type
 export type Course = {
   title: string
+  hasVideo: boolean
+  type: string
+  path: string
   subtitle: string
   shortDescription: string
   description: string
   price: string
   priceNumber: number
+  discount: number
   duration: string
   sessionsCount: string
   schedule: string
@@ -301,6 +305,8 @@ const trackClarityEvent = (eventName: string, eventData?: Record<string, string>
 // Registration Form Component
 function RegistrationForm({ onClose, course }: { onClose: () => void; course?: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isWebinar = course?.type === "webinar"
+  const isFree = course?.priceNumber === 0
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -364,13 +370,19 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">فرم ثبت‌نام در دوره {course?.title}</h2>
+            <h2 className="text-2xl font-bold">{isWebinar ? "فرم ثبت‌نام در وبینار" : "فرم ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="w-6 h-6" />
             </button>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {isWebinar && (
+              <p className="text-sm text-muted-foreground mb-4 bg-blue-50 p-3 rounded-lg">
+                لینک وبینار از طریق گروه بله <a href="https://ble.ir/join/A6HiDuie9S">@system-design </a>
+                یا با پر کردن این فرم و از طریق پیامک برای شما ارسال خواهد شد
+              </p>
+            )}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">نام</label>
@@ -426,45 +438,75 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">نحوه شرکت در دوره</label>
-              <div className="flex gap-3">
-                <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
-                  <input type="radio" name="attendance" value="online" className="w-4 h-4 cursor-pointer" defaultChecked />
-                  <span className="text-sm">آنلاین</span>
+            {!isWebinar && (
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  {course?.hasVideo ? "نحوه ثبت نام" : "نحوه شرکت در دوره"}
                 </label>
-                <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
-                  <input type="radio" name="attendance" value="in-person" className="w-4 h-4 cursor-pointer" />
-                  <span className="text-sm">فقط حضوری</span>
+                {course?.hasVideo ? (
+                    <>
+                      <div className="flex gap-3">
+                        <label
+                            className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
+                          <input type="radio" name="attendance" value="video_purchase"
+                                 className="w-4 h-4 cursor-pointer" defaultChecked/>
+                          <span className="text-sm">خرید ویدیو</span>
+                        </label>
+                        <label
+                            className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
+                          <input type="radio" name="attendance" value="online_class"
+                                 className="w-4 h-4 cursor-pointer"/>
+                          <span className="text-sm">کلاس آنلاین</span>
+                        </label>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        با ثبت نام به هر روشی شما هم به ویدیو‌ها دسترسی خواهید داشت هم در صورت به حد نصاب رسیدن متقاضیان برگزاری انلاین، می‌توانید در کلاس انلاین شرکت کنید.
+                         در هر دو حالت شما می توانید در جلسات آنلاین تیم‌سازی و حل تمرین شرکت کنید
+                      </p>
+                    </>
+                ) : (
+                    <div className="flex gap-3">
+                      <label
+                          className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
+                      <input type="radio" name="attendance" value="online" className="w-4 h-4 cursor-pointer" defaultChecked />
+                      <span className="text-sm">آنلاین</span>
+                    </label>
+                    {/* <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
+                      <input type="radio" name="attendance" value="in-person" className="w-4 h-4 cursor-pointer" />
+                      <span className="text-sm">فقط حضوری</span>
+                    </label>
+                    <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
+                      <input
+                        type="radio"
+                        name="attendance"
+                        value="both"
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-sm">فرقی نمی‌کند</span>
+                    </label> */}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!isFree && (
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  مبلغ <span className="font-bold text-primary">{course?.discount && course.priceNumber ? Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR") : course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۳۶۲۱۴۱۰۸۲۴۴۳۶۱۶</span> بنام بهراد زاری بانک ملی (آینده سابق) واریز نموده و عکس فیش بانکی رو ارسال کنید
                 </label>
-                <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
-                  <input
-                    type="radio"
-                    name="attendance"
-                    value="both"
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <span className="text-sm">فرقی نمی‌کند</span>
+                <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer block">
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">کلیک کنید یا فایل را بکشید</p>
+                  <input type="file" name="paymentReceipt" className="hidden" accept="image/*" onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const label = e.target.parentElement?.querySelector('p');
+                      if (label) label.textContent = file.name;
+                    }
+                  }} />
                 </label>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                مبلغ <span className="font-bold text-primary">{course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۳۶۲۱۴۱۰۸۲۴۴۳۶۱۶</span> بنام بهراد زاری بانک ملی (آینده سابق) واریز نموده و عکس فیش بانکی رو ارسال کنید
-              </label>
-              <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer block">
-                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">کلیک کنید یا فایل را بکشید</p>
-                <input type="file" name="paymentReceipt" className="hidden" accept="image/*" onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const label = e.target.parentElement?.querySelector('p');
-                    if (label) label.textContent = file.name;
-                  }
-                }} />
-              </label>
-            </div>
+            )}
 
             {/* <div>
               <label className="block text-sm font-medium mb-2">
@@ -490,6 +532,8 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
 // Reserve Form Component
 function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isWebinar = course?.type === "webinar"
+  const isFree = course?.priceNumber === 0
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -536,7 +580,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">پیش ثبت‌نام در دوره {course?.title}</h2>
+            <h2 className="text-2xl font-bold">{isWebinar ? "پیش ثبت‌نام در وبینار" : "پیش ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="w-6 h-6" />
             </button>
@@ -544,7 +588,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
 
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm leading-relaxed">
-              با پر کردن این فرم، شما به لیست رزرو دوره اضافه می‌شوید. این دوره در زمستان ۱۴۰۴ برگزار خواهد شد و زمان دقیق برگزاری به شما اطلاع داده می‌شود.
+              با پر کردن این فرم، شما به لیست رزرو {isWebinar ? "وبینار" : "دوره"} اضافه می‌شوید. {isWebinar ? "وبینار" : "این دوره"} در زمستان ۱۴۰۴ برگزار خواهد شد و زمان دقیق برگزاری به شما اطلاع داده می‌شود.
             </p>
           </div>
 
@@ -671,14 +715,22 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
           {/* Telegram Option */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-center mb-3">
-              می‌تونید مستقیماً از طریق تلگرام با من در ارتباط باشید یا فرم زیر رو پر کنید
+              می‌تونید مستقیماً از طریق بله یا تلگرام با من در ارتباط باشید یا فرم زیر رو پر کنید
             </p>
-            <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-white" variant="outline">
-              <Link href="https://t.me/bzari" target="_blank" className="flex items-center justify-center gap-2">
-                <Send className="w-4 h-4" />
-                ارسال پیام در تلگرام
-              </Link>
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-white" variant="outline">
+                <Link href="https://t.me/bzari" target="_blank" className="flex items-center justify-center gap-2">
+                  <Send className="w-4 h-4" />
+                  ارسال پیام در تلگرام
+                </Link>
+              </Button>
+              <Button asChild className="w-full bg-transparent hover:bg-primary hover:text-white" variant="outline">
+                <Link href="https://ble.ir/behradz62" target="_blank" className="flex items-center justify-center gap-2">
+                  <Send className="w-4 h-4" />
+                  ارسال پیام در بله
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className="relative mb-6">
@@ -745,6 +797,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
 // Corporate Training Form Component
 function CorporateTrainingForm({ onClose, course }: { onClose: () => void; course?: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isWebinar = course?.type === "webinar"
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -773,7 +826,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
 
       if (response.ok) {
         trackClarityEvent("corporate_training_form_submitted")
-        alert("درخواست برگزاری دوره با موفقیت ارسال شد!")
+        alert(`درخواست برگزاری ${isWebinar ? "وبینار" : "دوره"} با موفقیت ارسال شد!`)
         onClose()
       } else {
         alert("خطا در ارسال فرم. لطفا دوباره تلاش کنید.")
@@ -791,7 +844,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
       <div className="bg-white rounded-lg max-w-md w-full">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">برگزاری دوره برای تیم/شرکت شما</h2>
+            <h2 className="text-2xl font-bold">{isWebinar ? "برگزاری وبینار" : "برگزاری دوره"} برای تیم/شرکت شما</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="w-6 h-6" />
             </button>
@@ -860,6 +913,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
 }
 
 export default function CoursePageClient({ course, slug }: { course: Course | undefined; slug?: string }) {
+  const isWebinar = course?.type === "webinar"
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
   const [showReserveForm, setShowReserveForm] = useState(false)
   const [showConsultationForm, setShowConsultationForm] = useState(false)
@@ -982,7 +1036,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   خانه
                 </Link>
                 <span className="opacity-60">/</span>
-                <Link href="/courses" className="hover:underline opacity-80 cursor-pointer">
+                <Link href="/" className="hover:underline opacity-80 cursor-pointer">
                   دوره‌ها
                 </Link>
                 <span className="opacity-60">/</span>
@@ -1063,12 +1117,12 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           </section>
 
           {/* Only show companies section for specific courses */}
-          {slug && !["backend-nodejs", "art-of-coding"].includes(slug) && (
+          {slug && !isWebinar && !["backend-nodejs", "art-of-coding"].includes(slug) && (
             <section className="bg-muted/30 py-12 border-y">
               <div className="container mx-auto px-4">
                 <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
                   <Building2 className="w-5 h-5 text-primary" />
-                  شرکت‌هایی که کارکنانشان در این دوره شرکت کرده‌اند
+                  شرکت‌هایی که کارکنانشان در این {isWebinar ? "وبینار" : "دوره"} شرکت کرده‌اند
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
                   {companies.map((company, index) => (
@@ -1124,7 +1178,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   <section>
                     <h2 className="text-3xl font-bold mb-2 flex items-center gap-3">
                       <BookOpen className="w-6 h-6 text-primary" />
-                      سرفصل‌های دوره
+                      سرفصل‌های {isWebinar ? "وبینار" : "دوره"}
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       {course.modules.length} ماژول • {course.sessionsCount} • {course.duration} 
@@ -1171,7 +1225,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 <section>
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <FileText className="w-6 h-6 text-primary" />
-                    شرح دوره
+                    شرح {isWebinar ? "وبینار" : "دوره"}
                   </h2>
 
                   {course.descriptionImage && (
@@ -1212,7 +1266,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     <CardHeader>
                       <CardTitle className="flex items-center gap-3 text-2xl">
                         <Users className="w-7 h-7 text-primary" />
-                        این دوره برای چه کسانی است؟
+                        این {isWebinar ? "وبینار" : "دوره"} برای چه کسانی است؟
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1320,6 +1374,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   </Card>
                 </section>
 
+              {course.type !== 'webinar' && (
                 <section>
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <Shield className="w-6 h-6 text-primary" />
@@ -1335,9 +1390,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           <div>
                             <h3 className="font-bold text-lg mb-2">گارانتی بازگشت وجه</h3>
                             <p className="text-sm text-foreground leading-relaxed">
-                              اگر تا پایان جلسه سوم به هر دلیلی از شرکت در ادامه دوره منصرف شدید، کل مبلغ را پس میگیرید. 
+                              اگر تا پایان جلسه سوم به هر دلیلی از شرکت در ادامه {isWebinar ? "وبینار" : "دوره"} منصرف شدید، کل مبلغ را پس میگیرید. 
                               <br></br>
-                              فقط لازمه به من بازخورد شفاف بدید تا بتونم در صورت نیاز کیفیت دوره رو بالاتر ببرم.
+                              فقط لازمه به من بازخورد شفاف بدید تا بتونم در صورت نیاز کیفیت {isWebinar ? "وبینار" : "دوره"} رو بالاتر ببرم.
                             </p>
                           </div>
                         </div>
@@ -1353,7 +1408,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           <div>
                             <h3 className="font-bold text-lg mb-2">جلسه اول رایگان</h3>
                             <p className="text-sm text-foreground leading-relaxed">
-                              اگر معرف ندارید یا من رو نمیشناسید یا به هر دلیلی دودل هستید که این دوره بدردتون می‌خوره یا نه، می‌تونید جلسه اول رو رایگان ولی با پر کردن فرم ثبت نام شرکت کنید. 
+                              اگر معرف ندارید یا من رو نمیشناسید یا به هر دلیلی دودل هستید که این {isWebinar ? "وبینار" : "دوره"} بدردتون می‌خوره یا نه، می‌تونید جلسه اول رو رایگان ولی با پر کردن فرم ثبت نام شرکت کنید. 
                             </p>
                           </div>
                         </div>
@@ -1361,6 +1416,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     </Card>
                   </div>
                 </section>
+              )}
 
                 {course.faqs.length > 0 && (
                   <section>
@@ -1389,7 +1445,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                 {course.relatedCourses && course.relatedCourses.length > 0 && (
                   <section>
-                    <h2 className="text-3xl font-bold mb-6">دوره‌های مرتبط</h2>
+                    <h2 className="text-3xl font-bold mb-6">{isWebinar ? "وبینارهای مرتبط" : "دوره‌های مرتبط"}</h2>
                     <div className="grid md:grid-cols-2 gap-6">
                       {course.relatedCourses.map((relatedCourse, index) => (
                         <Card
@@ -1414,7 +1470,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                               variant="outline"
                               className="w-full bg-transparent cursor-pointer hover:bg-primary hover:text-white"
                             >
-                              <Link href={`/courses/${relatedCourse.slug}`}>مشاهده دوره</Link>
+                              <Link href={`/courses/${relatedCourse.slug}`}>{isWebinar ? "مشاهده وبینار" : "مشاهده دوره"}</Link>
                             </Button>
                           </CardContent>
                         </Card>
@@ -1429,9 +1485,22 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   <Card className="border-2 shadow-lg">
                     <CardContent className="p-6">
                       <div className="mb-6 text-center">
-                        <div className="flex items-baseline justify-center gap-2 mb-2">
-                          <span className="text-5xl font-bold text-primary">{course.price}</span>
-                          <span className="text-xl text-muted-foreground">تومان</span>
+                        <div className="flex flex-col items-center gap-2 mb-2">
+                          {course.discount > 0 && course.priceNumber > 0 ? (
+                            <>
+                              <span className="text-sm text-muted-foreground line-through">
+                                {course.price} تومان
+                              </span>
+                              <span className="text-4xl md:text-4xl font-bold text-red-600">
+                                {Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR")} تومان
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-5xl font-bold text-primary">{course.price}</span>
+                              <span className="text-xl text-muted-foreground">{course.priceNumber === 0 ? "" : "تومان"}</span>
+                            </>
+                          )}
                         </div>
                       </div>
 
@@ -1449,7 +1518,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                             }
                           }}
                         >
-                          {course.isFull ? "پیش ثبت‌نام" : "ثبت‌نام در دوره"}
+                          {course.isFull ? "پیش ثبت‌نام" : "ثبت‌نام"}
                         </Button>
                       </div>
 
@@ -1464,21 +1533,19 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         </div>
                         <div className="flex items-center gap-3">
                           <Users className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>{course.format}</span>
+                          <span>{course.format} {course?.hasVideo ? " یا ویدیو (اسپات پلیر)" : ""}</span>
+                          
                         </div>
                         <div className="flex items-center gap-3">
                           <Presentation className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>تیم‌‌سازی</span>
+                          <span>تیم‌سازی و جلسات حل تمرین و مرور کد ماهانه</span>
                         </div>
                         <div className="flex items-center gap-3">
                 
                           <Award className="w-5 h-5 text-primary flex-shrink-0" />
                           <span>تضمین بازگشت وجه</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <Gift className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>جلسه اول رایگان</span>
-                        </div>
+
                       </div>
 
                       <div className="mb-4">
@@ -1491,7 +1558,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                             setShowCorporateTrainingForm(true)
                           }}
                         >
-                          شخصی‌سازی دوره برای تیم/شرکت شما
+                          شخصی‌سازی {isWebinar ? "وبینار" : "دوره"} برای تیم/شرکت شما
                         </Button>
                       </div>
 
@@ -1510,7 +1577,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       </div>
 
                       <div className="border-t pt-4">
-                        <p className="text-sm font-medium mb-3">دوره رو به اشتراک بگذارید تا دیگران هم ببینن</p>
+                        <p className="text-sm font-medium mb-3">{isWebinar ? "وبینار" : "دوره"} رو به اشتراک بگذارید تا دیگران هم ببینن</p>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -1557,7 +1624,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-4xl font-bold mb-4">به شما قول میدم</h2>
               <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto leading-relaxed">
-                بعد از این دوره نگاه و طرز فکرتون نسبت به کارهایی که تا الان میکردید تغییر می‌کنه
+                بعد از این {isWebinar ? "وبینار" : "دوره"} نگاه و طرز فکرتون نسبت به کارهایی که تا الان میکردید تغییر می‌کنه
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
@@ -1573,7 +1640,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     }
                   }}
                 >
-                  {course.isFull ? "پیش ثبت‌نام" : "ثبت‌نام در این دوره"}
+                  {course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${isWebinar ? "وبینار" : "این دوره"}`}
                 </Button>
                 <Button
                   asChild
@@ -1582,7 +1649,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 cursor-pointer"
                 >
                   <Link href="/" onClick={() => trackClarityEvent("view_other_courses_clicked")}>
-                    مشاهده سایر دوره‌ها
+                    {isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}
                   </Link>
                 </Button>
               </div>

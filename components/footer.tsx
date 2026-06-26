@@ -10,13 +10,6 @@ export function Footer() {
           </div>
           <div className="flex gap-6">
             <Link
-              href="https://www.linkedin.com/in/behradz/"
-              target="_blank"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              لینکدین
-            </Link>
-            <Link
               href="https://t.me/mindfulsoft"
               target="_blank"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -24,10 +17,24 @@ export function Footer() {
               کانال تلگرام
             </Link>
             <Link
+              href="https://ble.ir/join/A6HiDuie9S"
+              target="_blank"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              گروه بله
+            </Link>
+            <Link
+              href="https://www.linkedin.com/in/behradz/"
+              target="_blank"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              لینکدین من
+            </Link>
+            <Link
               href="mailto:behradz@gmail.com"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              ایمیل
+              ایمیل من
             </Link>
           </div>
         </div>
