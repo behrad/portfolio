@@ -119,7 +119,7 @@ export default function HomePage() {
         {/* Courses Grid */}
         <section id="courses-grid" className="container mx-auto px-4 py-14">
           <div className="mb-10 flex items-end justify-between gap-4">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">همه‌ی دوره‌ها</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">دوره و وبینار‌ها</h2>
             <span className="mono text-xs text-muted-foreground">
               {courses.length.toLocaleString("en-US")} دوره
             </span>

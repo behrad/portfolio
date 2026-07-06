@@ -343,7 +343,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
     }
 
     try {
-      const response = await fetch("https://n8n.sazito.com/webhook/register", {
+      const response = await fetch("https://n8n.behradz.ir/webhook/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -553,7 +553,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
     }
 
     try {
-      const response = await fetch("https://n8n.sazito.com/webhook/register", {
+      const response = await fetch("https://n8n.behradz.ir/webhook/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -679,7 +679,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
     }
 
     try {
-      const response = await fetch("https://n8n.sazito.com/webhook/register", {
+      const response = await fetch("https://n8n.behradz.ir/webhook/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -817,7 +817,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
     }
 
     try {
-      const response = await fetch("https://n8n.sazito.com/webhook/register", {
+      const response = await fetch("https://n8n.behradz.ir/webhook/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

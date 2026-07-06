@@ -30,3 +30,5 @@ next-env.d.ts
 .kiro/
 behrad.zip
 public/.DS_Store
+/n8n_data/
+/.claude/settings.json

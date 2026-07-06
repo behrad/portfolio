@@ -39,7 +39,7 @@ export function DiscountRibbon() {
       </span>
       <span className="mono text-base font-bold text-[var(--danger)]">50%</span>
       <span className="text-foreground">
-        تخفیف همهٔ دوره‌ها، فقط تا <span className="font-bold">۱۵ تیر</span>
+        تخفیف همهٔ دوره‌ها، فقط تا <span className="font-bold">۲۶ تیر</span>
       </span>
     </a>
   )
@@ -51,7 +51,7 @@ export function DiscountNote() {
 
   return (
     <p className="mx-auto mt-4 text-sm font-medium text-[var(--danger)]/90">
-      از ۱۵ تیر ماه تخفیف ۵۰ درصدی برداشته می‌شه. فرصت ثبت‌نام با نصف قیمت محدوده.
+      از ۲۶ تیر ماه تخفیف ۵۰ درصدی برداشته می‌شه. فرصت ثبت‌نام با نصف قیمت محدوده.
     </p>
   )
 }

@@ -36,7 +36,7 @@ ssh $REMOTE_HOST << EOF
     sudo docker rm behrad || true
 
     echo "==> Starting new container..."
-    sudo docker run -d -p 80:80 --restart unless-stopped --name behrad behrad
+    sudo docker run -d -p 80:80 --network my-shared-network --restart unless-stopped --name behrad behrad
 
     echo "==> Deployment finished."
 EOF
