@@ -2,27 +2,21 @@
 
 set -e  # اگر خطایی رخ دهد، اسکریپت متوقف می‌شود
 
-ZIP_NAME="behrad.zip"
 REMOTE_HOST="behrad"
-REMOTE_DIR="~"
 PROJECT_DIR="behrad"
 
-echo "==> Zipping out directory..."
-rm -f $ZIP_NAME
-zip -r $ZIP_NAME out/
+echo "==> Building project with pnpm..."
+pnpm build
 
-echo "==> Uploading zip to server..."
-scp $ZIP_NAME $REMOTE_HOST:$REMOTE_DIR
+echo "==> Syncing out directory using rsync..."
+rsync -avz --delete out/ $REMOTE_HOST:$PROJECT_DIR/out/
 
 echo "==> Running deployment on remote server..."
 ssh $REMOTE_HOST << EOF
     set -e
 
-    echo "==> Cleaning old project directory..."
-    rm -rf $PROJECT_DIR/out
-
-    echo "==> Unzipping project..."
-    unzip $ZIP_NAME -d $PROJECT_DIR
+    echo "==> Setting read permissions on output..."
+    sudo chmod -R a+r $PROJECT_DIR/out
 
     cd $PROJECT_DIR
 

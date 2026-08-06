@@ -62,6 +62,7 @@ export type Course = {
   descriptionImage?: string
   descriptionVideoId?: string
   videoUrl: string
+  sampleVideo?: string
   rating?: number
   reviewCount?: number
   isFull?: boolean
@@ -419,7 +420,9 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">ایمیل</label>
+              <label className="block text-sm font-medium mb-2">
+                ایمیل <span className="text-muted-foreground text-xs font-normal">(اطلاعات و لایسنس دوره برای شما از طریق همین ایمیل ارسال خواهد شد)</span>
+              </label>
               <input
                 type="email"
                 name="email"
@@ -1092,24 +1095,24 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                 <div className="relative">
                   <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl border-4 border-white/20">
-                    {/* Video section - will be added later */}
-                    {/* <video
-                      controls
-                      className="w-full h-full"
-                      poster={course.image}
-                      onPlay={() => trackClarityEvent("course_video_played")}
-                    >
-                      <source src={course.videoUrl} type="video/mp4" />
-                      مرورگر شما از ویدیو پشتیبانی نمی‌کند.
-                    </video> */}
-                    
-                    {/* Temporary: Show course cover image until video is ready */}
-                    <Image
-                      src={course.image || "/placeholder.svg"}
-                      alt={course.title}
-                      fill
-                      className="object-cover"
-                    />
+                    {course.sampleVideo ? (
+                      <video
+                        controls
+                        className="w-full h-full object-cover"
+                        poster={course.image}
+                        onPlay={() => trackClarityEvent("course_video_played")}
+                      >
+                        <source src={course.sampleVideo} type="video/mp4" />
+                        مرورگر شما از ویدیو پشتیبانی نمی‌کند.
+                      </video>
+                    ) : (
+                      <Image
+                        src={course.image || "/placeholder.svg"}
+                        alt={course.title}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                   <div className="mt-4 text-center text-sm opacity-75"></div>
                 </div>
@@ -1547,14 +1550,31 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       </div>
 
                       <div className="space-y-3 mb-6 text-sm">
-                        <div className="flex items-center gap-3">
-                          <Clock className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>{course.schedule}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>شروع: {course.startDate}</span>
-                        </div>
+                        {course.hasVideo ? (
+                          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 space-y-2 mb-4 text-primary">
+                            <div className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                              <span className="font-semibold text-sm">این دوره به صورت ویدیویی موجود می‌باشد.</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                              <span className="text-xs leading-relaxed">
+                                تنها در صورت به حد نصاب رسیدن درخواست برای برگزاری، به صورت آنلاین برگزار می‌شود.
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-3">
+                              <Clock className="w-5 h-5 text-primary flex-shrink-0" />
+                              <span>{course.schedule}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
+                              <span>شروع: {course.startDate}</span>
+                            </div>
+                          </>
+                        )}
                         <div className="flex items-center gap-3">
                           <Users className="w-5 h-5 text-primary flex-shrink-0" />
                           <span>{course.format} {course?.hasVideo ? " یا ویدیو (اسپات پلیر)" : ""}</span>
