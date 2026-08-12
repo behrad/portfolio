@@ -1531,6 +1531,16 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         </div>
                       </div>
 
+                      {slug === 'system-design-3' && (
+                        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 font-bold text-center flex items-center justify-center gap-2">
+                          <span className="relative flex h-2 w-2">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 bg-red-600"></span>
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
+                          </span>
+                          این تخفیف برای امروزه فقط تا آخر شب فقط حواست باشه
+                        </div>
+                      )}
+
                       <div className="mb-6">
                         <Button
                           size="lg"

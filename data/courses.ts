@@ -265,7 +265,7 @@ export const coursesData: { [key: string]: Course } = {
     description:
         "در این دوره انواع تکنولوژی‌های دیتابیس رو مقایسه می‌کنیم و چندین مثال از معماری‌های واقعی که در آن از دیتابیس‌های مختلف استفاده شده است را بررسی می‌کنیم ",
     price: "۷,۹۰۰,۰۰۰",
-    discount: 0,
+    discount: 29 / 79,
     priceNumber: 7900000,
     rating: 4.2,
     reviewCount: 15,
