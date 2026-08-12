@@ -7,6 +7,7 @@
     "deploy": "./deploy.sh",
     "dev": "next dev",
     "lint": "eslint .",
+    "serve:out": "npx serve@latest out",
     "start": "next start"
   },
   "dependencies": {
