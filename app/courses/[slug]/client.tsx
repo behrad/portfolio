@@ -33,8 +33,9 @@ import {
   ChevronRight,
   Presentation,
   Building2,
+  Play,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
 
 // Define the Course type
@@ -305,7 +306,7 @@ const trackClarityEvent = (eventName: string, eventData?: Record<string, string>
 }
 
 // Registration Form Component
-function RegistrationForm({ onClose, course }: { onClose: () => void; course?: Course }) {
+function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () => void; course?: Course; effectiveDiscount?: number }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isWebinar = course?.type === "webinar"
   const isFree = course?.priceNumber === 0
@@ -496,7 +497,7 @@ function RegistrationForm({ onClose, course }: { onClose: () => void; course?: C
             {!isFree && (
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  مبلغ <span className="font-bold text-primary">{course?.discount && course.priceNumber ? Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR") : course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۲۲۱۰۶۱۰۵۲۸۸۴۱۹۶</span> بنام بهراد زاری بانک پارسیان واریز نموده و عکس فیش بانکی رو ارسال کنید
+                  مبلغ <span className="font-bold text-primary">{(effectiveDiscount ?? course?.discount ?? 0) > 0 && course?.priceNumber ? Math.round(course.priceNumber * (1 - (effectiveDiscount ?? course?.discount ?? 0))).toLocaleString("fa-IR") : course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۲۲۱۰۶۱۰۵۲۸۸۴۱۹۶</span> بنام بهراد زاری بانک پارسیان واریز نموده و عکس فیش بانکی رو ارسال کنید
                 </label>
                 <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer block">
                   <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
@@ -923,6 +924,15 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   const [showConsultationForm, setShowConsultationForm] = useState(false)
   const [showCorporateTrainingForm, setShowCorporateTrainingForm] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [isFlashSaleActive, setIsFlashSaleActive] = useState(false)
+
+  useEffect(() => {
+    // Flash sale ends at the end of today (2026-08-12 23:59:59)
+    const deadline = new Date("2026-08-13T00:00:00+03:30").getTime()
+    setIsFlashSaleActive(Date.now() < deadline)
+  }, [])
+
+  const effectiveDiscount = slug === "system-design-3" ? (isFlashSaleActive ? course?.discount ?? 0 : 0) : course?.discount ?? 0;
 
   if (!course) {
     notFound()
@@ -1015,7 +1025,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {showRegistrationForm && <RegistrationForm onClose={() => setShowRegistrationForm(false)} course={course} />}
+      {showRegistrationForm && <RegistrationForm onClose={() => setShowRegistrationForm(false)} course={course} effectiveDiscount={effectiveDiscount} />}
       {showReserveForm && <ReserveForm onClose={() => setShowReserveForm(false)} course={course} />}
       {showConsultationForm && <ConsultationForm onClose={() => setShowConsultationForm(false)} course={course} />}
       {showCorporateTrainingForm && <CorporateTrainingForm onClose={() => setShowCorporateTrainingForm(false)} course={course} />}
@@ -1094,17 +1104,30 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 </div>
 
                 <div className="relative">
-                  <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl border-4 border-white/20">
+                  <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl border-4 border-white/20 group">
                     {course.sampleVideo ? (
-                      <video
-                        controls
-                        className="w-full h-full object-cover"
-                        poster={course.image}
-                        onPlay={() => trackClarityEvent("course_video_played")}
-                      >
-                        <source src={course.sampleVideo} type="video/mp4" />
-                        مرورگر شما از ویدیو پشتیبانی نمی‌کند.
-                      </video>
+                      <>
+                        <video
+                          controls
+                          className="w-full h-full object-cover peer"
+                          poster={course.image}
+                          onPlay={(e) => {
+                            trackClarityEvent("course_video_played");
+                            e.currentTarget.parentElement?.classList.add('is-playing');
+                          }}
+                          onPause={(e) => {
+                            e.currentTarget.parentElement?.classList.remove('is-playing');
+                          }}
+                        >
+                          <source src={course.sampleVideo} type="video/mp4" />
+                          مرورگر شما از ویدیو پشتیبانی نمی‌کند.
+                        </video>
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-[.is-playing]:hidden">
+                          <div className="bg-primary/80 text-white rounded-full p-4 pl-5 backdrop-blur-sm shadow-lg border-2 border-white/20 group-hover:bg-primary transition-colors">
+                            <Play className="w-12 h-12" fill="currentColor" />
+                          </div>
+                        </div>
+                      </>
                     ) : (
                       <Image
                         src={course.image || "/placeholder.svg"}
@@ -1513,13 +1536,13 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     <CardContent className="p-6">
                       <div className="mb-6 text-center">
                         <div className="flex flex-col items-center gap-2 mb-2">
-                          {course.discount > 0 && course.priceNumber > 0 ? (
+                          {effectiveDiscount > 0 && course.priceNumber > 0 ? (
                             <>
                               <span className="text-sm text-muted-foreground line-through">
                                 {course.price} تومان
                               </span>
                               <span className="text-4xl md:text-4xl font-bold text-red-600">
-                                {Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR")} تومان
+                                {Math.round(course.priceNumber * (1 - effectiveDiscount)).toLocaleString("fa-IR")} تومان
                               </span>
                             </>
                           ) : (
@@ -1531,7 +1554,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         </div>
                       </div>
 
-                      {slug === 'system-design-3' && (
+                      {slug === 'system-design-3' && isFlashSaleActive && (
                         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 font-bold text-center flex items-center justify-center gap-2">
                           <span className="relative flex h-2 w-2">
                             <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 bg-red-600"></span>

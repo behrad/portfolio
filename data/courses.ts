@@ -260,7 +260,7 @@ export const coursesData: { [key: string]: Course } = {
     type: "course",
     subtitle: "Polyglot Database Architectures",
     path: "system_design",
-    hasVideo: false,
+    hasVideo: true,
     shortDescription: "یکی از مهمترین جنبه‌های هر سیستم مهندسی داده‌های آن هست",
     description:
         "در این دوره انواع تکنولوژی‌های دیتابیس رو مقایسه می‌کنیم و چندین مثال از معماری‌های واقعی که در آن از دیتابیس‌های مختلف استفاده شده است را بررسی می‌کنیم ",
@@ -280,6 +280,7 @@ export const coursesData: { [key: string]: Course } = {
     image: "/sd3.png",
     descriptionImage: "/classroom-whiteboard-system-design-training.jpg",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    sampleVideo: "/sd1-sample.mp4",
     instructor: {
       name: "بهراد زاری",
       title: "مهندس نرم افزار و منتور",
