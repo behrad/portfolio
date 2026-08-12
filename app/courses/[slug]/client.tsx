@@ -927,8 +927,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   const [isFlashSaleActive, setIsFlashSaleActive] = useState(false)
 
   useEffect(() => {
-    // Flash sale ends at the end of today (2026-08-12 23:59:59)
-    const deadline = new Date("2026-08-13T00:00:00+03:30").getTime()
+    // Flash sale ends at the end of today (2026-08-12 23:59:59 local time)
+    // Using year, monthIndex (7=Aug), day to avoid parsing issues in some browsers like Safari
+    const deadline = new Date(2026, 7, 13).getTime()
     setIsFlashSaleActive(Date.now() < deadline)
   }, [])
 
