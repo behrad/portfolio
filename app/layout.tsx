@@ -1,8 +1,10 @@
 import type React from "react"
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { Vazirmatn, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script"
+import { UtmTracker } from "@/components/utm-tracker"
 import "./globals.css"
 
 const vazirmatn = Vazirmatn({
@@ -119,6 +121,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${vazirmatn.className} font-sans antialiased`}>
+        <Suspense fallback={null}>
+          <UtmTracker />
+        </Suspense>
         {children}
         <Analytics />
       </body>

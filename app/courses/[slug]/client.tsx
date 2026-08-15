@@ -37,6 +37,7 @@ import {
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
+import { getTrackingData } from "@/lib/tracking"
 
 // Define the Course type
 export type Course = {
@@ -330,6 +331,8 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
       })
     }
     
+    const tracking = getTrackingData()
+
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
@@ -342,6 +345,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
       formType: "registration",
+      ...tracking,
     }
 
     try {
@@ -429,7 +433,9 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 
             <div>
               <label className="block text-sm font-medium mb-2">
-                ایمیل <span className="text-muted-foreground text-xs font-normal">(اطلاعات و لایسنس دوره برای شما از طریق همین ایمیل ارسال خواهد شد)</span>
+                ایمیل {!isWebinar && (
+                  <span className="text-muted-foreground text-xs font-normal">(اطلاعات و لایسنس دوره برای شما از طریق همین ایمیل ارسال خواهد شد)</span>
+                )}
               </label>
               <input
                 type="email"
@@ -552,6 +558,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
     setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
+    const tracking = getTrackingData()
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
@@ -561,6 +568,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
       formType: "reserve",
+      ...tracking,
     }
 
     try {
@@ -679,6 +687,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
     setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
+    const tracking = getTrackingData()
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
@@ -687,6 +696,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
       formType: "consultation",
+      ...tracking,
     }
 
     try {
@@ -816,6 +826,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
     setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
+    const tracking = getTrackingData()
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
@@ -825,6 +836,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
       formType: "corporate",
+      ...tracking,
     }
 
     try {
