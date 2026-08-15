@@ -381,9 +381,16 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             {isWebinar && (
-              <p className="mb-4 rounded-lg border border-[var(--accent-border)] bg-[var(--accent-soft)] p-3 text-sm text-muted-foreground">
-                لینک وبینار از طریق گروه بله <a href="https://ble.ir/join/A6HiDuie9S">@system-design </a>
-                یا با پر کردن این فرم و از طریق پیامک برای شما ارسال خواهد شد
+              <p className="mb-4 rounded-lg border border-[var(--accent-border)] bg-[var(--accent-soft)] p-3 text-sm text-muted-foreground leading-relaxed">
+                لینک وبینار از طریق کانال تلگرام{" "}
+                <a href="https://t.me/mindfulsoft" target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:opacity-80">
+                  @mindfulsoft
+                </a>
+                ، گروه بله{" "}
+                <a href="https://ble.ir/join/A6HiDuie9S" target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:opacity-80">
+                  @system-design
+                </a>{" "}
+                یا با پر کردن این فرم و از طریق پیامک برای شما ارسال خواهد شد.
               </p>
             )}
             <div className="grid md:grid-cols-2 gap-4">
@@ -1614,15 +1621,18 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           <span>{course.format} {course?.hasVideo ? " یا ویدیو (اسپات پلیر)" : ""}</span>
                           
                         </div>
-                        <div className="flex items-center gap-3">
-                          <Presentation className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>تیم‌سازی و جلسات حل تمرین و مرور کد ماهانه</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                
-                          <Award className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>تضمین بازگشت وجه</span>
-                        </div>
+                        {!isWebinar && (
+                          <>
+                            <div className="flex items-center gap-3">
+                              <Presentation className="w-5 h-5 text-primary flex-shrink-0" />
+                              <span>تیم‌سازی و جلسات حل تمرین و مرور کد ماهانه</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Award className="w-5 h-5 text-primary flex-shrink-0" />
+                              <span>تضمین بازگشت وجه</span>
+                            </div>
+                          </>
+                        )}
 
                       </div>
 

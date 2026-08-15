@@ -1554,7 +1554,7 @@ export default function CoachingPage() {
               </div>
             </div>
 
-            <div class="slide-footer">
+            <div className="slide-footer">
               <span>Engineering Leadership &amp; Technical Coaching Proposal</span>
               <a href="#outcomes" className="scroll-hint" aria-label="Scroll to next section">
                 <span>Scroll Down</span>
