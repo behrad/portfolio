@@ -64,8 +64,38 @@ export default function ShortUrlClient({ config, code }: ShortUrlClientProps) {
     )
   }
 
+  // Inline script code to execute instant redirect as soon as HTML is rendered
+  const inlineRedirectScript = `
+    (function() {
+      try {
+        var target = ${JSON.stringify(config.target)};
+        var search = window.location.search;
+        if (search && search !== '?') {
+          var dummyBase = window.location.origin || 'https://behradz.ir';
+          var isAbsolute = target.indexOf('http://') === 0 || target.indexOf('https://') === 0;
+          var url = new URL(target, dummyBase);
+          var incomingParams = new URLSearchParams(search);
+          incomingParams.forEach(function(val, key) {
+            url.searchParams.set(key, val);
+          });
+          target = isAbsolute ? url.toString() : (url.pathname + url.search + url.hash);
+        }
+        window.location.replace(target);
+      } catch (err) {
+        window.location.href = ${JSON.stringify(config.target)};
+      }
+    })();
+  `
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 text-center">
+      {/* Synchronous inline script for 0ms immediate redirect before React hydrates */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: inlineRedirectScript,
+        }}
+      />
+
       {/* Background glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-600/15 rounded-full blur-3xl" />

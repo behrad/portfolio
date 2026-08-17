@@ -39,14 +39,5 @@ export default async function ShortUrlPage({
   const { code } = await params
   const config = getShortUrl(code)
 
-  return (
-    <>
-      {config?.target && (
-        <head>
-          <meta httpEquiv="refresh" content={`0;url=${config.target}`} />
-        </head>
-      )}
-      <ShortUrlClient config={config} code={code} />
-    </>
-  )
+  return <ShortUrlClient config={config} code={code} />
 }

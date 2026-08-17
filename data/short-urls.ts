@@ -1,6 +1,6 @@
 export interface ShortUrlConfig {
   /**
-   * The short slug/code (e.g., "ai-ws", "ag-ws", "sd1", "clean-code")
+   * The short slug/code (e.g., "ai-ws", "ai-asd", "ag-ws", "sd1", "clean-code")
    * Will be accessible at: https://behradz.ir/{code}
    */
   code: string
@@ -57,6 +57,13 @@ export const RESERVED_SLUGS = new Set([
 export const shortUrlsList: ShortUrlConfig[] = [
   // AI-Assisted Software Engineering Workshop
   {
+    code: "ai-asd",
+    target: "/courses/ai-assisted-software-engineering",
+    title: "کارگاه مهندسی نرم‌افزار Agent-محور (AI-Assisted SE)",
+    description: "لینک کوتاه کارگاه هوش مصنوعی و مهندسی نرم‌افزار",
+    createdAt: "2026-08-17",
+  },
+  {
     code: "ai-ws",
     target: "/courses/ai-assisted-software-engineering",
     title: "کارگاه AI-Assisted Software Engineering",
@@ -68,6 +75,20 @@ export const shortUrlsList: ShortUrlConfig[] = [
     target: "/courses/ai-assisted-software-engineering",
     title: "کارگاه مهندسی با AI (مخفف)",
     description: "کد کوتاه ۵ کاراکتری کارگاه",
+    createdAt: "2026-08-17",
+  },
+  {
+    code: "ai-se",
+    target: "/courses/ai-assisted-software-engineering",
+    title: "کارگاه AI-SE",
+    description: "لینک کوتاه AI Software Engineering",
+    createdAt: "2026-08-17",
+  },
+  {
+    code: "asd",
+    target: "/courses/ai-assisted-software-engineering",
+    title: "کارگاه AI-Assisted SE (مخفف ۳ حرفی)",
+    description: "لینک فوق کوتاه ۳ حرفی کارگاه",
     createdAt: "2026-08-17",
   },
   {
