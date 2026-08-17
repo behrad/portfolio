@@ -41,6 +41,7 @@ export default function HomePage() {
   const courses = Object.entries(coursesData).map(([id, course]) => {
     const isFree = course.priceNumber === 0
     const isWebinar = course.type === "webinar"
+    const isWorkshop = course.type === "workshop"
     const discountedPrice =
       !isFree && course.discount > 0
         ? Math.round(course.priceNumber * (1 - course.discount)).toLocaleString("fa-IR")
@@ -58,6 +59,7 @@ export default function HomePage() {
       highlights: course.skills?.slice(0, 3) ?? [],
       isFull: course.isFull ?? false,
       isWebinar,
+      isWorkshop,
       isFree,
       hasVideo: !!course.descriptionVideoId,
     }
@@ -119,9 +121,9 @@ export default function HomePage() {
         {/* Courses Grid */}
         <section id="courses-grid" className="container mx-auto px-4 py-14">
           <div className="mb-10 flex items-end justify-between gap-4">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">دوره و وبینار‌ها</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">دوره، کارگاه و وبینار‌ها</h2>
             <span className="mono text-xs text-muted-foreground">
-              {courses.length.toLocaleString("en-US")} دوره
+              {courses.length.toLocaleString("en-US")} عنوان آموزشی
             </span>
           </div>
 
@@ -207,10 +209,16 @@ export default function HomePage() {
                       {course.hasVideo
                         ? "مشاهده آنلاین"
                         : course.isFree
-                          ? "شرکت در وبینار"
-                          : course.isWebinar
-                            ? "مشاهده وبینار"
-                            : "جزییات دوره"}
+                          ? course.isWebinar
+                            ? "شرکت در وبینار"
+                            : course.isWorkshop
+                              ? "شرکت در کارگاه"
+                              : "ثبت‌نام رایگان"
+                          : course.isWorkshop
+                            ? "جزییات کارگاه"
+                            : course.isWebinar
+                              ? "مشاهده وبینار"
+                              : "جزییات دوره"}
                     </Link>
                   </Button>
                 </CardContent>

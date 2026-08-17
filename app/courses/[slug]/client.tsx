@@ -34,6 +34,9 @@ import {
   Presentation,
   Building2,
   Play,
+  Tag,
+  Copy,
+  Check,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
@@ -306,11 +309,64 @@ const trackClarityEvent = (eventName: string, eventData?: Record<string, string>
   }
 }
 
+const DISCOUNT_CODES: { [key: string]: number } = {
+  sdlc: 0.30,
+  behrad10: 0.10,
+  behrad25: 0.25,
+  behrad22: 0.22,
+  behrad50: 0.50,
+  "بهراد10": 0.10,
+  "بهراد25": 0.25,
+  "بهراد22": 0.22,
+  "بهراد50": 0.50,
+}
+
+function normalizeDiscountCode(input: string): string {
+  const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"]
+  let normalized = input.trim().toLowerCase()
+  persianDigits.forEach((digit, i) => {
+    normalized = normalized.replaceAll(digit, i.toString())
+  })
+  return normalized.replace(/[\s\-_]/g, "")
+}
+
 // Registration Form Component
 function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () => void; course?: Course; effectiveDiscount?: number }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [couponInput, setCouponInput] = useState("")
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; percent: number } | null>(null)
+  const [couponStatus, setCouponStatus] = useState<"idle" | "success" | "invalid">("idle")
+  const [copiedCard, setCopiedCard] = useState(false)
+
+  const handleCopyCard = () => {
+    navigator.clipboard.writeText("6221061052884196")
+    setCopiedCard(true)
+    setTimeout(() => setCopiedCard(false), 2000)
+  }
+
   const isWebinar = course?.type === "webinar"
+  const isWorkshop = course?.type === "workshop"
   const isFree = course?.priceNumber === 0
+
+  const baseDiscount = effectiveDiscount ?? course?.discount ?? 0
+  const totalDiscount = appliedCoupon ? Math.max(baseDiscount, appliedCoupon.percent) : baseDiscount
+  const finalPrice = course?.priceNumber ? Math.round(course.priceNumber * (1 - totalDiscount)) : 0
+
+  const handleApplyCoupon = () => {
+    const normalized = normalizeDiscountCode(couponInput)
+    if (!normalized) {
+      setAppliedCoupon(null)
+      setCouponStatus("idle")
+      return
+    }
+    if (DISCOUNT_CODES[normalized] !== undefined) {
+      setAppliedCoupon({ code: couponInput.trim(), percent: DISCOUNT_CODES[normalized] })
+      setCouponStatus("success")
+    } else {
+      setAppliedCoupon(null)
+      setCouponStatus("invalid")
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -344,6 +400,8 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
       paymentReceiptName: paymentReceipt?.name || "",
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
+      discountCode: appliedCoupon ? appliedCoupon.code : "",
+      finalPrice: finalPrice,
       formType: "registration",
       ...tracking,
     }
@@ -377,7 +435,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">{isWebinar ? "فرم ثبت‌نام در وبینار" : "فرم ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
+            <h2 className="text-2xl font-bold">{isWorkshop ? "فرم ثبت‌نام در کارگاه" : isWebinar ? "فرم ثبت‌نام در وبینار" : "فرم ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="w-6 h-6" />
             </button>
@@ -434,7 +492,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
             <div>
               <label className="block text-sm font-medium mb-2">
                 ایمیل {!isWebinar && (
-                  <span className="text-muted-foreground text-xs font-normal">(اطلاعات و لایسنس دوره برای شما از طریق همین ایمیل ارسال خواهد شد)</span>
+                  <span className="text-muted-foreground text-xs font-normal">(اطلاعات و لایسنس {isWorkshop ? "کارگاه" : "دوره"} برای شما از طریق همین ایمیل ارسال خواهد شد)</span>
                 )}
               </label>
               <input
@@ -459,7 +517,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
             {!isWebinar && (
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  {course?.hasVideo ? "نحوه ثبت نام" : "نحوه شرکت در دوره"}
+                  {course?.hasVideo ? "نحوه ثبت نام" : isWorkshop ? "نحوه شرکت در کارگاه" : "نحوه شرکت در دوره"}
                 </label>
                 {course?.hasVideo ? (
                     <>
@@ -489,40 +547,141 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
                       <input type="radio" name="attendance" value="online" className="w-4 h-4 cursor-pointer" defaultChecked />
                       <span className="text-sm">آنلاین</span>
                     </label>
-                    {/* <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
-                      <input type="radio" name="attendance" value="in-person" className="w-4 h-4 cursor-pointer" />
-                      <span className="text-sm">فقط حضوری</span>
-                    </label>
-                    <label className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
-                      <input
-                        type="radio"
-                        name="attendance"
-                        value="both"
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">فرقی نمی‌کند</span>
-                    </label> */}
                   </div>
                 )}
               </div>
             )}
 
             {!isFree && (
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  مبلغ <span className="font-bold text-primary">{(effectiveDiscount ?? course?.discount ?? 0) > 0 && course?.priceNumber ? Math.round(course.priceNumber * (1 - (effectiveDiscount ?? course?.discount ?? 0))).toLocaleString("fa-IR") : course?.price} تومان</span> را به شماره کارت <span className="font-bold text-primary">۶۲۲۱۰۶۱۰۵۲۸۸۴۱۹۶</span> بنام بهراد زاری بانک پارسیان واریز نموده و عکس فیش بانکی رو ارسال کنید
-                </label>
-                <label className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer block">
-                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">کلیک کنید یا فایل را بکشید</p>
-                  <input type="file" name="paymentReceipt" className="hidden" accept="image/*" onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const label = e.target.parentElement?.querySelector('p');
-                      if (label) label.textContent = file.name;
-                    }
-                  }} />
-                </label>
+              <div className="rounded-lg border border-border bg-muted/30 p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Tag className="w-3.5 h-3.5 text-primary" />
+                    کد تخفیف (اختیاری)
+                  </label>
+                  {appliedCoupon && (
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      {(appliedCoupon.percent * 100).toLocaleString("fa-IR")}٪ تخفیف اعمال شد
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value)
+                      if (couponStatus !== "idle") setCouponStatus("idle")
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        handleApplyCoupon()
+                      }
+                    }}
+                    className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 uppercase tracking-wider"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleApplyCoupon}
+                    className="px-4 text-xs h-9 cursor-pointer hover:bg-primary hover:text-white"
+                  >
+                    اعمال کد
+                  </Button>
+                </div>
+                {couponStatus === "invalid" && (
+                  <p className="text-xs text-red-500 font-medium">کد تخفیف وارد شده معتبر نیست.</p>
+                )}
+                {couponStatus === "success" && appliedCoupon && (
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                    ✓ کد تخفیف با موفقیت اعمال شد و مبلغ نهایی به‌روزرسانی شد.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {!isFree && (
+              <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
+                  <span className="text-sm font-medium text-foreground">مبلغ قابل واریز:</span>
+                  <div className="flex items-center gap-2">
+                    {totalDiscount > 0 && course?.priceNumber ? (
+                      <>
+                        <span className="text-sm text-muted-foreground line-through">
+                          {course.price}
+                        </span>
+                        <span className="text-2xl font-extrabold text-primary">
+                          {finalPrice.toLocaleString("fa-IR")}
+                        </span>
+                        <span className="text-sm font-bold text-primary">تومان</span>
+                        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                          ({Math.round(totalDiscount * 100).toLocaleString("fa-IR")}٪ تخفیف)
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-2xl font-extrabold text-primary">
+                          {course?.price}
+                        </span>
+                        <span className="text-sm font-bold text-primary">تومان</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="text-xs text-muted-foreground">
+                    شماره کارت بانک پارسیان (بنام بهراد زاری):
+                  </div>
+                  <div className="flex items-center justify-between gap-3 bg-background rounded-lg border border-border px-3.5 py-2.5">
+                    <span className="font-mono text-base md:text-lg font-bold tracking-widest text-foreground select-all" dir="ltr">
+                      ۶۲۲۱ - ۰۶۱۰ - ۵۲۸۸ - ۴۱۹۶
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyCard}
+                      className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors cursor-pointer bg-primary/10 hover:bg-primary/20 px-2.5 py-1.5 rounded-md font-medium"
+                      title="کپی شماره کارت"
+                    >
+                      {copiedCard ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <span className="text-emerald-600 dark:text-emerald-400">کپی شد</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>کپی</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-2">
+                    تصویر فیش واریزی را ارسال کنید:
+                  </label>
+                  <label className="border-2 border-dashed border-border rounded-lg p-5 text-center hover:border-primary transition-colors cursor-pointer block bg-background/50 hover:bg-background">
+                    <Upload className="w-7 h-7 mx-auto mb-1.5 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">برای انتخاب فایل کلیک کنید یا فایل را اینجا بکشید</p>
+                    <input
+                      type="file"
+                      name="paymentReceipt"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const label = e.target.parentElement?.querySelector("p")
+                          if (label) label.textContent = file.name
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
             )}
 
@@ -551,6 +710,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isWebinar = course?.type === "webinar"
+  const isWorkshop = course?.type === "workshop"
   const isFree = course?.priceNumber === 0
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -600,7 +760,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">{isWebinar ? "پیش ثبت‌نام در وبینار" : "پیش ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
+            <h2 className="text-2xl font-bold">{isWorkshop ? "پیش ثبت‌نام در کارگاه" : isWebinar ? "پیش ثبت‌نام در وبینار" : "پیش ثبت‌نام در دوره"}{course?.title ? ` ${course?.title}` : ""}</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="w-6 h-6" />
             </button>
@@ -608,7 +768,7 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
 
           <div className="mb-6 rounded-lg border border-[var(--accent-border)] bg-[var(--accent-soft)] p-4">
             <p className="text-sm leading-relaxed">
-              با پر کردن این فرم، شما به لیست رزرو {isWebinar ? "وبینار" : "دوره"} اضافه می‌شوید. {isWebinar ? "وبینار" : "این دوره"} در زمستان ۱۴۰۴ برگزار خواهد شد و زمان دقیق برگزاری به شما اطلاع داده می‌شود.
+              با پر کردن این فرم، شما به لیست رزرو {isWorkshop ? "کارگاه" : isWebinar ? "وبینار" : "دوره"} اضافه می‌شوید. {isWorkshop ? "این کارگاه" : isWebinar ? "وبینار" : "این دوره"} در {course?.startDate || "شهریور ۱۴۰۴"} برگزار خواهد شد و زمان دقیق برگزاری به شما اطلاع داده می‌شود.
             </p>
           </div>
 
@@ -820,6 +980,7 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
 function CorporateTrainingForm({ onClose, course }: { onClose: () => void; course?: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isWebinar = course?.type === "webinar"
+  const isWorkshop = course?.type === "workshop"
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -850,7 +1011,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
 
       if (response.ok) {
         trackClarityEvent("corporate_training_form_submitted")
-        alert(`درخواست برگزاری ${isWebinar ? "وبینار" : "دوره"} با موفقیت ارسال شد!`)
+        alert(`درخواست برگزاری ${isWorkshop ? "کارگاه" : isWebinar ? "وبینار" : "دوره"} با موفقیت ارسال شد!`)
         onClose()
       } else {
         alert("خطا در ارسال فرم. لطفا دوباره تلاش کنید.")
@@ -868,7 +1029,7 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
       <div className="w-full max-w-md rounded-xl border border-border bg-card text-card-foreground shadow-lg">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">{isWebinar ? "برگزاری وبینار" : "برگزاری دوره"} برای تیم/شرکت شما</h2>
+            <h2 className="text-2xl font-bold">{isWorkshop ? "برگزاری کارگاه" : isWebinar ? "برگزاری وبینار" : "برگزاری دوره"} برای تیم/شرکت شما</h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="w-6 h-6" />
             </button>
@@ -938,6 +1099,8 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
 
 export default function CoursePageClient({ course, slug }: { course: Course | undefined; slug?: string }) {
   const isWebinar = course?.type === "webinar"
+  const isWorkshop = course?.type === "workshop"
+  const typeLabel = isWorkshop ? "کارگاه" : isWebinar ? "وبینار" : "دوره"
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
   const [showReserveForm, setShowReserveForm] = useState(false)
   const [showConsultationForm, setShowConsultationForm] = useState(false)
@@ -1037,7 +1200,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
     { name: "فیلیا", logo: "https://web-cdn.snapp.ir/snapp-website/icons/snappTextLogo.svg" },
     {
       name: "سازیتو",
-      logo: "<svg width=\"52\" height=\"32\" viewBox=\"0 0 52 32\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M27.4266 2.90918H30.0105V29.4027C30.0105 30.8372 28.8536 32.0001 27.4266 32.0001H24.8427V5.50658C24.8427 4.07208 25.9996 2.90918 27.4266 2.90918ZM39.3123 13.4025V23.2726C39.3123 25.4543 40.9211 27.1168 43.0331 27.1168C45.124 27.1168 46.7539 25.4541 46.7533 23.3362L46.7537 13.4025C46.7539 11.968 47.9107 10.8052 49.3377 10.8051H51.9216V23.0649C51.9216 27.9996 47.9421 31.9999 43.0331 31.9999C38.1241 31.9999 34.1446 27.9996 34.1446 23.0649V10.8051H36.7285C38.1555 10.8051 39.3123 11.968 39.3123 13.4025ZM5.20532 12.7729L5.20544 2.9098H2.62158C1.20794 2.9098 0.0377197 4.06383 0.0377197 5.5072V21.6111L0.0420235 21.6112C0.201377 27.3772 4.76578 32.0007 10.3732 32.0007C16.0813 32.0007 20.7078 27.3772 20.7086 21.2994C20.7086 21.2575 20.7084 21.2157 20.7078 21.1741C20.7083 21.1293 20.7086 21.0845 20.7086 21.0397C20.7086 15.1582 16.4514 10.3903 11.2 10.3903C8.92741 10.3903 6.84105 11.2832 5.20532 12.7729ZM4.89537 21.1436C4.89537 17.8442 7.30158 15.1695 10.2698 15.1695C13.238 15.1695 15.6442 17.8442 15.6442 21.1436C15.6442 24.4429 13.238 27.1176 10.2698 27.1176C7.30158 27.1176 4.89537 24.4429 4.89537 21.1436Z\" fill=\"#4E91E6\"></path><path d=\"M12.4403 4.15584C13.5819 4.15584 14.5073 3.22553 14.5073 2.07792C14.5073 0.930317 13.5819 0 12.4403 0C11.2986 0 10.3732 0.930317 10.3732 2.07792C10.3732 3.22553 11.2986 4.15584 12.4403 4.15584Z\" fill=\"#0C1011\"></path></svg>",
+      logo: "<svg width=\"52\" height=\"32\" viewBox=\"0 0 52 32\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M27.4266 2.90918H30.0105V29.4027C30.0105 30.8372 28.8536 32.0001 27.4266 32.0001H24.8427V5.50658C24.8427 4.07208 25.9996 2.90918 27.4266 2.90918ZM39.3123 13.4025V23.2726C39.3123 25.4543 40.9211 27.1168 43.0331 27.1168C45.124 27.1168 46.7539 25.4541 46.7533 23.3362L46.7537 13.4025C46.7539 11.968 47.9107 10.8052 49.3377 10.8051H51.9216V23.0649C51.9216 27.9996 47.9421 31.9999 43.0331 31.9999C38.1241 31.9999 34.1446 27.9996 34.1446 23.0649V10.8051H36.7285C38.1555 10.8051 39.3123 11.968 39.3123 13.4025ZM5.20532 12.7729L5.20544 2.9098H2.62158C1.20794 2.9098 0.0377197 4.06383 0.0377197 5.5072V21.6111L0.0420235 21.6112C0.201377 27.3772 4.76578 32.0007 10.3732 32.0007C16.0813 32.0007 20.7078 27.3772 20.7086 21.2994C20.7086 21.2575 20.7084 21.2157 20.7086 21.1741C20.7083 21.1293 20.7086 21.0845 20.7086 21.0397C20.7086 15.1582 16.4514 10.3903 11.2 10.3903C8.92741 10.3903 6.84105 11.2832 5.20532 12.7729ZM4.89537 21.1436C4.89537 17.8442 7.30158 15.1695 10.2698 15.1695C13.238 15.1695 15.6442 17.8442 15.6442 21.1436C15.6442 24.4429 13.238 27.1176 10.2698 27.1176C7.30158 27.1176 4.89537 24.4429 4.89537 21.1436Z\" fill=\"#4E91E6\"></path><path d=\"M12.4403 4.15584C13.5819 4.15584 14.5073 3.22553 14.5073 2.07792C14.5073 0.930317 13.5819 0 12.4403 0C11.2986 0 10.3732 0.930317 10.3732 2.07792C10.3732 3.22553 11.2986 4.15584 12.4403 4.15584Z\" fill=\"#0C1011\"></path></svg>",
     },
     { name: "فناپ", logo: "https://fanap-infra.com/wp-content/uploads/2023/09/Fanap-infra-logo-2.svg" },
   ]
@@ -1071,7 +1234,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 </Link>
                 <span className="opacity-60">/</span>
                 <Link href="/" className="hover:underline opacity-80 cursor-pointer">
-                  دوره‌ها
+                  {isWorkshop ? "کارگاه‌ها" : isWebinar ? "وبینارها" : "دوره‌ها"}
                 </Link>
                 <span className="opacity-60">/</span>
                 <span>{course.title}</span>
@@ -1164,12 +1327,12 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           </section>
 
           {/* Only show companies section for specific courses */}
-          {slug && !isWebinar && !["backend-nodejs", "art-of-coding"].includes(slug) && (
+          {slug && !isWebinar && !["backend-nodejs", "art-of-coding", "ai-assisted-software-engineering"].includes(slug) && (
             <section className="bg-muted/30 py-12 border-y">
               <div className="container mx-auto px-4">
                 <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
                   <Building2 className="w-5 h-5 text-primary" />
-                  شرکت‌هایی که کارکنانشان در این {isWebinar ? "وبینار" : "دوره"} شرکت کرده‌اند
+                  شرکت‌هایی که کارکنانشان در این {typeLabel} شرکت کرده‌اند
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
                   {companies.map((company, index) => (
@@ -1226,7 +1389,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   <section>
                     <h2 className="text-3xl font-bold mb-2 flex items-center gap-3">
                       <BookOpen className="w-6 h-6 text-primary" />
-                      سرفصل‌های {isWebinar ? "وبینار" : "دوره"}
+                      سرفصل‌های {typeLabel}
                     </h2>
                     <p className="text-muted-foreground mb-6">
                       {course.modules.length} ماژول • {course.sessionsCount} • {course.duration} 
@@ -1273,7 +1436,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 <section>
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <FileText className="w-6 h-6 text-primary" />
-                    شرح {isWebinar ? "وبینار" : "دوره"}
+                    شرح {typeLabel}
                   </h2>
 
                   {course.descriptionVideoId ? (
@@ -1326,7 +1489,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     <CardHeader>
                       <CardTitle className="flex items-center gap-3 text-2xl">
                         <Users className="w-7 h-7 text-primary" />
-                        این {isWebinar ? "وبینار" : "دوره"} برای چه کسانی است؟
+                        این {typeLabel} برای چه کسانی است؟
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1450,30 +1613,14 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           <div>
                             <h3 className="font-bold text-lg mb-2">گارانتی بازگشت وجه</h3>
                             <p className="text-sm text-foreground leading-relaxed">
-                              اگر تا پایان جلسه سوم به هر دلیلی از شرکت در ادامه {isWebinar ? "وبینار" : "دوره"} منصرف شدید، کل مبلغ را پس میگیرید. 
+                              اگر تا پایان {isWorkshop ? "جلسه اول" : "جلسه سوم"} به هر دلیلی از شرکت در ادامه {typeLabel} منصرف شدید، کل مبلغ را پس میگیرید. 
                               <br></br>
-                              فقط لازمه به من بازخورد شفاف بدید تا بتونم در صورت نیاز کیفیت {isWebinar ? "وبینار" : "دوره"} رو بالاتر ببرم.
+                              فقط لازمه به من بازخورد شفاف بدید تا بتونم در صورت نیاز کیفیت {typeLabel} رو بالاتر ببرم.
                             </p>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
-
-                    {/*<Card className="border-2 border-[#dfbc92]/30 bg-[#dfbc92]/10 shadow-sm">*/}
-                    {/*  <CardContent className="pt-6">*/}
-                    {/*    <div className="flex items-start gap-4">*/}
-                    {/*      <div className="w-12 h-12 rounded-full bg-[#dfbc92]/20 flex items-center justify-center flex-shrink-0">*/}
-                    {/*        <Gift className="w-6 h-6 text-[#dfbc92]" />*/}
-                    {/*      </div>*/}
-                    {/*      <div>*/}
-                    {/*        <h3 className="font-bold text-lg mb-2">جلسه اول رایگان</h3>*/}
-                    {/*        <p className="text-sm text-foreground leading-relaxed">*/}
-                    {/*          اگر معرف ندارید یا من رو نمیشناسید یا به هر دلیلی دودل هستید که این {isWebinar ? "وبینار" : "دوره"} بدردتون می‌خوره یا نه، می‌تونید جلسه اول رو رایگان ولی با پر کردن فرم ثبت نام شرکت کنید. */}
-                    {/*        </p>*/}
-                    {/*      </div>*/}
-                    {/*    </div>*/}
-                    {/*  </CardContent>*/}
-                    {/*</Card>*/}
                   </div>
                 </section>
               )}
@@ -1505,7 +1652,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                 {course.relatedCourses && course.relatedCourses.length > 0 && (
                   <section>
-                    <h2 className="text-3xl font-bold mb-6">{isWebinar ? "وبینارهای مرتبط" : "دوره‌های مرتبط"}</h2>
+                    <h2 className="text-3xl font-bold mb-6">{isWorkshop ? "کارگاه‌ها و دوره‌های مرتبط" : isWebinar ? "وبینارهای مرتبط" : "دوره‌های مرتبط"}</h2>
                     <div className="grid md:grid-cols-2 gap-6">
                       {course.relatedCourses.map((relatedCourse, index) => (
                         <Card
@@ -1539,7 +1686,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                               variant="outline"
                               className="w-full cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent hover:border-primary hover:text-primary"
                             >
-                              <Link href={`/courses/${relatedCourse.slug}`}>{isWebinar ? "مشاهده وبینار" : "مشاهده دوره"}</Link>
+                              <Link href={`/courses/${relatedCourse.slug}`}>مشاهده جزئیات</Link>
                             </Button>
                           </CardContent>
                         </Card>
@@ -1658,7 +1805,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                             setShowCorporateTrainingForm(true)
                           }}
                         >
-                          شخصی‌سازی {isWebinar ? "وبینار" : "دوره"} برای تیم/شرکت شما
+                          شخصی‌سازی {typeLabel} برای تیم/شرکت شما
                         </Button>
                       </div>
 
@@ -1677,7 +1824,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       </div>
 
                       <div className="border-t pt-4">
-                        <p className="text-sm font-medium mb-3">{isWebinar ? "وبینار" : "دوره"} رو به اشتراک بگذارید تا دیگران هم ببینن</p>
+                        <p className="text-sm font-medium mb-3">{typeLabel} رو به اشتراک بگذارید تا دیگران هم ببینن</p>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -1737,7 +1884,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 قول می‌دم
               </span>
               <p className="mx-auto mb-8 mt-5 max-w-[60ch] text-lg leading-8 text-muted-foreground">
-                بعد از این {isWebinar ? "وبینار" : "دوره"} نگاه و طرز فکرتون نسبت به کارهایی که تا الان
+                بعد از این {typeLabel} نگاه و طرز فکرتون نسبت به کارهایی که تا الان
                 میکردید تغییر می‌کنه
               </p>
               <div className="flex flex-col justify-center gap-3 sm:flex-row">
@@ -1754,7 +1901,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     }
                   }}
                 >
-                  {course.descriptionVideoId ? "مشاهده آنلاین" : course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${isWebinar ? "وبینار" : "این دوره"}`}
+                  {course.descriptionVideoId ? "مشاهده آنلاین" : course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${typeLabel}`}
                 </Button>
                 <Button
                   asChild
@@ -1763,7 +1910,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   className="cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-lg text-foreground hover:border-primary hover:text-primary"
                 >
                   <Link href="/" onClick={() => trackClarityEvent("view_other_courses_clicked")}>
-                    {isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}
+                    {isWorkshop ? "مشاهده سایر کارگاه‌ها و دوره‌ها" : isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}
                   </Link>
                 </Button>
               </div>
