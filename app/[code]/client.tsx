@@ -4,25 +4,33 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, ExternalLink, Loader2, Sparkles } from "lucide-react"
 import { buildRedirectUrl, type ShortUrlConfig } from "@/data/short-urls"
+import { resolveClientShortUrl } from "@/lib/short-urls-storage"
 
 interface ShortUrlClientProps {
   config?: ShortUrlConfig
   code: string
 }
 
-export default function ShortUrlClient({ config, code }: ShortUrlClientProps) {
-  const [redirectUrl, setRedirectUrl] = useState<string>(config?.target || "/")
-  const [hasError, setHasError] = useState(!config)
+export default function ShortUrlClient({ config: staticConfig, code }: ShortUrlClientProps) {
+  const [currentConfig, setCurrentConfig] = useState<ShortUrlConfig | undefined>(staticConfig)
+  const [redirectUrl, setRedirectUrl] = useState<string>(staticConfig?.target || "/")
+  const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
-    if (!config) {
+    // Check if there is an overridden or newly created short URL in localStorage
+    const dynamicConfig = resolveClientShortUrl(code)
+    const activeConfig = dynamicConfig || staticConfig
+
+    if (!activeConfig) {
       setHasError(true)
       return
     }
 
+    setCurrentConfig(activeConfig)
+
     // Combine any incoming search query parameters (like ?utm_campaign=xxx) with target
     const currentSearch = typeof window !== "undefined" ? window.location.search : ""
-    const targetWithParams = buildRedirectUrl(config.target, currentSearch)
+    const targetWithParams = buildRedirectUrl(activeConfig.target, currentSearch)
     setRedirectUrl(targetWithParams)
 
     // Execute immediate browser redirection
@@ -31,9 +39,9 @@ export default function ShortUrlClient({ config, code }: ShortUrlClientProps) {
     } catch {
       window.location.href = targetWithParams
     }
-  }, [config])
+  }, [staticConfig, code])
 
-  if (hasError || !config) {
+  if (hasError || (!currentConfig && !staticConfig)) {
     return (
       <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-md w-full bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-2xl backdrop-blur">
@@ -64,11 +72,14 @@ export default function ShortUrlClient({ config, code }: ShortUrlClientProps) {
     )
   }
 
+  const activeTarget = currentConfig?.target || staticConfig?.target || "/"
+  const activeTitle = currentConfig?.title || staticConfig?.title || "در حال انتقال به صفحه مقصد..."
+
   // Inline script code to execute instant redirect as soon as HTML is rendered
   const inlineRedirectScript = `
     (function() {
       try {
-        var target = ${JSON.stringify(config.target)};
+        var target = ${JSON.stringify(activeTarget)};
         var search = window.location.search;
         if (search && search !== '?') {
           var dummyBase = window.location.origin || 'https://behradz.ir';
@@ -82,7 +93,7 @@ export default function ShortUrlClient({ config, code }: ShortUrlClientProps) {
         }
         window.location.replace(target);
       } catch (err) {
-        window.location.href = ${JSON.stringify(config.target)};
+        window.location.href = ${JSON.stringify(activeTarget)};
       }
     })();
   `
@@ -117,7 +128,7 @@ export default function ShortUrlClient({ config, code }: ShortUrlClientProps) {
         </div>
 
         <h1 className="text-lg sm:text-xl font-bold text-slate-100 mb-2">
-          {config.title || "در حال انتقال به صفحه مقصد..."}
+          {activeTitle}
         </h1>
 
         <p className="text-slate-400 text-xs sm:text-sm mb-6">
