@@ -625,7 +625,7 @@ export const coursesData: { [key: string]: Course } = {
     reviewCount: 0,
     duration: "۴ ساعت",
     sessionsCount: "۲ جلسه (هر جلسه ۲ ساعت)",
-    schedule: "پنج‌شنبه و جمعه ساعت ۱۷:۰۰ تا ۱۹:۰۰",
+    schedule: "پنج‌شنبه و جمعه",
     startDate: "هفته اول شهریور",
     format: "آنلاین و تعاملی",
     level: "مقدماتی تا پیشرفته",
