@@ -33,17 +33,22 @@ the ثبت‌نام button, and share buttons.
   `client.tsx` file and toggled via `showRegistrationForm` / `showReserveForm`
   state.
 
-## `descriptionVideoId` behavior (Aparat embed)
+## `descriptionVideoId` & `videoChapters` behavior (Aparat embed)
 
 If a course in `data/courses.ts` has **`descriptionVideoId`** set (e.g.
 `system-design-interview: "iuxsk3v"`), the course page changes:
 
 1. Under "شرح وبینار/دوره", an Aparat `<iframe>` embed is shown instead of
    `descriptionImage` (embed URL: `https://www.aparat.com/video/video/embed/videohash/<id>/vt/frame`).
-2. The sticky registration cart is **hidden** and the layout becomes full-width
+2. **Interactive Chapters**: If `videoChapters` array is also defined on the course object,
+   the page mounts `<VideoChaptersPlayer>` instead of the default static iframe. It provides
+   an interactive table of contents, timestamp seeking (`startTime`), next/prev controls,
+   and key takeaway badges for each chapter. If `videoChapters` is not provided, it falls back
+   to the standard single Aparat iframe cleanly.
+3. The sticky registration cart is **hidden** and the layout becomes full-width
    (`lg:grid-cols-1`).
-3. The bottom CTA section ("قول می‌دم") is **hidden**.
-4. The main CTA button label becomes **"مشاهده آنلاین"** (instead of "ثبت‌نام...").
+4. The bottom CTA section ("قول می‌دم") is **hidden**.
+5. The main CTA button label becomes **"مشاهده آنلاین"** (instead of "ثبت‌نام...").
 
 The course **list** page **`app/page.tsx`** also reads this: it maps each course
 to `hasVideo: !!course.descriptionVideoId`, and the card button shows

@@ -205,7 +205,7 @@ export default function HomePage() {
                     asChild
                     className="w-full rounded-lg py-5 font-medium shadow-none transition-colors"
                   >
-                    <Link href={`/courses/${course.id}`}>
+                    <Link href={course.hasVideo ? `/courses/${course.id}#video` : `/courses/${course.id}`}>
                       {course.hasVideo
                         ? "مشاهده آنلاین"
                         : course.isFree

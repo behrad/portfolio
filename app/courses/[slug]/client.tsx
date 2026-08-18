@@ -41,6 +41,9 @@ import {
 import { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
 import { getTrackingData } from "@/lib/tracking"
+import { VideoChaptersPlayer, type VideoChapter } from "@/components/video-chapters-player"
+
+export type { VideoChapter }
 
 // Define the Course type
 export type Course = {
@@ -66,6 +69,7 @@ export type Course = {
   heroImage?: string
   descriptionImage?: string
   descriptionVideoId?: string
+  videoChapters?: VideoChapter[]
   videoUrl: string
   sampleVideo?: string
   rating?: number
@@ -1178,6 +1182,37 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
     }
   }
 
+  // Smooth scroll support for anchors/hashtags like #video, #watch, #skills, #curriculum
+  useEffect(() => {
+    const scrollToHash = () => {
+      const hash = window.location.hash
+      if (!hash) return
+
+      const cleanHash = decodeURIComponent(hash.replace("#", "")).trim().toLowerCase()
+      let targetElement = document.getElementById(cleanHash)
+
+      // Fallback aliases for video hashtag
+      if (!targetElement && ["video", "watch", "watch-video", "video-section", "chapters", "aparat", "ویدیو", "مشاهده-ویدیو"].includes(cleanHash)) {
+        targetElement = document.getElementById("video")
+      }
+
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" })
+      }
+    }
+
+    // Scroll upon mount after hydration & layout stabilization
+    const timer1 = setTimeout(scrollToHash, 100)
+    const timer2 = setTimeout(scrollToHash, 400)
+
+    window.addEventListener("hashchange", scrollToHash)
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+      window.removeEventListener("hashchange", scrollToHash)
+    }
+  }, [])
+
   const companies = [
     { name: "آروان کلود", logo: "https://www.arvancloud.ir/images/v6/svg/logo-header-desktop-v6.svg" },
     {
@@ -1275,6 +1310,31 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       <p className="text-sm opacity-80">{course.instructor.title}</p>
                     </div>
                   </div>
+
+                  {course.descriptionVideoId && (
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <Button
+                        asChild
+                        size="lg"
+                        className="gap-2 rounded-xl text-base px-6 py-5 shadow-lg shadow-primary/20 cursor-pointer bg-white text-slate-950 hover:bg-slate-100 font-semibold"
+                      >
+                        <a
+                          href="#video"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            const el = document.getElementById("video")
+                            if (el) {
+                              el.scrollIntoView({ behavior: "smooth", block: "start" })
+                              window.history.pushState(null, "", "#video")
+                            }
+                          }}
+                        >
+                          <Play className="w-5 h-5 fill-current text-primary" />
+                          مشاهده آنلاین ویدیو
+                        </a>
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="relative">
@@ -1302,6 +1362,36 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           </div>
                         </div>
                       </>
+                    ) : course.descriptionVideoId ? (
+                      <a
+                        href="#video"
+                        className="block relative w-full h-full cursor-pointer"
+                        title="مشاهده آنلاین ویدیو"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          const el = document.getElementById("video")
+                          if (el) {
+                            el.scrollIntoView({ behavior: "smooth", block: "start" })
+                            window.history.pushState(null, "", "#video")
+                          }
+                        }}
+                      >
+                        <Image
+                          src={course.image || "/placeholder.svg"}
+                          alt={course.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                          <div className="bg-primary text-white rounded-full p-4 pl-5 shadow-xl border-2 border-white/30 group-hover:scale-110 transition-transform">
+                            <Play className="w-12 h-12" fill="currentColor" />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-1.5 font-medium">
+                          <Play className="w-3.5 h-3.5 fill-primary text-primary" />
+                          <span>مشاهده آنلاین ویدیوی کامل</span>
+                        </div>
+                      </a>
                     ) : (
                       <Image
                         src={course.image || "/placeholder.svg"}
@@ -1357,7 +1447,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
             <div className={`grid gap-8 ${course.descriptionVideoId ? "lg:grid-cols-1" : "lg:grid-cols-3"}`}>
               {/* Main content area */}
               <div className={`space-y-12 ${course.descriptionVideoId ? "" : "lg:col-span-2"}`}>
-                <section>
+                <section id="skills" className="scroll-mt-24">
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <Target className="w-6 h-6 text-primary" />
                     مهارت‌هایی که کسب می‌کنید
@@ -1377,7 +1467,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 </section>
 
                 {course.modules.length > 0 && (
-                  <section>
+                  <section id="curriculum" className="scroll-mt-24">
                     <h2 className="text-3xl font-bold mb-2 flex items-center gap-3">
                       <BookOpen className="w-6 h-6 text-primary" />
                       سرفصل‌های {typeLabel}
@@ -1424,7 +1514,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   </section>
                 )}
 
-                <section>
+                <section id="video" className="scroll-mt-24">
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     {course.descriptionVideoId ? (
                       <>
@@ -1439,7 +1529,15 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     )}
                   </h2>
 
-                  {course.descriptionVideoId ? (
+                  {course.descriptionVideoId && course.videoChapters && course.videoChapters.length > 0 ? (
+                    <div className="mb-8">
+                      <VideoChaptersPlayer
+                        videoId={course.descriptionVideoId}
+                        chapters={course.videoChapters}
+                        title={course.title}
+                      />
+                    </div>
+                  ) : course.descriptionVideoId ? (
                     <div className="mb-8">
                       <div className="relative w-full overflow-hidden rounded-lg shadow-md" style={{ aspectRatio: "16 / 9" }}>
                         <iframe
@@ -1460,7 +1558,6 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         height={400}
                         className="w-full rounded-lg shadow-md"
                       />
-
                     </div>
                   )}
 
@@ -1484,7 +1581,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   </div>
                 </section>
 
-                <section>
+                <section id="audience" className="scroll-mt-24">
                   <Card className="border-2 shadow-md">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-3 text-2xl">
