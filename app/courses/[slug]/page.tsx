@@ -12,6 +12,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const keywords = [
+    course.title,
+    course.subtitle,
+    "توسعه نرم‌افزار Agent محور",
+    "توسعه نرم‌افزار ایجنت‌محور",
+    "Agentic Software Development",
+    "AI-Assisted Software Engineering",
     "دوره سیستم دیزاین",
     "آموزش طراحی سیستم",
     "معماری نرم‌افزار",
@@ -25,7 +31,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     "distributed systems",
     "آموزش برنامه نویسی",
     "دوره برنامه نویسی",
-  ]
+    ...(course.skills || []),
+  ].filter(Boolean)
 
   return {
     title: `${course.title} | مسیر رشد مهندسی نرم‌افزار - بهراد زاری`,

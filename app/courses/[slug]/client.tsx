@@ -1106,16 +1106,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   const [showConsultationForm, setShowConsultationForm] = useState(false)
   const [showCorporateTrainingForm, setShowCorporateTrainingForm] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
-  const [isFlashSaleActive, setIsFlashSaleActive] = useState(false)
-
-  useEffect(() => {
-    // Flash sale ends at the end of today (2026-08-12 23:59:59 local time)
-    // Using year, monthIndex (7=Aug), day to avoid parsing issues in some browsers like Safari
-    const deadline = new Date(2026, 7, 13).getTime()
-    setIsFlashSaleActive(Date.now() < deadline)
-  }, [])
-
-  const effectiveDiscount = slug === "system-design-3" ? (isFlashSaleActive ? course?.discount ?? 0 : 0) : course?.discount ?? 0;
+  const effectiveDiscount = course?.discount ?? 0;
 
   if (!course) {
     notFound()
@@ -1435,8 +1426,17 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                 <section>
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                    <FileText className="w-6 h-6 text-primary" />
-                    شرح {typeLabel}
+                    {course.descriptionVideoId ? (
+                      <>
+                        <Play className="w-6 h-6 text-primary fill-primary" />
+                        مشاهده ویدیوی {typeLabel}
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="w-6 h-6 text-primary" />
+                        شرح {typeLabel}
+                      </>
+                    )}
                   </h2>
 
                   {course.descriptionVideoId ? (
@@ -1721,16 +1721,6 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         </div>
                       </div>
 
-                      {slug === 'system-design-3' && isFlashSaleActive && (
-                        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 font-bold text-center flex items-center justify-center gap-2">
-                          <span className="relative flex h-2 w-2">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 bg-red-600"></span>
-                            <span className="relative inline-flex h-2 w-2 rounded-full bg-red-600"></span>
-                          </span>
-                          این تخفیف برای امروزه فقط تا آخر شب فقط حواست باشه
-                        </div>
-                      )}
-
                       <div className="mb-6">
                         <Button
                           size="lg"
@@ -1868,54 +1858,56 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
             </div>
           </div>
 
-          <section className="relative overflow-hidden border-t border-border bg-card">
-            <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-70"
-              style={{
-                background:
-                  "radial-gradient(55% 100% at 50% 0%, var(--accent-soft), transparent 70%)",
-              }}
-            />
-            <div className="container relative mx-auto px-4 py-20 text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-border)] bg-[var(--accent-soft)] px-3.5 py-1.5 text-xs font-medium text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
-                قول می‌دم
-              </span>
-              <p className="mx-auto mb-8 mt-5 max-w-[60ch] text-lg leading-8 text-muted-foreground">
-                بعد از این {typeLabel} نگاه و طرز فکرتون نسبت به کارهایی که تا الان
-                میکردید تغییر می‌کنه
-              </p>
-              <div className="flex flex-col justify-center gap-3 sm:flex-row">
-                <Button
-                  size="lg"
-                  className="cursor-pointer rounded-lg px-8 text-lg shadow-none"
-                  onClick={() => {
-                    if (course.isFull) {
-                      trackClarityEvent("reserve_button_clicked")
-                      setShowReserveForm(true)
-                    } else {
-                      trackClarityEvent("final_cta_registration_clicked")
-                      setShowRegistrationForm(true)
-                    }
-                  }}
-                >
-                  {course.descriptionVideoId ? "مشاهده آنلاین" : course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${typeLabel}`}
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-lg text-foreground hover:border-primary hover:text-primary"
-                >
-                  <Link href="/" onClick={() => trackClarityEvent("view_other_courses_clicked")}>
-                    {isWorkshop ? "مشاهده سایر کارگاه‌ها و دوره‌ها" : isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}
-                  </Link>
-                </Button>
+          {!course.descriptionVideoId && (
+            <section className="relative overflow-hidden border-t border-border bg-card">
+              <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-70"
+                style={{
+                  background:
+                    "radial-gradient(55% 100% at 50% 0%, var(--accent-soft), transparent 70%)",
+                }}
+              />
+              <div className="container relative mx-auto px-4 py-20 text-center">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-border)] bg-[var(--accent-soft)] px-3.5 py-1.5 text-xs font-medium text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+                  قول می‌دم
+                </span>
+                <p className="mx-auto mb-8 mt-5 max-w-[60ch] text-lg leading-8 text-muted-foreground">
+                  بعد از این {typeLabel} نگاه و طرز فکرتون نسبت به کارهایی که تا الان
+                  میکردید تغییر می‌کنه
+                </p>
+                <div className="flex flex-col justify-center gap-3 sm:flex-row">
+                  <Button
+                    size="lg"
+                    className="cursor-pointer rounded-lg px-8 text-lg shadow-none"
+                    onClick={() => {
+                      if (course.isFull) {
+                        trackClarityEvent("reserve_button_clicked")
+                        setShowReserveForm(true)
+                      } else {
+                        trackClarityEvent("final_cta_registration_clicked")
+                        setShowRegistrationForm(true)
+                      }
+                    }}
+                  >
+                    {course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${typeLabel}`}
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-lg text-foreground hover:border-primary hover:text-primary"
+                  >
+                    <Link href="/" onClick={() => trackClarityEvent("view_other_courses_clicked")}>
+                      {isWorkshop ? "مشاهده سایر کارگاه‌ها و دوره‌ها" : isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}
+                    </Link>
+                  </Button>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
         </main>
 
         <Footer />

@@ -42,7 +42,8 @@ If a course in `data/courses.ts` has **`descriptionVideoId`** set (e.g.
    `descriptionImage` (embed URL: `https://www.aparat.com/video/video/embed/videohash/<id>/vt/frame`).
 2. The sticky registration cart is **hidden** and the layout becomes full-width
    (`lg:grid-cols-1`).
-3. The main CTA button label becomes **"مشاهده آنلاین"** (instead of "ثبت‌نام...").
+3. The bottom CTA section ("قول می‌دم") is **hidden**.
+4. The main CTA button label becomes **"مشاهده آنلاین"** (instead of "ثبت‌نام...").
 
 The course **list** page **`app/page.tsx`** also reads this: it maps each course
 to `hasVideo: !!course.descriptionVideoId`, and the card button shows

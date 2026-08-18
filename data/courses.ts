@@ -265,7 +265,7 @@ export const coursesData: { [key: string]: Course } = {
     description:
         "در این دوره انواع تکنولوژی‌های دیتابیس رو مقایسه می‌کنیم و چندین مثال از معماری‌های واقعی که در آن از دیتابیس‌های مختلف استفاده شده است را بررسی می‌کنیم ",
     price: "۷,۹۰۰,۰۰۰",
-    discount: 29 / 79,
+    discount: 0,
     priceNumber: 7900000,
     rating: 4.2,
     reviewCount: 15,
@@ -540,7 +540,7 @@ export const coursesData: { [key: string]: Course } = {
     ],
   },
   "agentic-software-development": {
-    title: "Agentic Software Development",
+    title: "Agentic Software Development (توسعه نرم‌افزار Agent-محور)",
     type: "webinar",
     subtitle: "مقایسه ورکفلوها و اسکیل‌ها",
     path: "ai_engineering",
@@ -563,6 +563,7 @@ export const coursesData: { [key: string]: Course } = {
     isFull: false,
     image: "/agentic-webinar.png",
     descriptionImage: "/agentic-webinar.png",
+    descriptionVideoId: "gdiiu4d",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     instructor: {
       name: "بهراد زاری",
