@@ -29,7 +29,7 @@ export function Navigation() {
               href="/about"
               className="font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              درباره من
+              درباره مدرس
             </Link>
           </div>
         </div>

@@ -89,6 +89,13 @@ export const shortUrlsList: ShortUrlConfig[] = [
     createdAt: "2026-08-18",
   },
   {
+    code: "agentic-li",
+    target: "/courses/agentic-software-development?utm_source=linkedin&utm_medium=post&utm_campaign=agentic_webinar#video",
+    title: "وبینار Agentic Software Development - لینکدین",
+    description: "لینک مستقیم مشاهده ویدیو با UTM لینکدین",
+    createdAt: "2026-08-18",
+  },
+  {
     code: "ag-tg",
     target: "/courses/agentic-software-development?utm_source=telegram&utm_medium=channel&utm_campaign=mindfulsoft#video",
     title: "وبینار Agentic Software Development - تلگرام Mindful Soft",
@@ -96,10 +103,31 @@ export const shortUrlsList: ShortUrlConfig[] = [
     createdAt: "2026-08-18",
   },
   {
+    code: "agentic-tg",
+    target: "/courses/agentic-software-development?utm_source=telegram&utm_medium=channel&utm_campaign=mindfulsoft#video",
+    title: "وبینار Agentic Software Development - تلگرام",
+    description: "لینک مستقیم مشاهده ویدیو با UTM تلگرام",
+    createdAt: "2026-08-18",
+  },
+  {
     code: "ag-ms",
     target: "/courses/agentic-software-development?utm_source=telegram&utm_medium=channel&utm_campaign=mindfulsoft#video",
     title: "وبینار ایجنتیک - کمپین Mindful Soft تلگرام",
     description: "لینک کوتاه ویژه کمپین Mindful Soft برای مشاهده ویدیوی وبینار",
+    createdAt: "2026-08-18",
+  },
+  {
+    code: "ag-yt",
+    target: "/courses/agentic-software-development?utm_source=youtube&utm_medium=video&utm_campaign=agentic_webinar#video",
+    title: "وبینار Agentic Software Development - یوتیوب",
+    description: "لینک مستقیم مشاهده ویدیو با UTM یوتیوب و هشتگ ویدیو",
+    createdAt: "2026-08-18",
+  },
+  {
+    code: "agentic-yt",
+    target: "/courses/agentic-software-development?utm_source=youtube&utm_medium=video&utm_campaign=agentic_webinar#video",
+    title: "وبینار Agentic Software Development - یوتیوب",
+    description: "لینک مستقیم ویدیو با UTM یوتیوب",
     createdAt: "2026-08-18",
   },
   {
