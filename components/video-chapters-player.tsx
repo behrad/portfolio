@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   Play,
   Clock,
@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { VideoShareBox } from "@/components/video-share-box"
 
 export interface VideoChapter {
   id: number
@@ -31,6 +32,7 @@ interface VideoChaptersPlayerProps {
   videoId: string
   chapters: VideoChapter[]
   title: string
+  slug?: string
 }
 
 function formatSeconds(seconds: number): string {
@@ -48,10 +50,40 @@ function toPersianDigits(str: string): string {
   return str.replace(/[0-9]/g, (w) => persianDigits[+w])
 }
 
-export function VideoChaptersPlayer({ videoId, chapters, title }: VideoChaptersPlayerProps) {
+export function VideoChaptersPlayer({ videoId, chapters, title, slug }: VideoChaptersPlayerProps) {
   const [selectedChapterId, setSelectedChapterId] = useState<number>(chapters[0]?.id || 1)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [currentStartTime, setCurrentStartTime] = useState<number>(chapters[0]?.startTime || 0)
+
+  // Initialize chapter from URL param (?chapter=X or ?t=X) if provided
+  useEffect(() => {
+    if (typeof window === "undefined" || chapters.length === 0) return
+
+    const params = new URLSearchParams(window.location.search)
+    const chapterParam = params.get("chapter")
+    const tParam = params.get("t") || params.get("time")
+
+    if (chapterParam) {
+      const parsedId = parseInt(chapterParam, 10)
+      const found = chapters.find((c) => c.id === parsedId)
+      if (found) {
+        setSelectedChapterId(found.id)
+        setCurrentStartTime(found.startTime)
+        return
+      }
+    }
+
+    if (tParam) {
+      const timeInSec = parseInt(tParam, 10)
+      if (!isNaN(timeInSec)) {
+        const found = [...chapters].reverse().find((c) => c.startTime <= timeInSec) || chapters[0]
+        if (found) {
+          setSelectedChapterId(found.id)
+          setCurrentStartTime(timeInSec)
+        }
+      }
+    }
+  }, [chapters])
 
   const selectedChapter = chapters.find((c) => c.id === selectedChapterId) || chapters[0]
 
@@ -59,6 +91,17 @@ export function VideoChaptersPlayer({ videoId, chapters, title }: VideoChaptersP
     setSelectedChapterId(chapter.id)
     setCurrentStartTime(chapter.startTime)
     setIsPlaying(true)
+
+    if (typeof window !== "undefined") {
+      try {
+        const url = new URL(window.location.href)
+        url.searchParams.set("chapter", chapter.id.toString())
+        url.hash = "video"
+        window.history.replaceState(null, "", url.toString())
+      } catch (e) {
+        // Fallback silently if history API is restricted
+      }
+    }
   }
 
   const handleNextChapter = () => {
@@ -112,27 +155,39 @@ export function VideoChaptersPlayer({ videoId, chapters, title }: VideoChaptersP
             />
           </div>
 
-          {/* Current Chapter Navigation & Controls */}
+          {/* Single Unified Card: Current Chapter Status + Key Takeaways + Social Share */}
           {selectedChapter && (
-            <div className="bg-card border border-border/60 rounded-xl p-4 shadow-sm space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-card/85 p-4 sm:p-5 backdrop-blur-md shadow-sm space-y-4">
+              {/* Decorative subtle ambient gradient */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-primary/10 blur-2xl"
+              />
+
+              {/* Top Bar: Live Playing Indicator + Navigation Controls */}
+              <div className="relative flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50">
                 <div className="flex items-center gap-2">
                   <span className="flex h-2.5 w-2.5 relative">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
                   </span>
-                  <span className="text-xs font-semibold text-primary">
-                    در حال پخش سرفصل {toPersianDigits(selectedChapter.id.toString())} از {toPersianDigits(chapters.length.toString())}
+                  <span className="text-xs sm:text-sm font-semibold text-primary">
+                    پخش سرفصل {toPersianDigits(selectedChapter.id.toString())} از {toPersianDigits(chapters.length.toString())}
                   </span>
+                  {selectedChapter.formattedTime && (
+                    <Badge variant="secondary" className="text-[11px] font-mono py-0 px-2 font-normal">
+                      {toPersianDigits(selectedChapter.formattedTime)}
+                    </Badge>
+                  )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={handlePrevChapter}
                     disabled={isFirstChapter}
-                    className="h-8 text-xs gap-1"
+                    className="h-7 sm:h-8 text-xs gap-1 cursor-pointer px-2.5"
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
                     بخش قبلی
@@ -142,7 +197,7 @@ export function VideoChaptersPlayer({ videoId, chapters, title }: VideoChaptersP
                     variant="outline"
                     onClick={handleNextChapter}
                     disabled={isLastChapter}
-                    className="h-8 text-xs gap-1"
+                    className="h-7 sm:h-8 text-xs gap-1 cursor-pointer px-2.5"
                   >
                     بخش بعدی
                     <ChevronLeft className="w-3.5 h-3.5" />
@@ -150,42 +205,39 @@ export function VideoChaptersPlayer({ videoId, chapters, title }: VideoChaptersP
                 </div>
               </div>
 
-              <div className="border-t border-border/40 pt-3">
-                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <span>{selectedChapter.title}</span>
-                  <Badge variant="secondary" className="text-xs font-mono font-normal">
-                    از {toPersianDigits(selectedChapter.formattedTime || formatSeconds(selectedChapter.startTime))}
-                  </Badge>
-                </h3>
-                {selectedChapter.summary && (
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                    {selectedChapter.summary}
-                  </p>
-                )}
+              {/* Key Takeaways Section */}
+              {selectedChapter?.keyTakeaways && selectedChapter.keyTakeaways.length > 0 && (
+                <div className="relative space-y-2">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span>نکات کلیدی این بخش:</span>
+                  </div>
+                  <ul className="space-y-1.5 pr-2">
+                    {selectedChapter.keyTakeaways.map((takeaway, idx) => (
+                      <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2 leading-relaxed">
+                        <span className="text-primary font-bold mt-0.5 select-none">•</span>
+                        <span>{takeaway}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Chapter-Specific Social Share Box (embedded smoothly inside the single card) */}
+              <div className="relative pt-3 border-t border-border/50">
+                <VideoShareBox
+                  mode="chapter"
+                  title={title}
+                  chapterTitle={selectedChapter.title}
+                  chapterId={selectedChapter.id}
+                  startTime={selectedChapter.startTime}
+                  formattedTime={selectedChapter.formattedTime || formatSeconds(selectedChapter.startTime)}
+                  slug={slug}
+                  showCardWrapper={false}
+                  hideChapterPill={true}
+                />
               </div>
             </div>
-          )}
-
-          {/* Key Takeaways Card (if available for current chapter) */}
-          {selectedChapter?.keyTakeaways && selectedChapter.keyTakeaways.length > 0 && (
-            <Card className="border-border/60">
-              <CardHeader className="py-3 px-4 pb-2">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  نکات کلیدی این بخش:
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="py-2 px-4 pb-4">
-                <ul className="space-y-2">
-                  {selectedChapter.keyTakeaways.map((takeaway, idx) => (
-                    <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="text-primary font-bold mt-0.5">•</span>
-                      <span>{takeaway}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
           )}
         </div>
 
@@ -275,7 +327,7 @@ export function VideoChaptersPlayer({ videoId, chapters, title }: VideoChaptersP
               size="sm"
               variant="secondary"
               onClick={() => handleSelectChapter(chapters[0])}
-              className="text-xs gap-1 h-7"
+              className="text-xs gap-1 h-7 cursor-pointer"
             >
               <Play className="w-3 h-3 fill-current" />
               پخش از ابتدا

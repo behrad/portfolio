@@ -42,6 +42,8 @@ import { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
 import { getTrackingData } from "@/lib/tracking"
 import { VideoChaptersPlayer, type VideoChapter } from "@/components/video-chapters-player"
+import { VideoShareBox } from "@/components/video-share-box"
+import { AgilixWorkshopCta } from "@/components/agilix-workshop-cta"
 
 export type { VideoChapter }
 
@@ -1535,11 +1537,12 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         videoId={course.descriptionVideoId}
                         chapters={course.videoChapters}
                         title={course.title}
+                        slug={slug}
                       />
                     </div>
                   ) : course.descriptionVideoId ? (
-                    <div className="mb-8">
-                      <div className="relative w-full overflow-hidden rounded-lg shadow-md" style={{ aspectRatio: "16 / 9" }}>
+                    <div className="mb-8 space-y-4">
+                      <div className="relative w-full overflow-hidden rounded-2xl shadow-xl border border-border/70 bg-black aspect-video">
                         <iframe
                           src={`https://www.aparat.com/video/video/embed/videohash/${course.descriptionVideoId}/vt/frame`}
                           title={`ویدیو ${course.title}`}
@@ -1548,6 +1551,12 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           className="absolute inset-0 w-full h-full border-0"
                         />
                       </div>
+                      <VideoShareBox
+                        mode="simple"
+                        title={course.title}
+                        description={course.shortDescription}
+                        slug={slug}
+                      />
                     </div>
                   ) : course.descriptionImage && (
                     <div className="mb-8">
@@ -1558,6 +1567,13 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         height={400}
                         className="w-full rounded-lg shadow-md"
                       />
+                    </div>
+                  )}
+
+                  {/* AgiliX Workshop CTA Card for Webinar Pages */}
+                  {(slug === "agentic-software-development" || isWebinar) && (
+                    <div className="mb-10">
+                      <AgilixWorkshopCta source="webinar_video" />
                     </div>
                   )}
 
@@ -1609,51 +1625,78 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       نظرات شرکت‌کنندگان
                     </h2>
                     <div className="relative">
-                      <button
-                        onClick={prevTestimonial}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors cursor-pointer shadow-md"
-                        aria-label="نظر قبلی"
-                      >
-                        <ChevronRight className="w-5 h-5" />
-                      </button>
+                      {course.testimonials.length > 1 && (
+                        <>
+                          <button
+                            onClick={prevTestimonial}
+                            className="group absolute right-0 sm:-right-4 md:-right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-card/85 hover:bg-primary border border-border/80 hover:border-primary text-muted-foreground hover:text-primary-foreground shadow-md hover:shadow-lg hover:shadow-primary/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            aria-label="نظر قبلی"
+                          >
+                            <ChevronRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                          </button>
 
-                      <button
-                        onClick={nextTestimonial}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors cursor-pointer shadow-md"
-                        aria-label="نظر بعدی"
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                      </button>
+                          <button
+                            onClick={nextTestimonial}
+                            className="group absolute left-0 sm:-left-4 md:-left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-card/85 hover:bg-primary border border-border/80 hover:border-primary text-muted-foreground hover:text-primary-foreground shadow-md hover:shadow-lg hover:shadow-primary/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            aria-label="نظر بعدی"
+                          >
+                            <ChevronLeft className="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-0.5" />
+                          </button>
+                        </>
+                      )}
 
-                      <div className="max-w-3xl mx-auto px-16">
-                        <Card className="border shadow-sm">
-                          <CardContent className="pt-6">
-                            <p className="text-foreground leading-relaxed mb-6 italic text-lg">
+                      <div className="max-w-3xl mx-auto px-10 sm:px-14 md:px-16">
+                        <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card/80 p-6 sm:p-8 backdrop-blur-sm shadow-sm transition-all duration-300 min-h-[240px] sm:min-h-[210px]">
+                          <div>
+                            {course.testimonials[currentTestimonial].rating && (
+                              <div className="flex items-center gap-1 mb-4 text-amber-400">
+                                {Array.from({ length: course.testimonials[currentTestimonial].rating || 5 }).map((_, i) => (
+                                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                ))}
+                              </div>
+                            )}
+
+                            <p className="text-foreground/90 leading-relaxed sm:leading-loose mb-6 text-base sm:text-lg font-normal">
                               "{course.testimonials[currentTestimonial].review}"
                             </p>
-                            <div className="border-t pt-4">
-                              <p className="font-bold text-lg">{course.testimonials[currentTestimonial].name}</p>
-                              <p className="text-muted-foreground">
-                                {course.testimonials[currentTestimonial].position} •{" "}
-                                {course.testimonials[currentTestimonial].company}
+                          </div>
+
+                          <div className="border-t border-border/60 pt-4 flex items-center gap-3.5">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold flex items-center justify-center text-sm flex-shrink-0">
+                              {course.testimonials[currentTestimonial].name.trim().charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-base text-foreground leading-snug">
+                                {course.testimonials[currentTestimonial].name}
+                              </p>
+                              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                                {course.testimonials[currentTestimonial].position}
+                                {course.testimonials[currentTestimonial].company && (
+                                  <>
+                                    <span className="mx-1.5 text-border">•</span>
+                                    {course.testimonials[currentTestimonial].company}
+                                  </>
+                                )}
                               </p>
                             </div>
-                          </CardContent>
-                        </Card>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex justify-center gap-2 mt-6">
-                        {course.testimonials.map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setCurrentTestimonial(index)}
-                            className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                              index === currentTestimonial ? "bg-primary w-8" : "bg-border"
-                            }`}
-                            aria-label={`نظر ${index + 1}`}
-                          />
-                        ))}
-                      </div>
+                      {course.testimonials.length > 1 && (
+                        <div className="flex items-center justify-center gap-2 mt-6">
+                          {course.testimonials.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentTestimonial(index)}
+                              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                                index === currentTestimonial ? "bg-primary w-8" : "bg-border hover:bg-muted-foreground/40 w-2"
+                              }`}
+                              aria-label={`نظر ${index + 1}`}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </section>
                 )}
@@ -1661,7 +1704,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 <section>
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <User className="w-6 h-6 text-primary" />
-                    درباره مدرس
+                    درباره من
                   </h2>
                   <Card className="border-2 shadow-md">
                     <CardContent className="pt-6">

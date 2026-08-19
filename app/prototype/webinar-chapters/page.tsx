@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { VideoShareBox } from "@/components/video-share-box"
+import { AgilixWorkshopCta } from "@/components/agilix-workshop-cta"
 
 interface Chapter {
   id: number
@@ -263,24 +265,32 @@ export default function WebinarChaptersPrototype() {
                   />
                 </div>
 
-                {/* Player Navigation & Current Chapter Status */}
-                <div className="bg-card border border-border/60 rounded-xl p-4 shadow-sm space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                {/* Single Unified Card: Current Chapter Status + Key Takeaways + Social Share */}
+                <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-card/85 p-4 sm:p-5 backdrop-blur-md shadow-sm space-y-4">
+                  {/* Top Bar: Live Playing Indicator + Navigation Controls */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border/50">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-3 w-3 relative">
+                      <span className="flex h-2.5 w-2.5 relative">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
                       </span>
-                      <span className="text-xs font-semibold text-primary">در حال پخش بخش {selectedChapter.id} از ۵</span>
+                      <span className="text-xs sm:text-sm font-semibold text-primary">
+                        پخش سرفصل {selectedChapter.id} از {CHAPTERS.length}
+                      </span>
+                      {selectedChapter.formattedTime && (
+                        <Badge variant="secondary" className="text-[11px] font-mono py-0 px-2 font-normal">
+                          {selectedChapter.formattedTime}
+                        </Badge>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <Button 
                         size="sm" 
                         variant="outline" 
                         onClick={handlePrevChapter} 
                         disabled={selectedChapterId === 1}
-                        className="h-8 text-xs gap-1"
+                        className="h-7 sm:h-8 text-xs gap-1 cursor-pointer px-2.5"
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
                         بخش قبلی
@@ -290,7 +300,7 @@ export default function WebinarChaptersPrototype() {
                         variant="outline" 
                         onClick={handleNextChapter} 
                         disabled={selectedChapterId === CHAPTERS.length}
-                        className="h-8 text-xs gap-1"
+                        className="h-7 sm:h-8 text-xs gap-1 cursor-pointer px-2.5"
                       >
                         بخش بعدی
                         <ChevronLeft className="w-3.5 h-3.5" />
@@ -298,38 +308,39 @@ export default function WebinarChaptersPrototype() {
                     </div>
                   </div>
 
-                  <div className="border-t border-border/40 pt-3">
-                    <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                      <span>{selectedChapter.title}</span>
-                      <Badge variant="secondary" className="text-xs font-mono font-normal">
-                        از {selectedChapter.formattedTime}
-                      </Badge>
-                    </h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                      {selectedChapter.summary}
-                    </p>
+                  {/* Key Takeaways Section */}
+                  {selectedChapter.keyTakeaways && selectedChapter.keyTakeaways.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-foreground">
+                        <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span>نکات کلیدی این بخش:</span>
+                      </div>
+                      <ul className="space-y-1.5 pr-2">
+                        {selectedChapter.keyTakeaways.map((takeaway, idx) => (
+                          <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2 leading-relaxed">
+                            <span className="text-primary font-bold mt-0.5 select-none">•</span>
+                            <span>{takeaway}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Chapter-Specific Social Share Box */}
+                  <div className="pt-3 border-t border-border/50">
+                    <VideoShareBox
+                      mode="chapter"
+                      title="Agentic Software Development"
+                      chapterTitle={selectedChapter.title}
+                      chapterId={selectedChapter.id}
+                      startTime={selectedChapter.startTime}
+                      formattedTime={selectedChapter.formattedTime}
+                      slug="agentic-software-development"
+                      showCardWrapper={false}
+                      hideChapterPill={true}
+                    />
                   </div>
                 </div>
-
-                {/* Key Takeaways Card for Currently Selected Chapter */}
-                <Card className="border-border/60">
-                  <CardHeader className="py-3 px-4 pb-2">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                      <CheckCircle2 className="w-4 h-4 text-primary" />
-                      نکات کلیدی این بخش:
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-2 px-4 pb-4">
-                    <ul className="space-y-2">
-                      {selectedChapter.keyTakeaways.map((takeaway, idx) => (
-                        <li key={idx} className="text-xs sm:text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="text-primary font-bold mt-0.5">•</span>
-                          <span>{takeaway}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
               </div>
 
               {/* Right Column: Chapter List / Table of Contents */}
@@ -415,6 +426,11 @@ export default function WebinarChaptersPrototype() {
                 </div>
               </div>
 
+            </div>
+
+            {/* AgiliX Workshop CTA Card below the entire video player section */}
+            <div className="pt-4">
+              <AgilixWorkshopCta source="prototype_webinar_video" />
             </div>
           </TabsContent>
 
@@ -554,6 +570,11 @@ export default function WebinarChaptersPrototype() {
                       className="absolute inset-0 w-full h-full border-0"
                     />
                   </div>
+                  <VideoShareBox
+                    mode="simple"
+                    title="Agentic Software Development"
+                    slug="agentic-software-development"
+                  />
                 </div>
               </CardContent>
             </Card>

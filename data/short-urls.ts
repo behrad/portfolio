@@ -26,6 +26,41 @@ export const RESERVED_SLUGS = new Set([
 
 export const shortUrlsList: ShortUrlConfig[] = [
   {
+    code: "agilix",
+    target: "/courses/ai-assisted-software-engineering?utm_source=webinar&utm_medium=video_cta&utm_campaign=agilix",
+    title: "کارگاه Agentic Software Development",
+    description: "لینک مستقیم کارگاه Agentic با کمپین وبینار",
+    createdAt: "2026-08-19",
+  },
+  {
+    code: "agentic",
+    target: "/courses/ai-assisted-software-engineering?utm_source=webinar&utm_medium=video_cta&utm_campaign=agentic",
+    title: "کارگاه Agentic Software Development",
+    description: "لینک مستقیم کارگاه Agentic با کمپین وبینار",
+    createdAt: "2026-08-19",
+  },
+  {
+    code: "agilix-ws",
+    target: "/courses/ai-assisted-software-engineering",
+    title: "کارگاه Agentic Software Development (اصلی)",
+    description: "لینک کوتاه کارگاه Agentic",
+    createdAt: "2026-08-19",
+  },
+  {
+    code: "drilling",
+    target: "/courses/ai-assisted-software-engineering?utm_source=drilling",
+    title: "کارگاه Agentic - متد Grilling",
+    description: "لینک کوتاه متد Grilling در توسعه ایجنت‌محور",
+    createdAt: "2026-08-19",
+  },
+  {
+    code: "grilling",
+    target: "/courses/ai-assisted-software-engineering?utm_source=grilling",
+    title: "کارگاه Agentic - متد Grilling",
+    description: "لینک کوتاه متد Grilling در توسعه ایجنت‌محور",
+    createdAt: "2026-08-19",
+  },
+  {
     code: "ai-asd",
     target: "/courses/ai-assisted-software-engineering?utm_source=webinar&utm_campaign=asd",
     title: "کارگاه مهندسی نرمافزار Agent-محور (AI-Assisted SE)",
