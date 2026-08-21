@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import {
   Sparkles,
   Layers,
   ArrowLeft,
+  Map,
 } from 'lucide-react'
 
 // Enhanced SVG coordinates for responsive 760x340 viewBox (Zero horizontal scroll)
@@ -23,7 +24,6 @@ interface MetroStationNode extends RoadmapNode {
   cy: number
   lineNameFa: string
   lineColor: string
-  isHub?: boolean
 }
 
 const METRO_STATIONS: MetroStationNode[] = [
@@ -52,8 +52,8 @@ const METRO_STATIONS: MetroStationNode[] = [
     ...ROADMAP_NODES.find((n) => n.id === 'backend-nodejs')!,
     cx: 230,
     cy: 165,
-    lineNameFa: 'تخصص رانتایم نود',
-    lineColor: '#f59e0b',
+    lineNameFa: 'مهندسی بک‌اند',
+    lineColor: '#38bdf8',
   },
   {
     ...ROADMAP_NODES.find((n) => n.id === 'art-of-coding')!,
@@ -61,7 +61,6 @@ const METRO_STATIONS: MetroStationNode[] = [
     cy: 165,
     lineNameFa: 'معماری کد & DDD',
     lineColor: '#818cf8',
-    isHub: true,
   },
   {
     ...ROADMAP_NODES.find((n) => n.id === 'system-design-1')!,
@@ -69,7 +68,6 @@ const METRO_STATIONS: MetroStationNode[] = [
     cy: 275,
     lineNameFa: 'سیستم دیزاین ۱',
     lineColor: '#2dd4bf',
-    isHub: true,
   },
   {
     ...ROADMAP_NODES.find((n) => n.id === 'system-design-2')!,
@@ -94,12 +92,32 @@ const METRO_STATIONS: MetroStationNode[] = [
   },
 ]
 
+// Map labels use the real catalog title, dropping only a trailing
+// "- ..." / "(...)" qualifier, then wrapping so it fits between stations.
+function stationLabelLines(title: string): string[] {
+  const clean = title.split(/\s*[-–(]\s*/)[0].trim()
+  const lines: string[] = []
+  let line = ''
+  for (const word of clean.split(/\s+/)) {
+    if (line && `${line} ${word}`.length > 28) {
+      lines.push(line)
+      line = word
+    } else {
+      line = line ? `${line} ${word}` : word
+    }
+  }
+  if (line) lines.push(line)
+  return lines.slice(0, 3)
+}
+
 // SVG Track definitions connecting stations
 const METRO_TRACKS = [
   // M1 Coding & TS Track (Yellow)
   { id: 't-m1-1', from: 'core-js-ts', to: 'advanced-js-ts', color: '#f59e0b', d: 'M 90 55 L 370 55' },
   { id: 't-m1-2', from: 'advanced-js-ts', to: 'functional-ts', color: '#f59e0b', d: 'M 370 55 L 650 55' },
-  { id: 't-m1-branch', from: 'core-js-ts', to: 'backend-nodejs', color: '#f59e0b', d: 'M 90 55 C 90 120, 160 165, 230 165' },
+  { id: 't-m4-branch', from: 'core-js-ts', to: 'backend-nodejs', color: '#38bdf8', d: 'M 90 55 C 90 120, 160 165, 230 165' },
+
+  // M4 Backend Line (Sky)
 
   // M2 Architecture Line (Purple)
   { id: 't-m2-1', from: 'advanced-js-ts', to: 'art-of-coding', color: '#818cf8', d: 'M 370 55 C 370 120, 430 165, 510 165' },
@@ -113,13 +131,65 @@ const METRO_TRACKS = [
   { id: 't-m3-chain-3', from: 'system-design-3', to: 'system-design-4', color: '#2dd4bf', d: 'M 470 275 L 660 275' },
 ]
 
+const METRO_LINES = [
+  {
+    id: 'm1',
+    label: 'کدنویسی JS/TS',
+    color: '#f59e0b',
+    descFa: 'شامل سه دوره، از مقدماتی تا حرفه‌ای؛ برای همه سطح‌ها و برای برنامه‌نویس‌های فرانت‌اند و بک‌اند.',
+  },
+  {
+    id: 'm4',
+    label: 'بک‌اند / Node.js',
+    color: '#38bdf8',
+    descFa: 'شامل سه دوره Node.js؛ از کسانی که می‌خواهند وارد Node.js شوند تا کسانی که با Node.js کار می‌کنند و می‌خواهند حرفه‌ای‌تر شوند.',
+  },
+  {
+    id: 'm2',
+    label: 'معماری کد & DDD',
+    color: '#818cf8',
+    descFa: 'برای دولوپرها روی هر زبان و هر استکی؛ نوشتن کد با قابلیت نگهداری بالا و مدل‌سازی و طراحی با DDD در پروژه‌های با اسکیل بالا.',
+  },
+  {
+    id: 'm3',
+    label: 'سیستم دیزاین',
+    color: '#2dd4bf',
+    descFa: 'چهار دوره که هرکدام بخشی از مفاهیم و تکنیک‌های موردنیاز یک معمار سیستم را پوشش می‌دهند.',
+  },
+] as const
+
 export function MetroRoadmap() {
-  const [activeLine, setActiveLine] = useState<'all' | 'm1' | 'm2' | 'm3'>('all')
+  const [activeLine, setActiveLine] = useState<'all' | 'm1' | 'm2' | 'm3' | 'm4'>('all')
   const [selectedRole, setSelectedRole] = useState<AudienceRole>('everyone')
-  const [activeStationId, setActiveStationId] = useState<string | null>('core-js-ts')
+  const [activeStationId, setActiveStationId] = useState<string | null>(null)
   const [hoveredStationId, setHoveredStationId] = useState<string | null>(null)
 
-  const activeStation = METRO_STATIONS.find((s) => s.id === (hoveredStationId || activeStationId)) || METRO_STATIONS[0]
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  // A pinned station is released by Escape, or by clicking anywhere that is
+  // neither another station nor the inspector card itself.
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target as Element | null
+      if (!target) return
+      if (target.closest?.('[data-station]')) return
+      if (cardRef.current?.contains(target)) return
+      setActiveStationId(null)
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActiveStationId(null)
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  const focusedId = hoveredStationId || activeStationId
+  const activeStation = focusedId ? METRO_STATIONS.find((s) => s.id === focusedId) : undefined
 
   // Helper to check if a station node is active under current filters
   const isNodeActive = (stationId: string) => {
@@ -139,6 +209,7 @@ export function MetroRoadmap() {
     if (activeLine === 'm1' && track.color === '#f59e0b') return 1
     if (activeLine === 'm2' && track.color === '#818cf8') return 1
     if (activeLine === 'm3' && track.color === '#2dd4bf') return 1
+    if (activeLine === 'm4' && track.color === '#38bdf8') return 1
     return 0.05
   }
 
@@ -164,7 +235,10 @@ export function MetroRoadmap() {
   function isTrackMatch(station: MetroStationNode) {
     if (activeLine === 'all') return true
     if (activeLine === 'm1') {
-      return ['core-js-ts', 'advanced-js-ts', 'functional-ts', 'backend-nodejs'].includes(station.id)
+      return ['core-js-ts', 'advanced-js-ts', 'functional-ts'].includes(station.id)
+    }
+    if (activeLine === 'm4') {
+      return ['core-js-ts', 'backend-nodejs'].includes(station.id)
     }
     if (activeLine === 'm2') {
       return ['advanced-js-ts', 'backend-nodejs', 'art-of-coding'].includes(station.id)
@@ -176,7 +250,7 @@ export function MetroRoadmap() {
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-[#070a0f] py-12 md:py-16 text-foreground">
+    <section className="relative overflow-hidden border-b border-border bg-[#070a0f] py-8 md:py-12 text-foreground">
       {/* Background Metro Grid Lines */}
       <div
         aria-hidden="true"
@@ -190,12 +264,12 @@ export function MetroRoadmap() {
 
       <div className="container relative mx-auto px-4">
         {/* Header Title & Description */}
-        <div className="mx-auto max-w-3xl text-center mb-8">
+        <div className="mx-auto max-w-3xl text-center mb-6">
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">
             نقشه راه مهندسی نرم‌افزار
           </h1>
 
-          <p className="mt-4 text-base leading-8 text-muted-foreground md:text-lg">
+          <p className="mt-3 text-sm leading-7 text-muted-foreground md:text-base">
             سرفصل این دوره‌ها بر اساس تجربه من در طول سال‌ها توسعه نرم‌افزار، تیم‌سازی و فیدبک از تدریس تدوین شده. به همین دلیل می‌تونن در مسیر حرفه‌ای شما، از یک برنامه‌نویس تازه‌کار تا تک‌لید یا مدیر فنی، مفید باشن تا با دید بازتری فکر کنید و تصمیمات بهتری در پروژه‌ها و تیم‌تون بگیرید.
           </p>
         </div>
@@ -244,23 +318,25 @@ export function MetroRoadmap() {
             </span>
 
             <div className="flex flex-wrap items-center gap-1">
-              {[
-                { id: 'all', label: 'همه مسیرها' },
-                { id: 'm1', label: 'کدنویسی & TS' },
-                { id: 'm2', label: 'معماری کد & DDD' },
-                { id: 'm3', label: 'سیستم دیزاین' },
-              ].map((line) => {
+              {[{ id: 'all', label: 'همه مسیرها', color: null }, ...METRO_LINES].map((line) => {
                 const active = activeLine === line.id
                 return (
                   <button
                     key={line.id}
                     onClick={() => setActiveLine(line.id as any)}
-                    className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${
+                    className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${
                       active
                         ? 'border-primary bg-primary/10 text-primary font-semibold'
                         : 'border-border/60 bg-card/30 text-muted-foreground hover:border-border hover:text-foreground'
                     }`}
                   >
+                    {line.color && (
+                      <span
+                        aria-hidden="true"
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: line.color }}
+                      />
+                    )}
                     <span>{line.label}</span>
                   </button>
                 )
@@ -272,14 +348,15 @@ export function MetroRoadmap() {
         {/* METRO MAP DASHBOARD: RESPONSIVE SVG CANVAS (9 COLS) + HEIGHT-MATCHED INSPECTOR CARD (3 COLS) */}
         <div className="mt-6 grid gap-6 lg:grid-cols-12 items-stretch">
           {/* SVG Canvas Column */}
-          <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-[#090d16] p-3 md:p-5 backdrop-blur-xl shadow-xl lg:col-span-9 flex flex-col justify-center">
+          <div className="relative h-[19rem] sm:h-[23rem] lg:h-[24rem] xl:h-[25rem] overflow-hidden rounded-2xl border border-border/80 bg-[#090d16] p-3 md:p-5 backdrop-blur-xl shadow-xl lg:col-span-9 flex flex-col">
             <svg
               viewBox="0 0 760 340"
-              className="w-full h-auto drop-shadow-lg overflow-visible"
+              preserveAspectRatio="xMidYMid meet"
+              className="w-full min-h-0 flex-1 drop-shadow-lg"
             >
               <defs>
                 <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="2.5" result="blur" />
+                  <feGaussianBlur stdDeviation="1.8" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
               </defs>
@@ -289,14 +366,14 @@ export function MetroRoadmap() {
                 const opacity = getTrackOpacity(track)
                 return (
                   <g key={track.id}>
-                    {/* Outer Glow Path */}
+                    {/* Soft Halo Path */}
                     <path
                       d={track.d}
                       fill="none"
                       stroke={track.color}
-                      strokeWidth="9"
+                      strokeWidth="5.5"
                       strokeLinecap="round"
-                      strokeOpacity={opacity * 0.3}
+                      strokeOpacity={opacity * 0.14}
                       filter="url(#glow)"
                     />
                     {/* Core Track Line */}
@@ -304,9 +381,9 @@ export function MetroRoadmap() {
                       d={track.d}
                       fill="none"
                       stroke={track.color}
-                      strokeWidth="5"
+                      strokeWidth="2"
                       strokeLinecap="round"
-                      strokeOpacity={opacity}
+                      strokeOpacity={opacity * 0.9}
                       className="transition-all duration-300"
                     />
                   </g>
@@ -317,11 +394,15 @@ export function MetroRoadmap() {
               {METRO_STATIONS.map((station) => {
                 const isSelected = (activeStationId === station.id) || (hoveredStationId === station.id)
                 const isMatched = isPersonaMatch(station) && isTrackMatch(station)
+                const labelLines = stationLabelLines(station.titleFa)
 
                 return (
                   <g
                     key={station.id}
-                    onClick={() => setActiveStationId(station.id)}
+                    data-station={station.id}
+                    onClick={() =>
+                      setActiveStationId((current) => (current === station.id ? null : station.id))
+                    }
                     onMouseEnter={() => setHoveredStationId(station.id)}
                     onMouseLeave={() => setHoveredStationId(null)}
                     className="cursor-pointer group transition-opacity duration-300"
@@ -364,11 +445,11 @@ export function MetroRoadmap() {
                       <circle
                         cx={station.cx}
                         cy={station.cy}
-                        r="21"
+                        r="15"
                         fill="none"
                         stroke={station.lineColor}
-                        strokeWidth="2"
-                        strokeOpacity="0.8"
+                        strokeWidth="1.25"
+                        strokeOpacity="0.55"
                       />
                     )}
 
@@ -376,10 +457,10 @@ export function MetroRoadmap() {
                     <circle
                       cx={station.cx}
                       cy={station.cy}
-                      r={isSelected ? (station.isHub ? 16 : 13) : (station.isHub ? 14 : 11)}
+                      r={isSelected ? 9.5 : 8}
                       fill="#0f172a"
                       stroke={station.lineColor}
-                      strokeWidth={isSelected ? '4.5' : '3.5'}
+                      strokeWidth={isSelected ? '2.75' : '2.25'}
                       className="transition-all duration-200"
                     />
 
@@ -387,26 +468,30 @@ export function MetroRoadmap() {
                     <circle
                       cx={station.cx}
                       cy={station.cy}
-                      r={station.isHub ? '5' : '3.5'}
+                      r="2.5"
                       fill={station.lineColor}
                     />
 
                     {/* Station Label Text (Bilingual: Persian + English) */}
                     <text
                       x={station.cx}
-                      y={station.cy + 28}
+                      y={station.cy + 24}
                       textAnchor="middle"
                       fill={isMatched ? (isSelected ? '#ffffff' : '#e2e8f0') : '#64748b'}
                       fontSize="11"
                       fontWeight={isSelected ? 'bold' : '500'}
                       className="pointer-events-none select-none font-vazir transition-colors duration-200"
                     >
-                      {station.titleFa.split('(')[0]}
+                      {labelLines.map((line, i) => (
+                        <tspan key={i} x={station.cx} dy={i === 0 ? 0 : 13}>
+                          {line}
+                        </tspan>
+                      ))}
                     </text>
 
                     <text
                       x={station.cx}
-                      y={station.cy + 41}
+                      y={station.cy + 24 + labelLines.length * 13}
                       textAnchor="middle"
                       fill={isMatched ? (isSelected ? '#38bdf8' : '#94a3b8') : '#475569'}
                       fontSize="9"
@@ -419,11 +504,53 @@ export function MetroRoadmap() {
                 )
               })}
             </svg>
+
+            <p className="mt-2 shrink-0 text-center text-[11px] font-medium leading-5 text-muted-foreground">
+              برای مشاهده جزئیات هر دوره، روی ایستگاه آن کلیک کنید.
+            </p>
           </div>
 
           {/* HEIGHT-MATCHED NARROW STATION INSPECTOR SIDE PANEL (3 COLS) */}
-          <div className="sticky top-24 lg:col-span-3 h-full rounded-2xl border border-border bg-card/95 p-4 md:p-5 backdrop-blur-xl shadow-xl flex flex-col justify-between">
+          <div
+            ref={cardRef}
+            className="lg:col-span-3 h-[26rem] lg:h-[24rem] xl:h-[25rem] overflow-hidden rounded-2xl border border-border bg-card/95 p-4 md:p-5 backdrop-blur-xl shadow-xl flex flex-col"
+          >
             <AnimatePresence mode="wait">
+              {!activeStation && (
+                /* Default state: explain the map instead of pre-selecting a course */
+                <motion.div
+                  key="__intro__"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="h-full min-h-0 flex flex-col"
+                >
+                  <div className="min-h-0 flex-1 overflow-y-auto space-y-3 pe-1">
+                    <div className="flex items-center gap-1.5">
+                      <Map className="h-4 w-4 text-primary" />
+                      <h3 className="text-base font-bold text-foreground">راهنمای نقشه راه دوره‌ها</h3>
+                    </div>
+
+                    <ul className="space-y-2">
+                      {METRO_LINES.map((line) => (
+                        <li key={line.id} className="flex items-start gap-2">
+                          <span
+                            aria-hidden="true"
+                            className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: line.color }}
+                          />
+                          <div className="leading-5">
+                            <span className="text-xs font-semibold text-foreground">{line.label}</span>
+                            <p className="text-[11px] text-muted-foreground leading-5">{line.descFa}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              )}
+
               {activeStation && (
                 <motion.div
                   key={activeStation.id}
@@ -431,9 +558,9 @@ export function MetroRoadmap() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
                   transition={{ duration: 0.15 }}
-                  className="h-full flex flex-col justify-between space-y-3"
+                  className="h-full min-h-0 flex flex-col"
                 >
-                  <div className="space-y-3">
+                  <div className="min-h-0 flex-1 overflow-y-auto space-y-3 pe-1">
                     {/* Station Header Badges */}
                     <div className="flex flex-wrap items-center gap-1.5">
                       {activeStation.isEntryPoint && (
@@ -478,7 +605,7 @@ export function MetroRoadmap() {
                   </div>
 
                   {/* Direct Action Button */}
-                  <Button asChild size="sm" className="w-full rounded-xl font-bold py-4 shadow-md mt-3">
+                  <Button asChild size="sm" className="w-full shrink-0 rounded-xl font-bold py-4 shadow-md mt-3">
                     <Link href={`/courses/${activeStation.pathSlug}`}>
                       <span>مشاهده دوره</span>
                       <ArrowLeft className="ms-1.5 h-3.5 w-3.5" />

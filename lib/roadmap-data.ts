@@ -1,3 +1,5 @@
+import { coursesData } from '@/data/courses'
+
 export type CourseLayer = 'coding' | 'code-architecture' | 'system-architecture'
 
 export type AudienceRole = 'frontend' | 'backend' | 'architect' | 'everyone'
@@ -83,7 +85,9 @@ export interface RoadmapEdge {
   color: string
 }
 
-export const ROADMAP_NODES: RoadmapNode[] = [
+// Titles/subtitles are NOT authored here — they are pulled from the course
+// catalog below so the roadmap can never drift from the real course names.
+const ROADMAP_NODE_DEFS: RoadmapNode[] = [
   {
     id: 'core-js-ts',
     titleFa: 'جاوا‌اسکریپت و تایپ‌اسکریپت عمیق (CoreJSTS)',
@@ -232,6 +236,18 @@ export const ROADMAP_NODES: RoadmapNode[] = [
     gridPos: { column: 4, row: 2 },
   },
 ]
+
+// Single source of truth for course naming: `data/courses.ts`.
+// A node keeps its own copy only if the slug has no catalog entry yet.
+export const ROADMAP_NODES: RoadmapNode[] = ROADMAP_NODE_DEFS.map((node) => {
+  const course = coursesData[node.pathSlug]
+  if (!course) return node
+  return {
+    ...node,
+    titleFa: course.title.trim(),
+    subtitleEn: course.subtitle.trim(),
+  }
+})
 
 export const ROADMAP_EDGES: RoadmapEdge[] = [
   // Coding Track
