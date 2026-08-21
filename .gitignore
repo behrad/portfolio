@@ -32,3 +32,9 @@ behrad.zip
 public/.DS_Store
 /n8n_data/
 /.claude/settings.json
+
+# macOS
+.DS_Store
+
+# locally-installed skill pack (not managed by skills-lock.json)
+.agents/skills/impeccable/
