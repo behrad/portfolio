@@ -920,6 +920,349 @@ export const coursesData: { [key: string]: Course } = {
   //     },
   //   ],
   // },
+  "core-js-ts": {
+    title: "جاوا‌اسکریپت و تایپ‌اسکریپت عمیق و کاربردی (CoreJSTS)",
+    type: "course",
+    subtitle: "Deep Dive & Professional JS/TS Development",
+    path: "senior_developer",
+    hasVideo: false,
+    shortDescription: "عمیق‌ترین دید به جاوااسکریپت و تایپ‌اسکریپت؛ از کارکرد Event Loop و Prototype تا تایپ‌پروگرامینگ پیشرفته",
+    description: "این دوره نگاهی متفاوت به زبان جاواسکریپت دارد و عمیق نشان میدهد که در آن زیر چه اتفاقی میافتد، چه دامهایی دارد، دبلوپر چطور در آن دامها نیفتد و چه امکانات قدرتمند جاواسکریپت دارد که میتواند در پروژههای واقعی به نحو درست استفاده کند.\n\nهمچنین وارد دنیای تایپاسکریپت میشود و تایپپروگرامینگ را معرفی میکند و اینکه چطور با تایپاسکریپت محدودیتهای جاواسکریپت را پوشش دهید و دنیای دبلوپر، دنیای امنتر و راحتتر و زیباتری شود.",
+    price: "۷,۹۰۰,۰۰۰",
+    priceNumber: 7900000,
+    discount: 0,
+    rating: 4.8,
+    reviewCount: 12,
+    duration: "۲۰ ساعت",
+    sessionsCount: "۸ جلسه",
+    schedule: "پنج‌شنبه‌ها ساعت ۱۶ - ۲۰",
+    startDate: "مهر ۱۴۰۵",
+    format: "آنلاین",
+    level: "مقدماتی تا متوسط",
+    language: "فارسی",
+    certificate: false,
+    image: "/js-ts-foundation.png",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    instructor: {
+      name: "بهراد زاری",
+      title: "مهندس نرم افزار و منتور",
+      bio: "+۲۰ سال تجربه طراحی و توسعه نرم افزار‌های سازمانی-استارتاپی و +۱۰ سال منتورینگ فنی و تیم سازی",
+      image: "/images/behrad.jpg",
+      linkedin: "https://www.linkedin.com/in/behradz/",
+    },
+    skills: [
+      "درک عمیق ساختار داخلی و نحوه اجرای کدهای جاوااسکریپت (Execution Context, Event Loop)",
+      "تسلط بر رفتارهای خاص جاوااسکریپت مانند closures, prototype و کلیدواژه this",
+      "استفاده هوشمندانه از قابلیت‌های تایپ‌اسکریپت برای پوشش دادن محدودیت‌های جاوااسکریپت",
+      "پیاده‌سازی تایپ‌پروگرامینگ پیشرفته با استفاده از generics, interfaces و utility types"
+    ],
+    outcomes: [
+      "نوشتن کدهای جاوااسکریپت بهینه، تمیز و بدون باگ‌های متداول",
+      "قابلیت دیباگ کردن مسائل پیچیده و درک رفتار موتور JS در پس‌زمینه",
+      "استفاده اصولی از ابزارهای پیشرفته تایپ‌اسکریپت در پروژه‌های واقعی"
+    ],
+    targetAudience: [
+      "کسانی که جاواسکریپت و تایپاسکریپت بلد نیستند و میخواهند این زبان را یاد بگیرند",
+      "کسانی که جاواسکریپت بلدند ولی میخواهند تایپاسکریپت را شروع کنند",
+      "کسانی که جاواسکریپت و تایپاسکریپت را بلدند ولی هیچگاه آن دید زیرپوستی را دنبال نکردهاند یا در پروژههایشان درگیر گامها نشدهاند"
+    ],
+    prerequisites: [
+      "آشنایی با مبانی اولیه برنامه‌نویسی"
+    ],
+    modules: [
+      {
+        title: "بخش اول: JavaScript Core",
+        description: "در این بخش به عمیق‌ترین مفاهیم هسته جاوااسکریپت و چگونگی کارکرد داخلی آن در زیرپوسته زبان می‌پردازیم.",
+        duration: "۱۰ ساعت",
+        lectures: 5,
+        topics: [
+          "execution context، call stack، hoisting",
+          "Scope و Scope Chain (var، let، const)",
+          "Closure: مفهوم، کاربرد و اشتباهات رایج",
+          "تابعها بهعنوان first-class citizen، higher-order functions",
+          "this: قوانین binding و تفاوت function vs arrow function",
+          "Prototype و prototypal inheritance",
+          "Event Loop: call stack، Web APIs، callback/microtask queue",
+          "Promise: ساخت، chaining، الگوهای ترکیب (all، race، allSettled)",
+          "async/await و مدیریت خطا با try/catch",
+          "مدیریت حافظه پایه و garbage collection (سطح مفهومی)"
+        ]
+      },
+      {
+        title: "بخش دوم: TypeScript Essential",
+        description: "وارد دنیای تایپ‌اسکریپت می‌شویم و یاد می‌گیریم چطور امنیت و لذت کدنویسی را با استفاده از تایپ‌پروگرامینگ افزایش دهیم.",
+        duration: "۱۰ ساعت",
+        lectures: 5,
+        topics: [
+          "چرا TypeScript؟ رابطهی TS با JS و فرآیند کامپایل",
+          "type annotation در برابر type inference",
+          "انواع پایه، union و intersection types",
+          "Interface در برابر Type Alias — چه زمانی از کدام استفاده کنیم",
+          "Narrowing: typeof، in، discriminated unions",
+          "Function typing: پارامترهای اختیاری، overload های ساده",
+          "Generics پایه: توابع و ساختارهای generic",
+          "Enum و alternative های امروزیتر (as const)",
+          "Utility Types پرکاربرد در پروژههای واقعی",
+          "تنظیمات ضروری tsconfig.json و مهاجرت تدریجی یک پروژه JS به TS"
+        ]
+      }
+    ],
+    testimonials: [],
+    faqs: [
+      {
+        question: "آیا این دوره برای افراد کاملاً مبتدی مناسب است؟",
+        answer: "بله، این دوره به گونه‌ای طراحی شده که حتی اگر جاوااسکریپت و تایپ‌اسکریپت بلد نیستید، بتوانید از صفر مفاهیم را عمیق و اصولی یاد بگیرید."
+      },
+      {
+        question: "آیا در این دوره پروژه‌های واقعی هم داریم؟",
+        answer: "بله، تمرکز دوره بر روی حل چالش‌های واقعی پروژه‌ها، پرهیز از تله‌های رایج زبان و نحوه مهاجرت پروژه‌ها از جاوااسکریپت به تایپ‌اسکریپت است."
+      },
+      {
+        question: "آیا برای شرکت در این دوره باید دانش بک‌اند داشته باشم؟",
+        answer: "خیر، مفاهیم این دوره هم برای توسعه‌دهندگان فرانت‌اند و هم بک‌اند بسیار حیاتی و کاربردی است."
+      }
+    ],
+    relatedCourses: [
+      {
+        title: "جاوا‌اسکریپت و تایپ‌اسکریپت پیشرفته (Advanced JSTS)",
+        description: "Advanced Type-Level TS & Software Design",
+        slug: "advanced-js-ts",
+        image: "/advanced-ts.png"
+      },
+      {
+        title: "برنامه‌نویسی تابعی با تایپ‌اسکریپت (Functional TS)",
+        description: "Functional Programming & TypeScript / Effect TS",
+        slug: "functional-ts",
+        image: "/functional-ts.png"
+      }
+    ]
+  },
+  "advanced-js-ts": {
+    title: "جاوا‌اسکریپت و تایپ‌اسکریپت پیشرفته (Advanced JSTS)",
+    type: "course",
+    subtitle: "Advanced Type-Level TS & Software Design",
+    path: "senior_developer",
+    hasVideo: false,
+    shortDescription: "طراحی نرم‌افزار، تایپ‌پروگرامینگ پیشرفته و اصول مهندسی نرم‌افزار در دنیای جاوااسکریپت و تایپ‌اسکریپت",
+    description: "این دوره برای توسعه‌دهندگانی در هر سطحی از JavaScript و TypeScript است که می‌خواهند کدهایی با قابلیت نگهداری بالاتر بنویسند. هدف این است که بتوانند مفاهیم code quality را بالا ببرند و اصول software engineering را در کدهای خود استفاده کنند.\n\nاین دوره برای تمام توسعه‌دهندگانی که چه frontend و چه backend هستند، مفید است و می‌خواهند کد بهتر و پیشرفته‌تری در پروژه‌های large scale بنویسند. همچنین برای کسانی که می‌خواهند type safe نویسی را به خوبی یاد بگیرند و به مثال‌های واقعی نگاه کنند، بسیار مفید است. در این دوره یاد می‌گیریم که چگونه با تایپ‌های پیشرفته، امکانات پیشرفته را برای تعریف تایپ‌ها استفاده کنیم. همچنین یاد می‌گیریم چگونه با Type Programming کدهای امن‌تر، robustتر و با خطا و باگ کمتر تولید کنیم. علاوه بر این، SOLID را در عمل درک می‌کنیم، با design patterns آشنا می‌شویم، domain modeling را یاد می‌گیریم و چگونگی error handling صحیح را بررسی می‌کنیم؛ همه این‌ها در حالی که از over-engineering پرهیز می‌کنیم.",
+    price: "۷,۹۰۰,۰۰۰",
+    priceNumber: 7900000,
+    discount: 0,
+    rating: 4.9,
+    reviewCount: 18,
+    duration: "۲۰ ساعت",
+    sessionsCount: "۸ جلسه",
+    schedule: "شنبه‌ها ساعت ۱۶ - ۲۰",
+    startDate: "آبان ۱۴۰۵",
+    format: "آنلاین",
+    level: "پیشرفته",
+    language: "فارسی",
+    certificate: false,
+    image: "/advanced-ts.png",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    instructor: {
+      name: "بهراد زاری",
+      title: "مهندس نرم افزار و منتور",
+      bio: "+۲۰ سال تجربه طراحی و توسعه نرم افزار‌های سازمانی-استارتاپی و +۱۰ سال منتورینگ فنی و تیم سازی",
+      image: "/images/behrad.jpg",
+      linkedin: "https://www.linkedin.com/in/behradz/",
+    },
+    skills: [
+      "تایپ‌پروگرامینگ در سطح پیشرفته (Type Level TypeScript)",
+      "اعمال اصول SOLID و الگوهای طراحی در اکوسیستم JS/TS",
+      "مدیریت خطا با الگوهای Result/Either در سطح معماری",
+      "طراحی و مدلسازی دامنه (Domain Modeling) و جلوگیری از over-engineering"
+    ],
+    outcomes: [
+      "نوشتن کدهای فوق‌العاده امن (Type-Safe)، مقاوم و با حداقل بدهی فنی",
+      "بهبود چشمگیر کیفیت طراحی نرم‌افزار و معماری پروژه‌های بزرگ مقیاس (Large Scale)",
+      "تست‌پذیری بالا و توانایی بازطراحی (Refactoring) تدریجی کدهای پیچیده"
+    ],
+    targetAudience: [
+      "توسعه‌دهندگان فرانت‌اند و بک‌اند که می‌خواهند کدهایی با قابلیت نگهداری بالا بنویسند",
+      "برنامه‌نویسانی که می‌خواهند اصول مهندسی نرم‌افزار و SOLID را در جاوااسکریپت/تایپ‌اسکریپت پیاده کنند",
+      "کسانی که به دنبال نوشتن کدهای تمیزتر، ماژولارتر و ایمن در پروژه‌های بزرگ هستند"
+    ],
+    prerequisites: [
+      "گذراندن دوره جاوااسکریپت و تایپ‌اسکریپت کاربردی (CoreJSTS) یا تسلط کامل بر مفاهیم پایه‌ای JS/TS"
+    ],
+    modules: [
+      {
+        title: "بخش اول: Type Level TypeScript",
+        description: "ورود به دنیای پیشرفته کامپایلر تایپ‌اسکریپت و برنامه‌نویسی در سطح تایپ‌ها برای امنیت بالا.",
+        duration: "۱۰ ساعت",
+        lectures: 5,
+        topics: [
+          "مرور generic ها و محدودیتهای آنها با extends",
+          "Conditional Types: شرطگذاری در سطح تایپ",
+          "عملگر infer و استخراج تایپ از ساختارهای پیچیده",
+          "Mapped Types و تبدیل سیستماتیک یک تایپ به تایپ دیگر",
+          "Template Literal Types و ساخت تایپ از رشتهها",
+          "Recursive Types و کار با ساختارهای تودرتو (tree، path، JSON)",
+          "Distributive Conditional Types و رفتارهای ظریف union ها",
+          "Branded/Nominal Types برای type-safety بیشتر در دنیای structural typing",
+          "طراحی type-safe API (مثل builder pattern با تایپ کامل)",
+          "خواندن و دیباگ کردن خطاهای پیچیدهی کامپایلر TypeScript"
+        ]
+      },
+      {
+        title: "بخش دوم: Software Design",
+        description: "پیاده‌سازی اصول مهندسی نرم‌افزار، الگوهای طراحی، مدلسازی دامنه و تست‌پذیری در عمل.",
+        duration: "۱۰ ساعت",
+        lectures: 5,
+        topics: [
+          "اصول SOLID با مثالهای واقعی در جاوااسکریپت/تایپاسکریپت",
+          "Coupling و Cohesion: معیار سنجش کیفیت طراحی",
+          "الگوهای طراحی رایج (Factory، Strategy، Adapter، Decorator و...)",
+          "Dependency Injection و Inversion of Control بدون فریمورک سنگین",
+          "طراحی مرز ماژولها (module boundaries) و جلوگیری از coupling پنهان",
+          "مدلسازی دامنه (domain modeling) و جدا کردن business logic از infrastructure",
+          "استراتژیهای مدیریت خطا در سطح معماری (Result/Either در برابر exception)",
+          "طراحی برای تستپذیری: چطور کدی بنویسیم که تست کردنش آسون باشه",
+          "Refactoring: شناسایی code smell ها و بازطراحی تدریجی و امن",
+          "تصمیمگیری معماری: چه زمانی abstraction بسازیم و چه زمانی نه"
+        ]
+      }
+    ],
+    testimonials: [],
+    faqs: [
+      {
+        question: "آیا در این دوره فریمورک خاصی تدریس می‌شود؟",
+        answer: "خیر، تمرکز دوره روی مفاهیم خالص طراحی نرم‌افزار، جاوااسکریپت و تایپ‌اسکریپت بدون وابستگی به فریمورک‌های سنگین است تا بتوانید آن را در هر پروژه‌ای استفاده کنید."
+      },
+      {
+        question: "آیا پیش‌نیاز این دوره، گذراندن دوره CoreJSTS است؟",
+        answer: "اگر با مباحث پیش‌فرض و مفاهیم داخلی جاوااسکریپت (مانند Closures و Prototypes) و مبانی تایپ‌اسکریپت آشنایی کامل دارید، نیازی به گذراندن CoreJSTS نیست."
+      },
+      {
+        question: "این دوره چقدر به درد مصاحبه‌های مهندسی نرم‌افزار می‌خورد؟",
+        answer: "مباحث SOLID، دیزاین پترن‌ها، و ریفکتورینگ مستقیماً از بخش‌های کلیدی مصاحبه‌های استخدامی سطوح بالا (Senior و Tech Lead) هستند."
+      }
+    ],
+    relatedCourses: [
+      {
+        title: "برنامه‌نویسی تابعی با تایپ‌اسکریپت (Functional TS)",
+        description: "Functional Programming & TypeScript / Effect TS",
+        slug: "functional-ts",
+        image: "/functional-ts.png"
+      },
+      {
+        title: "هنر کدنویسی",
+        description: "پیاده‌سازی با ذهنیت یک معمار",
+        slug: "art-of-coding",
+        image: "/artOfCoding.jpeg"
+      }
+    ]
+  },
+  "functional-ts": {
+    title: "برنامه‌نویسی تابعی با تایپ‌اسکریپت (Functional TS)",
+    type: "course",
+    subtitle: "Functional Programming & TypeScript / Effect TS",
+    path: "senior_developer",
+    hasVideo: false,
+    shortDescription: "یادگیری عمیق تفکر فانکشنال، Composability و کار با کتابخانه Effect برای مدیریت عوارض جانبی و خطاهای ناهمگام",
+    description: "این دوره کاملاً و به صورت عملی ما را با تفکر فانکشنال و قدرت و امکانات آن در پروژه‌های بزرگ و production-ready آشنا می‌کند. این دوره نگاهی دیگر به برنامه‌نویسی ارائه می‌دهد و کمک می‌کند تا فانکشنالیتی‌ها و لاجیک‌های بسیار پیچیده را بتوانید با خواناترین و ساده‌ترین راه توصیف کنید و کد بنویسید.\n\nاین دوره برای کسانی است که چه Back-End و چه Front-End با TypeScript و JavaScript کد می‌زنند، اما می‌خواهند Functional Programming را عمیقاً یاد بگیرند. همچنین برای کسانی که همواره درگیر کدهای nested، Error Handlingهای پیچیده، Callback Hell یا گرفتار مدارات Async بودهاند و کسانی که می‌خواهند پروژه‌ها یا سیستم‌های بسیار پیچیده را با System Thinking طراحی کنند، فوق‌العاده است. در این دوره، تفکر declarative به جای imperative، ترکیب OOP و Functional Programming، اصول پایه‌ای مانند لاجیک‌های Pure، Immutability و Functional Composition، و نحوه ساخت فرآیندهای پیچیده با Composability و Pipeline را یاد می‌گیریم.",
+    price: "۷,۹۰۰,۰۰۰",
+    priceNumber: 7900000,
+    discount: 0,
+    rating: 4.8,
+    reviewCount: 14,
+    duration: "۲۰ ساعت",
+    sessionsCount: "۸ جلسه",
+    schedule: "پنج‌شنبه‌ها ساعت ۱۶ - ۲۰",
+    startDate: "آذر ۱۴۰۵",
+    format: "آنلاین",
+    level: "پیشرفته",
+    language: "فارسی",
+    certificate: false,
+    image: "/functional-ts.png",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    instructor: {
+      name: "بهراد زاری",
+      title: "مهندس نرم افزار و منتور",
+      bio: "+۲۰ سال تجربه طراحی و توسعه نرم افزار‌های سازمانی-استارتاپی و +۱۰ سال منتورینگ فنی و تیم سازی",
+      image: "/images/behrad.jpg",
+      linkedin: "https://www.linkedin.com/in/behradz/",
+    },
+    skills: [
+      "تفکر اعلانی (Declarative) و فانکشنال",
+      "ترکیب توابع (Composition) و پایپلاین‌های داده",
+      "مدیریت عوارض جانبی و همروندی با کتابخانه Effect TS",
+      "مدیریت خطای Type-Safe بدون استفاده از null یا throw خام"
+    ],
+    outcomes: [
+      "نوشتن کدهای بدون اثر جانبی (Pure) و ایمن از خطاهای پیش‌بینی نشده",
+      "توانایی استفاده از اکوسیستم Effect در پروژه‌های پروداکشن واقعی",
+      "ساده‌سازی لاجیک‌های آسنکرون و پیچیده و افزایش خوانایی و نگهداری کد"
+    ],
+    targetAudience: [
+      "توسعه‌دهندگان فرانت‌اند و بک‌اند که با جاوااسکریپت و تایپ‌اسکریپت کار می‌کنند و می‌خواهند برنامه‌نویسی تابعی را عمیقاً یاد بگیرند",
+      "برنامه‌نویسانی که از Error Handling پیچیده، کدهای Nested و Callback Hell خسته شده‌اند",
+      "کسانی که به دنبال طراحی سیستم‌های توزیع‌شده و پیچیده با رویکرد تفکر سیستمی (System Thinking) هستند"
+    ],
+    prerequisites: [
+      "گذراندن دوره‌های CoreJSTS و Advanced JSTS یا تسلط کامل بر تایپ‌اسکریپت پیشرفته"
+    ],
+    modules: [
+      {
+        title: "بخش اول: مبانی برنامه‌نویسی تابعی در TypeScript",
+        description: "آشنایی با مفاهیم اصلی تفکر تابعی، توابع خالص، تغییرناپذیری داده‌ها و ترکیب توابع.",
+        duration: "۱۰ ساعت",
+        lectures: 4,
+        topics: [
+          "چرا Functional Programming؟ مقایسه با کد imperative/OOP رایج",
+          "Pure Function و Immutability",
+          "ترکیب توابع (composition) و pipeline های دادهای",
+          "مدلسازی «عدم وجود مقدار» و «شکست عملیات» بدون null/throw خام",
+          "الگوهای رایج کار با لیست و دادههای تودرتو به شکل تابعی"
+        ]
+      },
+      {
+        title: "بخش دوم: ورود به Effect",
+        description: "یادگیری و استفاده از اکوسیستم قدرتمند Effect برای مدیریت Type-safe خطاها، منابع و همروندی.",
+        duration: "۱۰ ساعت",
+        lectures: 4,
+        topics: [
+          "Effect چیست و چه مشکلی از مدیریت دستی side effect و خطا حل میکنه",
+          "مدلسازی عملیات (sync/async) بهعنوان یک مقدار قابل ترکیب",
+          "مدیریت خطا در Effect: خطاهای مورد انتظار در برابر خطاهای غیرمنتظره",
+          "مدیریت وابستگیها (dependency management) بهصورت type-safe",
+          "کنترل concurrency، retry و timeout بهصورت اعلانی (declarative)",
+          "مدیریت منابع (resource management) و اطمینان از پاکسازی درست",
+          "یکپارچهسازی Effect در یک پروژهی واقعی و مهاجرت تدریجی از کد مبتنی بر Promise"
+        ]
+      }
+    ],
+    testimonials: [],
+    faqs: [
+      {
+        question: "آیا این دوره با زبان‌های دیگر مانند Haskell یا Scala است؟",
+        answer: "خیر، تمام مفاهیم و تمرین‌ها در محیط جاوااسکریپت و تایپ‌اسکریپت تدریس می‌شوند و کتابخانه اصلی مورد استفاده Effect TS خواهد بود."
+      },
+      {
+        question: "کتابخانه Effect چقدر در صنعت پرکاربرد است؟",
+        answer: "Effect در حال حاضر یکی از مدرن‌ترین و سریع‌ترین کتابخانه‌های مدیریت عوارض جانبی و برنامه‌نویسی تابعی در اکوسیستم تایپ‌اسکریپت است که توسط شرکت‌های بزرگی برای سیستم‌های پیچیده انتخاب شده است."
+      },
+      {
+        question: "آیا بدون گذراندن Advanced JSTS می‌توانم در این دوره شرکت کنم؟",
+        answer: "داشتن درک از مباحث تایپ‌پروگرامینگ پیشرفته (مانند Generics و Conditional Types) برای این دوره بسیار مفید است؛ بنابراین پیشنهاد می‌شود ابتدا دوره‌های قبل را بگذرانید یا تسلط کافی داشته باشید."
+      }
+    ],
+    relatedCourses: [
+      {
+        title: "جاوا‌اسکریپت و تایپ‌اسکریپت پیشرفته (Advanced JSTS)",
+        description: "Advanced Type-Level TS & Software Design",
+        slug: "advanced-js-ts",
+        image: "/advanced-ts.png"
+      },
+      {
+        title: "هنر کدنویسی",
+        description: "پیاده‌سازی با ذهنیت یک معمار",
+        slug: "art-of-coding",
+        image: "/artOfCoding.jpeg"
+      }
+    ]
+  },
   "art-of-coding": {
     title: "هنر کدنویسی",
     type: "course",
@@ -1014,21 +1357,21 @@ export const coursesData: { [key: string]: Course } = {
     faqs: [],
     relatedCourses: [
       {
-        title: "سیستم دیزاین ۱",
-        description: "Foundations & Monolith Mastery",
-        slug: "system-design-1",
-        image: "/sd1.jpeg",
+        title: "جاوا‌اسکریپت و تایپ‌اسکریپت پیشرفته (Advanced JSTS)",
+        description: "Advanced Type-Level TS & Software Design",
+        slug: "advanced-js-ts",
+        image: "/advanced-ts.png",
       },
       {
-        title: "برنامه‌نویسی بکند با Node.js",
+        title: "مهندس Node.js",
         description: "Production Ready NodeJS",
         slug: "backend-nodejs",
-        image: "/nodejs.jpeg",
+        image: "/nodejs-engineer.png",
       },
     ],
   },
   "backend-nodejs": {
-    title: "برنامه‌نویسی بکند با Node.js",
+    title: "مهندس Node.js",
     type: "course",
     subtitle: "Production Ready NodeJS",
     path: "senior_developer",
@@ -1048,7 +1391,7 @@ export const coursesData: { [key: string]: Course } = {
     level: "مقدماتی تا متوسط",
     language: "فارسی",
     certificate: true,
-    image: "/nodejs.jpeg",
+    image: "/nodejs-engineer.png",
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     instructor: {
       name: "بهراد زاری",
@@ -1111,10 +1454,10 @@ export const coursesData: { [key: string]: Course } = {
     ],
     relatedCourses: [
       {
-        title: "هنر کدنویسی",
-        description: "پیاده‌سازی با ذهنیت یک معمار",
-        slug: "art-of-coding",
-        image: "/artOfCoding.jpeg",
+        title: "جاوا‌اسکریپت و تایپ‌اسکریپت پیشرفته (Advanced JSTS)",
+        description: "Advanced Type-Level TS & Software Design",
+        slug: "advanced-js-ts",
+        image: "/advanced-ts.png",
       },
       {
         title: "سیستم دیزاین ۱",
