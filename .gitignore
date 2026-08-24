@@ -36,5 +36,9 @@ public/.DS_Store
 # macOS
 .DS_Store
 
-# locally-installed skill pack (not managed by skills-lock.json)
+# locally-installed skill pack (not managed by skills-lock.json).
+# Installer emits one runtime-specific variant per directory - all generated, none tracked.
 .agents/skills/impeccable/
+.claude/skills/impeccable/
+.github/skills/impeccable/
+.cover-originals/
