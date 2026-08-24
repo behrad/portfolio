@@ -38,7 +38,7 @@ import {
   Copy,
   Check,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { notFound } from "next/navigation"
 import { getTrackingData } from "@/lib/tracking"
 import { VideoChaptersPlayer, type VideoChapter } from "@/components/video-chapters-player"
@@ -336,6 +336,33 @@ function normalizeDiscountCode(input: string): string {
   return normalized.replace(/[\s\-_]/g, "")
 }
 
+function getRegistrationSuccessMessage(course?: Course): string {
+  const isWorkshop = course?.type === "workshop"
+  const isWebinar = course?.type === "webinar"
+  const hasVideo = Boolean(course?.hasVideo)
+
+  if (isWorkshop) {
+    if (!hasVideo) {
+      return "اطلاعات و لینک حضور در این کارگاه از طریق ایمیل برای شما ارسال خواهد شد."
+    }
+    return "اطلاعات و لینک حضور در این کارگاه از طریق ایمیل برای شما ارسال خواهد شد."
+  }
+
+  if (isWebinar) {
+    if (hasVideo) {
+      return "این وبینار قبلاً برگزار شده و شما میتوانید از طریق سایت آن رو مشاهده کنید."
+    }
+    return "اطلاعات و لینک حضور در این وبینار از طریق ایمیل برای شما ارسال خواهد شد."
+  }
+
+  // Course (default)
+  if (hasVideo) {
+    return "لایسنس اسپات پلیر ویدیوهای دوره برای شما از طریق ایمیل ارسال خواهد شد."
+  }
+
+  return "اطلاعات شروع برگزاری دوره، برای شما از طریق ایمیل ارسال خواهد شد."
+}
+
 // Registration Form Component
 function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () => void; course?: Course; effectiveDiscount?: number }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -343,6 +370,10 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; percent: number } | null>(null)
   const [couponStatus, setCouponStatus] = useState<"idle" | "success" | "invalid">("idle")
   const [copiedCard, setCopiedCard] = useState(false)
+  const [receiptFile, setReceiptFile] = useState<File | null>(null)
+  const [receiptError, setReceiptError] = useState<string | null>(null)
+  const [isDraggingReceipt, setIsDraggingReceipt] = useState(false)
+  const receiptInputRef = useRef<HTMLInputElement>(null)
 
   const handleCopyCard = () => {
     navigator.clipboard.writeText("6221061052884196")
@@ -352,11 +383,12 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 
   const isWebinar = course?.type === "webinar"
   const isWorkshop = course?.type === "workshop"
-  const isFree = course?.priceNumber === 0
+  const isFree = !course?.priceNumber || course.priceNumber === 0
 
   const baseDiscount = effectiveDiscount ?? course?.discount ?? 0
   const totalDiscount = appliedCoupon ? Math.max(baseDiscount, appliedCoupon.percent) : baseDiscount
   const finalPrice = course?.priceNumber ? Math.round(course.priceNumber * (1 - totalDiscount)) : 0
+  const isPaid = !isFree && finalPrice > 0
 
   const handleApplyCoupon = () => {
     const normalized = normalizeDiscountCode(couponInput)
@@ -376,12 +408,20 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
+    // Validate receipt for paid courses
+    const paymentReceipt = receiptFile || ((new FormData(e.currentTarget)).get("paymentReceipt") as File)
+    if (isPaid) {
+      if (!paymentReceipt || paymentReceipt.size === 0) {
+        setReceiptError("بارگذاری تصویر فیش واریزی الزامی است.")
+        alert("لطفاً تصویر فیش واریزی را بارگذاری کنید.")
+        return
+      }
+    }
+
     setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
-    
-    // Get the file
-    const paymentReceipt = formData.get("paymentReceipt") as File
     
     // Convert file to base64 if exists
     let paymentReceiptBase64 = ""
@@ -403,7 +443,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
       company: formData.get("company"),
       attendance: formData.get("attendance"),
       paymentReceipt: paymentReceiptBase64,
-      paymentReceiptName: paymentReceipt?.name || "",
+      paymentReceiptName: paymentReceipt?.name || (receiptFile ? receiptFile.name : ""),
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
       discountCode: appliedCoupon ? appliedCoupon.code : "",
@@ -423,7 +463,7 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 
       if (response.ok) {
         trackClarityEvent("registration_form_submitted")
-        alert("فرم ثبت‌نام با موفقیت ارسال شد!")
+        alert(getRegistrationSuccessMessage(course))
         onClose()
       } else {
         alert("خطا در ارسال فرم. لطفا دوباره تلاش کنید.")
@@ -667,26 +707,89 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-2">
-                    تصویر فیش واریزی را ارسال کنید:
-                  </label>
-                  <label className="border-2 border-dashed border-border rounded-lg p-5 text-center hover:border-primary transition-colors cursor-pointer block bg-background/50 hover:bg-background">
-                    <Upload className="w-7 h-7 mx-auto mb-1.5 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">برای انتخاب فایل کلیک کنید یا فایل را اینجا بکشید</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium text-foreground">
+                      تصویر فیش واریزی را ارسال کنید:{" "}
+                      <span className="text-red-500 font-bold">* (اجباری)</span>
+                    </label>
+                    {receiptFile && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setReceiptFile(null)
+                          if (receiptInputRef.current) receiptInputRef.current.value = ""
+                        }}
+                        className="text-xs text-red-500 hover:text-red-600 underline cursor-pointer"
+                      >
+                        حذف فیش
+                      </button>
+                    )}
+                  </div>
+                  <div
+                    onClick={() => receiptInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault()
+                      setIsDraggingReceipt(true)
+                    }}
+                    onDragLeave={() => setIsDraggingReceipt(false)}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      setIsDraggingReceipt(false)
+                      const file = e.dataTransfer.files?.[0]
+                      if (file) {
+                        setReceiptFile(file)
+                        setReceiptError(null)
+                      }
+                    }}
+                    className={`border-2 border-dashed rounded-lg p-5 text-center transition-colors cursor-pointer block ${
+                      receiptError
+                        ? "border-red-500 bg-red-500/5"
+                        : isDraggingReceipt
+                        ? "border-primary bg-primary/10"
+                        : receiptFile
+                        ? "border-emerald-500 bg-emerald-500/5"
+                        : "border-border bg-background/50 hover:bg-background hover:border-primary"
+                    }`}
+                  >
+                    {receiptFile ? (
+                      <div className="flex flex-col items-center gap-1.5">
+                        <Check className="w-7 h-7 text-emerald-500" />
+                        <p className="text-xs font-bold text-foreground truncate max-w-full px-2" dir="ltr">
+                          {receiptFile.name}
+                        </p>
+                        <span className="text-[11px] text-muted-foreground">
+                          ({(receiptFile.size / 1024).toFixed(0)} KB) — برای تغییر کلیک کنید
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-7 h-7 mx-auto mb-1.5 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">برای انتخاب فایل فیش کلیک کنید یا فایل را اینجا بکشید</p>
+                        <p className="text-[11px] text-muted-foreground/70 mt-1">فرمت‌های مجاز: عکس (JPG، PNG، WEBP)</p>
+                      </>
+                    )}
                     <input
+                      ref={receiptInputRef}
                       type="file"
                       name="paymentReceipt"
                       className="hidden"
                       accept="image/*"
                       onChange={(e) => {
-                        const file = e.target.files?.[0]
+                        const file = e.target.files?.[0] || null
+                        setReceiptFile(file)
                         if (file) {
-                          const label = e.target.parentElement?.querySelector("p")
-                          if (label) label.textContent = file.name
+                          setReceiptError(null)
                         }
                       }}
                     />
-                  </label>
+                  </div>
+                  {receiptError && (
+                    <p className="text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1">
+                      <span>⚠️</span>
+                      <span>{receiptError}</span>
+                    </p>
+                  )}
                 </div>
               </div>
             )}
