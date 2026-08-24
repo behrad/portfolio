@@ -49,15 +49,29 @@ const METRO_STATIONS: MetroStationNode[] = [
     lineColor: '#f59e0b',
   },
   {
-    ...ROADMAP_NODES.find((n) => n.id === 'backend-nodejs')!,
-    cx: 230,
+    ...ROADMAP_NODES.find((n) => n.id === 'node-backends')!,
+    cx: 110,
+    cy: 165,
+    lineNameFa: 'ورود به بک‌اند',
+    lineColor: '#38bdf8',
+  },
+  {
+    ...ROADMAP_NODES.find((n) => n.id === 'inside-nodejs')!,
+    cx: 285,
+    cy: 165,
+    lineNameFa: 'رانتایم Node.js',
+    lineColor: '#38bdf8',
+  },
+  {
+    ...ROADMAP_NODES.find((n) => n.id === 'nodejs-engineer')!,
+    cx: 460,
     cy: 165,
     lineNameFa: 'مهندسی بک‌اند',
     lineColor: '#38bdf8',
   },
   {
     ...ROADMAP_NODES.find((n) => n.id === 'art-of-coding')!,
-    cx: 510,
+    cx: 645,
     cy: 165,
     lineNameFa: 'معماری کد & DDD',
     lineColor: '#818cf8',
@@ -115,17 +129,19 @@ const METRO_TRACKS = [
   // M1 Coding & TS Track (Yellow)
   { id: 't-m1-1', from: 'core-js-ts', to: 'advanced-js-ts', color: '#f59e0b', d: 'M 90 55 L 370 55' },
   { id: 't-m1-2', from: 'advanced-js-ts', to: 'functional-ts', color: '#f59e0b', d: 'M 370 55 L 650 55' },
-  { id: 't-m4-branch', from: 'core-js-ts', to: 'backend-nodejs', color: '#38bdf8', d: 'M 90 55 C 90 120, 160 165, 230 165' },
+  { id: 't-m4-branch', from: 'core-js-ts', to: 'node-backends', color: '#38bdf8', d: 'M 90 55 C 90 110, 100 130, 110 165' },
 
   // M4 Backend Line (Sky)
+  { id: 't-m4-1', from: 'node-backends', to: 'inside-nodejs', color: '#38bdf8', d: 'M 110 165 L 285 165' },
+  { id: 't-m4-2', from: 'inside-nodejs', to: 'nodejs-engineer', color: '#38bdf8', d: 'M 285 165 L 460 165' },
 
   // M2 Architecture Line (Purple)
-  { id: 't-m2-1', from: 'advanced-js-ts', to: 'art-of-coding', color: '#818cf8', d: 'M 370 55 C 370 120, 430 165, 510 165' },
-  { id: 't-m2-2', from: 'backend-nodejs', to: 'art-of-coding', color: '#818cf8', d: 'M 230 165 L 510 165' },
+  { id: 't-m2-1', from: 'advanced-js-ts', to: 'art-of-coding', color: '#818cf8', d: 'M 370 55 C 370 120, 560 165, 645 165' },
+  { id: 't-m2-2', from: 'nodejs-engineer', to: 'art-of-coding', color: '#818cf8', d: 'M 460 165 L 645 165' },
 
   // M3 System Design Expressway (Teal)
-  { id: 't-m3-node-feed', from: 'backend-nodejs', to: 'system-design-1', color: '#2dd4bf', d: 'M 230 165 C 230 230, 160 275, 90 275' },
-  { id: 't-m3-art-feed', from: 'art-of-coding', to: 'system-design-1', color: '#2dd4bf', d: 'M 510 165 C 510 240, 300 275, 90 275' },
+  { id: 't-m3-node-feed', from: 'nodejs-engineer', to: 'system-design-1', color: '#2dd4bf', d: 'M 460 165 C 460 240, 250 275, 90 275' },
+  { id: 't-m3-art-feed', from: 'art-of-coding', to: 'system-design-1', color: '#2dd4bf', d: 'M 645 165 C 645 250, 350 275, 90 275' },
   { id: 't-m3-chain-1', from: 'system-design-1', to: 'system-design-2', color: '#2dd4bf', d: 'M 90 275 L 280 275' },
   { id: 't-m3-chain-2', from: 'system-design-2', to: 'system-design-3', color: '#2dd4bf', d: 'M 280 275 L 470 275' },
   { id: 't-m3-chain-3', from: 'system-design-3', to: 'system-design-4', color: '#2dd4bf', d: 'M 470 275 L 660 275' },
@@ -238,13 +254,13 @@ export function MetroRoadmap() {
       return ['core-js-ts', 'advanced-js-ts', 'functional-ts'].includes(station.id)
     }
     if (activeLine === 'm4') {
-      return ['core-js-ts', 'backend-nodejs'].includes(station.id)
+      return ['core-js-ts', 'node-backends', 'inside-nodejs', 'nodejs-engineer'].includes(station.id)
     }
     if (activeLine === 'm2') {
-      return ['advanced-js-ts', 'backend-nodejs', 'art-of-coding'].includes(station.id)
+      return ['advanced-js-ts', 'nodejs-engineer', 'art-of-coding'].includes(station.id)
     }
     if (activeLine === 'm3') {
-      return ['backend-nodejs', 'art-of-coding', 'system-design-1', 'system-design-2', 'system-design-3', 'system-design-4'].includes(station.id)
+      return ['nodejs-engineer', 'art-of-coding', 'system-design-1', 'system-design-2', 'system-design-3', 'system-design-4'].includes(station.id)
     }
     return true
   }

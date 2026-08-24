@@ -244,10 +244,24 @@ export const shortUrlsList: ShortUrlConfig[] = [
   },
   {
     code: "node",
-    target: "/courses/backend-nodejs",
-    title: "دوره جامع بکند Node.js",
-    description: "لینک کوتاه دوره Node.js",
+    target: "/courses/node-backends",
+    title: "بک‌اند با Node.js",
+    description: "لینک کوتاه دوره اول Node.js (ساخت و دیپلوی اولین سرویس واقعی)",
     createdAt: "2026-08-17",
+  },
+  {
+    code: "node2",
+    target: "/courses/inside-nodejs",
+    title: "درون Node.js",
+    description: "لینک کوتاه دوره دوم Node.js (رانتایم در سطح مکانیزم)",
+    createdAt: "2026-08-21",
+  },
+  {
+    code: "node3",
+    target: "/courses/nodejs-engineer",
+    title: "مهندس Node.js",
+    description: "لینک کوتاه دوره سوم Node.js (پرکتیس‌ها و موازنه‌های پروداکشن)",
+    createdAt: "2026-08-21",
   },
   {
     code: "mentor",
