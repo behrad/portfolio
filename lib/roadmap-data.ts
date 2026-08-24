@@ -138,20 +138,53 @@ const ROADMAP_NODE_DEFS: RoadmapNode[] = [
     gridPos: { column: 3, row: 1 },
   },
   {
-    id: 'backend-nodejs',
-    titleFa: 'نود‌اسکریپت/Node.js تخصصی',
-    subtitleEn: 'Node.js Runtime & Architecture Mastery',
+    id: 'node-backends',
+    titleFa: 'بک‌اند با Node.js',
+    subtitleEn: 'Ship Your First Real Service',
+    layer: 'coding',
+    isEntryPoint: true,
+    entryPointBadgeFa: 'نقطه شروع بک‌اند',
+    audiences: ['backend', 'everyone'],
+    audienceLabelsFa: ['بک‌اند', 'فرانت‌اندی که بک‌اند می‌خواهد'],
+    levelFa: 'مقدماتی (ورود به Node.js)',
+    durationFa: '۲۴ ساعت',
+    shortDescFa: 'از صفر تا استقرار یک سرویس واقعی؛ برای هر تصمیم بک‌اندی یک پیش‌فرض قابل دفاع.',
+    tooltipDescFa: 'هر موضوع تا عمقی که یک نتیجه روشن دارد: چیست، چرا هست، چه هزینه‌ای دارد و قاعده‌اش چیست. در پایان یک API واقعی دیپلوی شده دارید.',
+    targetAudienceFa: 'مناسب برای کسانی که JS/TS بلدند ولی تا امروز با Node.js بک‌اند ننوشته‌اند.',
+    pathSlug: 'node-backends',
+    gridPos: { column: 1, row: 2 },
+  },
+  {
+    id: 'inside-nodejs',
+    titleFa: 'درون Node.js',
+    subtitleEn: 'How the Runtime Works',
     layer: 'coding',
     isEntryPoint: false,
     audiences: ['backend', 'architect'],
-    audienceLabelsFa: ['بک‌اند', 'معمار سیستم'],
-    levelFa: 'پیشرفته',
+    audienceLabelsFa: ['بک‌اند', 'مهندس ارشد'],
+    levelFa: 'متوسط تا پیشرفته',
     durationFa: '۱۸ ساعت',
-    shortDescFa: 'درک عمیق پلتفرم و رانتایم Node.js، مدیریت I/O و ساخت سیستم‌های تخصصی بک‌اند.',
-    tooltipDescFa: 'اعطای دید مهندسی عمیق به رانتایم و پلتفرم Node.js و نحوه استفاده اصولی در پروداکشن از استارتاپ تا سازمان.',
-    targetAudienceFa: 'مناسب برای برنامه‌نویسان بک‌اند؛ تمرکز بر درک عمیق رانتایم به جای صرفاً فریم‌ورک‌ها.',
-    pathSlug: 'backend-nodejs',
+    shortDescFa: 'ایونت‌لوپ، موتور، حافظه و استریم‌ها در سطح مکانیزم — با چیزی که می‌شود دید و اندازه گرفت.',
+    tooltipDescFa: 'یک مدل ذهنی درست از رانتایم: رفتار، مکانیزم زیرش، و راهی که خودتان می‌توانستید ببینیدش. دیباگ مبتنی بر فرضیه به‌جای حدس.',
+    targetAudienceFa: 'مناسب برای کسانی که Node می‌نویسند و دیپلوی می‌کنند ولی مکانیزم زیرش را نمی‌دانند.',
+    pathSlug: 'inside-nodejs',
     gridPos: { column: 2, row: 2 },
+  },
+  {
+    id: 'nodejs-engineer',
+    titleFa: 'مهندس Node.js',
+    subtitleEn: 'Production Practices & Trade-offs',
+    layer: 'coding',
+    isEntryPoint: false,
+    audiences: ['backend', 'architect'],
+    audienceLabelsFa: ['بک‌اند', 'تک‌لید / معمار'],
+    levelFa: 'پیشرفته',
+    durationFa: '۲۴ ساعت',
+    shortDescFa: 'تبدیل پرکتیس به قضاوت: خرابی، داده، آبزروبیلیتی، امنیت و تحویل — با عدد و موازنه.',
+    tooltipDescFa: 'برای هر موضوع: قاعده تصمیم، عددی که وضعیت سیستم را نشان می‌دهد و موردی که جواب مبتدی در آن غلط است.',
+    targetAudienceFa: 'مناسب برای کسانی که فیچر تحویل می‌دهند و می‌خواهند صاحب سرویس و incident باشند.',
+    pathSlug: 'nodejs-engineer',
+    gridPos: { column: 3, row: 2 },
   },
   {
     id: 'art-of-coding',
@@ -168,7 +201,7 @@ const ROADMAP_NODE_DEFS: RoadmapNode[] = [
     tooltipDescFa: 'آموزش Domain Driven Design، دگرگون کردن تفکر معماری کد، ساختار لایه‌بندی و اصول Clean Architecture.',
     targetAudienceFa: 'بسیار مفید برای توسعه‌دهندگان ارشد (Senior)، تک‌لیدها، معماران نرم‌افزار و CTOها.',
     pathSlug: 'art-of-coding',
-    gridPos: { column: 3, row: 2 },
+    gridPos: { column: 4, row: 2 },
   },
   {
     id: 'system-design-1',
@@ -233,7 +266,7 @@ const ROADMAP_NODE_DEFS: RoadmapNode[] = [
     tooltipDescFa: 'ویژه پروژه‌های سازمانی کلان؛ مهاجرت به Microservices، الگوی SAGA، Distributed Transactions و سیستم‌های توزیع‌شده.',
     targetAudienceFa: 'مناسب برای معماران کلان سیستم و تک‌لیدهایی که هدایت سیستم‌های میلیون‌کاربره را بر عهده دارند.',
     pathSlug: 'system-design-4',
-    gridPos: { column: 4, row: 2 },
+    gridPos: { column: 5, row: 2 },
   },
 ]
 
@@ -253,14 +286,18 @@ export const ROADMAP_EDGES: RoadmapEdge[] = [
   // Coding Track
   { from: 'core-js-ts', to: 'advanced-js-ts', trackType: 'primary', color: '#f59e0b' },
   { from: 'advanced-js-ts', to: 'functional-ts', trackType: 'primary', color: '#f59e0b' },
-  { from: 'core-js-ts', to: 'backend-nodejs', trackType: 'primary', color: '#f59e0b' },
+  { from: 'core-js-ts', to: 'node-backends', trackType: 'primary', color: '#38bdf8' },
+
+  // Node.js Track
+  { from: 'node-backends', to: 'inside-nodejs', trackType: 'primary', color: '#38bdf8' },
+  { from: 'inside-nodejs', to: 'nodejs-engineer', trackType: 'primary', color: '#38bdf8' },
   
   // Transition to Code Architecture
   { from: 'advanced-js-ts', to: 'art-of-coding', trackType: 'secondary', color: '#818cf8', labelFa: 'ورود به معماری' },
-  { from: 'backend-nodejs', to: 'art-of-coding', trackType: 'secondary', color: '#818cf8', labelFa: 'دید معماری' },
+  { from: 'nodejs-engineer', to: 'art-of-coding', trackType: 'secondary', color: '#818cf8', labelFa: 'دید معماری' },
 
   // Transition to System Design
-  { from: 'backend-nodejs', to: 'system-design-1', trackType: 'system', color: '#2dd4bf', labelFa: 'تخصص بک‌اند' },
+  { from: 'nodejs-engineer', to: 'system-design-1', trackType: 'system', color: '#2dd4bf', labelFa: 'تخصص بک‌اند' },
   { from: 'art-of-coding', to: 'system-design-1', trackType: 'system', color: '#2dd4bf', labelFa: 'تفکر سیستمی' },
 
   // System Design Chain

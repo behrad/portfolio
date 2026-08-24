@@ -1513,7 +1513,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           </section>
 
           {/* Only show companies section for specific courses */}
-          {slug && !isWebinar && !["backend-nodejs", "art-of-coding", "ai-assisted-software-engineering"].includes(slug) && (
+          {slug && !isWebinar && !["node-backends", "inside-nodejs", "nodejs-engineer", "art-of-coding", "ai-assisted-software-engineering"].includes(slug) && (
             <section className="bg-muted/30 py-12 border-y">
               <div className="container mx-auto px-4">
                 <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
