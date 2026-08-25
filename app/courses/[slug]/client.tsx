@@ -363,6 +363,81 @@ function getRegistrationSuccessMessage(course?: Course): string {
   return "اطلاعات شروع برگزاری دوره، برای شما از طریق ایمیل ارسال خواهد شد."
 }
 
+// Helper to compress uploaded receipt image to stay safely under server payload limits (< 100KB)
+async function compressReceiptImage(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    if (!file || file.size === 0) {
+      resolve("")
+      return
+    }
+
+    if (typeof window === "undefined" || !file.type.startsWith("image/")) {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve((reader.result as string) || "")
+      reader.onerror = () => resolve("")
+      reader.readAsDataURL(file)
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const dataUrl = event.target?.result as string
+        if (!dataUrl) {
+          resolve("")
+          return
+        }
+
+        const img = document.createElement("img")
+        img.onload = () => {
+          try {
+            const MAX_DIMENSION = 1200
+            let width = img.naturalWidth || img.width
+            let height = img.naturalHeight || img.height
+
+            if (width > height) {
+              if (width > MAX_DIMENSION) {
+                height = Math.round((height * MAX_DIMENSION) / width)
+                width = MAX_DIMENSION
+              }
+            } else {
+              if (height > MAX_DIMENSION) {
+                width = Math.round((width * MAX_DIMENSION) / height)
+                height = MAX_DIMENSION
+              }
+            }
+
+            const canvas = document.createElement("canvas")
+            canvas.width = width
+            canvas.height = height
+            const ctx = canvas.getContext("2d")
+
+            if (!ctx) {
+              resolve(dataUrl)
+              return
+            }
+
+            ctx.drawImage(img, 0, 0, width, height)
+            // JPEG 0.7 compresses multi-megabyte photos to ~40-80KB
+            const compressed = canvas.toDataURL("image/jpeg", 0.7)
+            resolve(compressed)
+          } catch {
+            resolve(dataUrl)
+          }
+        }
+        img.onerror = () => {
+          resolve(dataUrl)
+        }
+        img.src = dataUrl
+      } catch {
+        resolve("")
+      }
+    }
+    reader.onerror = () => resolve("")
+    reader.readAsDataURL(file)
+  })
+}
+
 // Registration Form Component
 function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () => void; course?: Course; effectiveDiscount?: number }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -423,14 +498,10 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
     
     const formData = new FormData(e.currentTarget)
     
-    // Convert file to base64 if exists
+    // Convert and compress file to base64 if exists
     let paymentReceiptBase64 = ""
     if (paymentReceipt && paymentReceipt.size > 0) {
-      const reader = new FileReader()
-      paymentReceiptBase64 = await new Promise((resolve) => {
-        reader.onloadend = () => resolve(reader.result as string)
-        reader.readAsDataURL(paymentReceipt)
-      })
+      paymentReceiptBase64 = await compressReceiptImage(paymentReceipt)
     }
     
     const tracking = getTrackingData()
