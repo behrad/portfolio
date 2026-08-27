@@ -11,8 +11,17 @@ export function Footer() {
           </div>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             <Link
+              href="https://www.youtube.com/@BehradZari"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              کانال یوتیوب
+            </Link>
+            <Link
               href="https://t.me/mindfulsoft"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               کانال تلگرام
@@ -20,6 +29,7 @@ export function Footer() {
             <Link
               href="https://ble.ir/join/A6HiDuie9S"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               گروه بله
@@ -27,6 +37,7 @@ export function Footer() {
             <Link
               href="https://www.linkedin.com/in/behradz/"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               لینکدین من

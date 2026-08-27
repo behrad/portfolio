@@ -266,7 +266,7 @@ export function MetroRoadmap() {
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-[#070a0f] py-8 md:py-12 text-foreground">
+    <section id="roadmap" className="relative overflow-hidden border-b border-border bg-[#070a0f] py-8 md:py-12 text-foreground">
       {/* Background Metro Grid Lines */}
       <div
         aria-hidden="true"

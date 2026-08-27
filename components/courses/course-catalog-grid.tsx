@@ -87,6 +87,7 @@ function courseHref(course: CourseGridItem) {
 export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<AudienceRole | 'all'>('all')
   const [selectedLayerFilter, setSelectedLayerFilter] = useState<CourseLayer | 'all'>('all')
+  const [onlyFreeFilter, setOnlyFreeFilter] = useState(false)
 
   // Helper map from course id to node metadata
   const nodeMap = new Map(ROADMAP_NODES.map((n) => [n.id, n]))
@@ -109,6 +110,11 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
       if (node.layer !== selectedLayerFilter) return false
     }
 
+    // Free content filter check
+    if (onlyFreeFilter && !course.isFree) {
+      return false
+    }
+
     return true
   })
 
@@ -120,7 +126,7 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-                لیست کامل دوره‌ها و وبینارها
+                همه دوره‌ها، وبینارها و کارگاه‌های من
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 با استفاده از فیلترهای زیر دوره‌های مرتبط با سطح و حوزه تخصصی خود را انتخاب کنید.
@@ -133,76 +139,91 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
           </div>
 
           {/* Filter Controls UI */}
-          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card/60 p-3.5 backdrop-blur-md">
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground me-2">
-              <Filter className="h-4 w-4 text-primary" />
-              <span>فیلتر تخصص:</span>
+          <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-border bg-card/60 p-3 backdrop-blur-md">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground me-1">
+                <Filter className="h-3.5 w-3.5 text-primary" />
+                <span>تخصص:</span>
+              </div>
+
+              {/* Role Filter Buttons */}
+              <div className="flex flex-wrap gap-1">
+                {[
+                  { id: 'all', label: 'همه دوره‌ها' },
+                  { id: 'frontend', label: 'فرانت‌اند' },
+                  { id: 'backend', label: 'بک‌اند' },
+                  { id: 'architect', label: 'معماری و لید' },
+                ].map((role) => {
+                  const active = selectedRoleFilter === role.id
+                  return (
+                    <button
+                      key={role.id}
+                      onClick={() => setSelectedRoleFilter(role.id as any)}
+                      className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                        active
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'border border-border bg-card/50 text-muted-foreground hover:border-[var(--border-strong)] hover:text-foreground'
+                      }`}
+                    >
+                      {role.label}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="h-4 w-px bg-border mx-1 hidden sm:block" />
+
+              {/* Layer Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1">
+                <span className="text-xs font-semibold text-muted-foreground me-1 hidden lg:inline-flex items-center gap-1">
+                  <Layers className="h-3.5 w-3.5" />
+                  <span>لایه:</span>
+                </span>
+
+                {[
+                  { id: 'all', label: 'همه لایه‌ها' },
+                  { id: 'coding', label: 'کدنویسی' },
+                  { id: 'code-architecture', label: 'معماری کد' },
+                  { id: 'system-architecture', label: 'معماری سیستم' },
+                ].map((layer) => {
+                  const active = selectedLayerFilter === layer.id
+                  const layerColor = layer.id !== 'all' ? COURSE_LAYERS[layer.id as CourseLayer]?.color : undefined
+
+                  return (
+                    <button
+                      key={layer.id}
+                      onClick={() => setSelectedLayerFilter(layer.id as any)}
+                      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                        active
+                          ? 'border border-primary bg-primary/10 text-primary'
+                          : 'border border-border bg-card/50 text-muted-foreground hover:border-[var(--border-strong)] hover:text-foreground'
+                      }`}
+                    >
+                      {layerColor && (
+                        <span
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: layerColor }}
+                        />
+                      )}
+                      <span>{layer.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* Role Filter Buttons */}
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                { id: 'all', label: 'همه دوره‌ها' },
-                { id: 'frontend', label: 'فرانت‌اند' },
-                { id: 'backend', label: 'بک‌اند' },
-                { id: 'architect', label: 'معماری و لید' },
-              ].map((role) => {
-                const active = selectedRoleFilter === role.id
-                return (
-                  <button
-                    key={role.id}
-                    onClick={() => setSelectedRoleFilter(role.id as any)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                      active
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'border border-border bg-card/50 text-muted-foreground hover:border-[var(--border-strong)] hover:text-foreground'
-                    }`}
-                  >
-                    {role.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            <div className="h-4 w-px bg-border mx-2 hidden sm:block" />
-
-            {/* Layer Filter Pills */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-semibold text-muted-foreground me-1 flex items-center gap-1">
-                <Layers className="h-3.5 w-3.5" />
-                <span>لایه:</span>
+            {/* Free Videos Sleek Checkbox Toggle */}
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-border/80 bg-card/40 px-2.5 py-1 text-xs font-medium transition-all hover:border-[var(--border-strong)] hover:bg-card/70 select-none shrink-0">
+              <input
+                type="checkbox"
+                checked={onlyFreeFilter}
+                onChange={(e) => setOnlyFreeFilter(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-border accent-primary cursor-pointer"
+              />
+              <span className={onlyFreeFilter ? "text-primary font-semibold" : "text-muted-foreground"}>
+                ویدیوهای رایگان
               </span>
-
-              {[
-                { id: 'all', label: 'همه لایه‌ها' },
-                { id: 'coding', label: 'کدنویسی' },
-                { id: 'code-architecture', label: 'معماری کد' },
-                { id: 'system-architecture', label: 'معماری سیستم' },
-              ].map((layer) => {
-                const active = selectedLayerFilter === layer.id
-                const layerColor = layer.id !== 'all' ? COURSE_LAYERS[layer.id as CourseLayer]?.color : undefined
-
-                return (
-                  <button
-                    key={layer.id}
-                    onClick={() => setSelectedLayerFilter(layer.id as any)}
-                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                      active
-                        ? 'border border-primary bg-primary/10 text-primary'
-                        : 'border border-border bg-card/50 text-muted-foreground hover:border-[var(--border-strong)] hover:text-foreground'
-                    }`}
-                  >
-                    {layerColor && (
-                      <span
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: layerColor }}
-                      />
-                    )}
-                    <span>{layer.label}</span>
-                  </button>
-                )
-              })}
-            </div>
+            </label>
           </div>
         </div>
 
@@ -219,6 +240,7 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
               onClick={() => {
                 setSelectedRoleFilter('all')
                 setSelectedLayerFilter('all')
+                setOnlyFreeFilter(false)
               }}
             >
               پاک کردن فیلترها

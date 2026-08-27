@@ -18,18 +18,44 @@ export function Navigation() {
               مسیر رشد مهندسین نرم‌افزار
             </span>
           </Link>
-          <div className="flex items-center gap-6 text-sm">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
             <Link
-              href="/"
+              href="/#roadmap"
               className="font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              دوره‌ها
+              نقشه راه
+            </Link>
+            <Link
+              href="/#courses-grid"
+              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              ویدیوها
+            </Link>
+            <Link
+              href="https://t.me/mindfulsoft"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              کانال تلگرام
+            </Link>
+            <Link
+              href="/coaching"
+              className="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <span>منتورینگ فنی</span>
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono leading-none text-muted-foreground border border-border/70">
+                EN
+              </span>
             </Link>
             <Link
               href="/about"
-              className="font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              درباره من
+              <span>درباره من</span>
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono leading-none text-muted-foreground border border-border/70">
+                EN
+              </span>
             </Link>
           </div>
         </div>
