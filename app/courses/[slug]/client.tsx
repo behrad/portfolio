@@ -1457,7 +1457,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   )}
                   <p className="text-xl font-semibold mb-6 opacity-95 leading-relaxed">{course.shortDescription}</p>
 
-                  {course.rating && course.reviewCount && course.rating > 0 && course.reviewCount > 0 && (
+                  {course.rating != null && course.reviewCount != null && course.rating > 0 && course.reviewCount > 0 ? (
                     <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
                       <div className="flex items-center gap-2">
                         <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -1473,7 +1473,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         {/* <span>گواهینامه معتبر</span> */}
                       </div>
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="flex items-center gap-3">
                     <Image
