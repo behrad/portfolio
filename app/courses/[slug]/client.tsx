@@ -1452,7 +1452,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       </span>
                     )}
                   </div>
-                  <p className="text-xl mb-6 opacity-90 leading-relaxed">{course.subtitle}</p>
+                  {course.subtitle && (
+                    <p className="text-xl mb-4 opacity-90 leading-relaxed">{course.subtitle}</p>
+                  )}
                   <p className="text-xl font-semibold mb-6 opacity-95 leading-relaxed">{course.shortDescription}</p>
 
                   {course.rating && course.reviewCount && course.rating > 0 && course.reviewCount > 0 && (
@@ -1752,7 +1754,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                   )}
 
                   <div className="prose prose-lg max-w-none">
-                    <p className="text-foreground leading-relaxed text-pretty text-lg">{course.description}</p>
+                    <div className="text-foreground leading-relaxed text-pretty text-lg whitespace-pre-line space-y-4">{course.description}</div>
                   </div>
 
                   <div className="mt-8">

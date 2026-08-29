@@ -697,8 +697,8 @@ export const coursesData: { [key: string]: Course } = {
     faqs: [],
     relatedCourses: [
       {
-        title: "کارگاه Agentic Software Development (توسعه نرم‌افزار Agent-محور)",
-        description: "Production-Ready AI-Assisted Software Engineering with Grilling Technique",
+        title: "کارگاه Agentic Software Development",
+        description: "پیاده‌سازی صفر تا صد یک ایده بر اساس تکنیک Grilling و TDD با ایجنت‌ها",
         slug: "ai-assisted-software-engineering",
         image: "/ai-assisted-engineering-workshop.png",
       },
@@ -711,13 +711,13 @@ export const coursesData: { [key: string]: Course } = {
     ],
   },
   "ai-assisted-software-engineering": {
-    title: "کارگاه Agentic Software Development (مهندسی نرم‌افزار Agent-محور)",
+    title: "کارگاه Agentic Software Development",
     type: "workshop",
-    subtitle: "Production-Ready AI-Assisted Software Engineering with Grilling Technique",
+    subtitle: "",
     path: "ai_engineering",
     hasVideo: false,
-    shortDescription: "پیاده‌سازی کاملاً عملی یک پروژه واقعی در محیط پروداکشن به صورت Agent-محور با تکنیک Grilling و اصول Clean Code",
-    description: "در این کارگاه تخصصی و عملی، ما یک پروژه کاملاً واقعی و Production-Grade را به صورت Agent-محور با استفاده از تکنیک Grilling و دستیارهای هوش مصنوعی پیاده‌سازی می‌کنیم تا اصول و استانداردهای مهندسی نرم‌افزار مبتنی بر Agentها (AI-Assisted Software Engineering) را در عمل تجربه کنید.\n\nهدف اصلی این کارگاه این است که یاد بگیریم چطور با هدایت درست Agentها و شکستن مسائل به Vertical Sliceها، کدی تولید کنیم که نه تنها کار کند، بلکه تمیز (Clean Code)، تست‌پذیر، دارای کمترین ریسک در محیط پروداکشن و با قابلیت نگهداری بالا (Maintainability) باشد.\n\nاین کارگاه برای دو گروه طراحی شده است:\n۱. کسانی که تا به حال با Agentها کار نکرده‌اند و کدنویسی نکرده‌اند؛ این کارگاه به شما کمک می‌کند تا با یک دید مهندسی و ذهنیت ساختاریافته وارد این دنیا شوید و مسیر یادگیری و استفاده را کاملاً اصولی طی کنید.\n۲. توسعه‌دهندگانی که تجربه استفاده از ابزارهای AI را دارند؛ به شما کمک می‌کند تا ورک‌فلوهای خود را بازبینی و بهینه‌سازی کنید، اصول مهندسی کانتکست (Context Engineering)، تکنیک Grilling و Spec-Driven Development را در پروژه‌های واقعی پیاده کنید و با بیشترین کارآمدی از Agentهایتان بهره ببرید.",
+    shortDescription: "پیاده‌سازی صفر تا صد یک ایده در پروداکشن، بر اساس تکنیک Grilling و TDD با ایجنت‌های هوش مصنوعی",
+    description: "در این کارگاه تخصصی و کاملاً عملی، یک پروژه واقعی و Production-Ready را از صفر تا صد به صورت ایجنت‌محور پیاده‌سازی می‌کنیم. تمرکز اصلی ما بر تجربه مستقیم اصول و استانداردهای نوین مهندسی نرم‌افزار با هوش مصنوعی (AI-Assisted Software Engineering)، تکنیک Grilling و هدایت هوشمندانه ایجنت‌هاست.\n\nهدف اصلی کارگاه این است که یاد بگیریم چگونه با خرد کردن نیازمندی‌ها به برش‌های عمودی (Vertical Slices) و هدایت گام‌به‌گام Agentها، کدی تمیز (Clean Code)، تست‌پذیر (TDD)، پایدار و با کمترین ریسک در محیط پروداکشن تولید کنیم.\n\nاین کارگاه برای چه افرادی طراحی شده است؟\n• ورود اصولی به دنیای ایجنت‌ها: اگر تا کنون با ایجنت‌ها کدنویسی نکرده‌اید، این کارگاه به شما کمک می‌کند با یک دید مهندسی و ذهنیت ساختاریافته وارد این فضا شوید و مسیر اصولی را بدون آزمون و خطای پرهزینه یاد بگیرید.\n• ارتقا و بهینه‌سازی ورک‌فلوها: اگر هم‌اکنون از ابزارهای هوش مصنوعی استفاده می‌کنید، این کارگاه به شما کمک می‌کند اصول مهندسی کانتکست (Context Engineering)، تکنیک Grilling و توسعه مبتنی بر اسپک (Spec-Driven Development) را در پروژه‌های واقعی پیاده‌سازی کرده و بهره‌وری تیم و خودتان را به بالاترین سطح برسانید.",
     price: "۲,۵۰۰,۰۰۰",
     priceNumber: 2500000,
     discount: 0,

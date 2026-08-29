@@ -17,7 +17,18 @@ export function getStoredShortUrls(): ShortUrlConfig[] {
     }
     const parsed = JSON.parse(raw)
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed
+      const customMap = new Map<string, ShortUrlConfig>()
+      // Start with default links from codebase
+      for (const item of shortUrlsList) {
+        customMap.set(item.code.toLowerCase(), item)
+      }
+      // Overlay custom links from localStorage
+      for (const item of parsed) {
+        if (item && item.code) {
+          customMap.set(item.code.toLowerCase(), item)
+        }
+      }
+      return Array.from(customMap.values())
     }
   } catch (err) {
     console.error("Failed to parse custom short URLs from localStorage:", err)

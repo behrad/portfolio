@@ -8,6 +8,9 @@
     "dev": "next dev",
     "lint": "eslint .",
     "serve:out": "npx serve@latest out",
+    "short-link": "node scripts/add-short-url.mjs",
+    "short-link:example": "node scripts/add-short-url.mjs --code sample-link --target /courses/ai-assisted-software-engineering --source telegram --medium channel --campaign DTW --hash video --title \"کارگاه Agentic Software Development - کمپین DTW\"",
+    "add:short-url": "node scripts/add-short-url.mjs",
     "start": "next start"
   },
   "dependencies": {

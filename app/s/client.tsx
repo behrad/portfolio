@@ -38,7 +38,7 @@ export default function ShortenerDashboardClient() {
   const formRef = useRef<HTMLDivElement>(null)
 
   // Local state for all links
-  const [links, setLinks] = useState<ShortUrlConfig[]>([])
+  const [links, setLinks] = useState<ShortUrlConfig[]>(defaultShortUrlsList)
   const [isClient, setIsClient] = useState(false)
 
   // Form states

@@ -26,6 +26,20 @@ export const RESERVED_SLUGS = new Set([
 
 export const shortUrlsList: ShortUrlConfig[] = [
   {
+    code: "dtw",
+    target: "/courses/ai-assisted-software-engineering?utm_source=telegram&utm_medium=channel&utm_campaign=DTW",
+    title: "کارگاه Agentic Software Development - کمپین DTW",
+    description: "لینک کوتاه کارگاه ایجنتیک با UTM تلگرام و کمپین DTW",
+    createdAt: "2026-08-29",
+  },
+  {
+    code: "ag-dtw",
+    target: "/courses/ai-assisted-software-engineering?utm_source=telegram&utm_medium=channel&utm_campaign=DTW",
+    title: "کارگاه Agentic Software Development - کمپین DTW",
+    description: "لینک کوتاه کارگاه ایجنتیک با UTM تلگرام و کمپین DTW",
+    createdAt: "2026-08-29",
+  },
+  {
     code: "agilix",
     target: "/courses/ai-assisted-software-engineering?utm_source=webinar&utm_medium=video_cta&utm_campaign=agilix",
     title: "کارگاه Agentic Software Development",
