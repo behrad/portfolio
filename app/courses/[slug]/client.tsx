@@ -327,13 +327,44 @@ const DISCOUNT_CODES: { [key: string]: number } = {
   "بهراد50": 0.50,
 }
 
-function normalizeDiscountCode(input: string): string {
+function toEnglishDigits(str: string): string {
+  if (!str) return ""
   const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"]
-  let normalized = input.trim().toLowerCase()
-  persianDigits.forEach((digit, i) => {
-    normalized = normalized.replaceAll(digit, i.toString())
-  })
+  const arabicDigits = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"]
+  let result = str
+  for (let i = 0; i < 10; i++) {
+    result = result.replaceAll(persianDigits[i], i.toString()).replaceAll(arabicDigits[i], i.toString())
+  }
+  return result
+}
+
+function normalizeDiscountCode(input: string): string {
+  let normalized = toEnglishDigits(input.trim().toLowerCase())
   return normalized.replace(/[\s\-_]/g, "")
+}
+
+function normalizeIranianMobile(input: string): string | null {
+  if (!input) return null
+  const cleaned = toEnglishDigits(input).trim().replace(/[\s\-_()+]/g, "")
+  const match = cleaned.match(/^(?:(?:0098|\+98|98|0)?)(9\d{9})$/)
+  if (!match) return null
+  return `0${match[1]}`
+}
+
+function isValidIranianMobile(input: string): boolean {
+  return normalizeIranianMobile(input) !== null
+}
+
+function isValidEmail(email: string): boolean {
+  if (!email) return false
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return emailRegex.test(email.trim())
+}
+
+function normalizeTelegramHandle(handle?: string | null): string {
+  if (!handle) return ""
+  const trimmed = handle.trim().replace(/^@+/, "")
+  return trimmed ? `@${trimmed}` : ""
 }
 
 function getRegistrationSuccessMessage(course?: Course): string {
@@ -484,8 +515,26 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
+    const formData = new FormData(e.currentTarget)
+    
+    const rawMobile = (formData.get("mobile") as string) || ""
+    const normalizedMobile = normalizeIranianMobile(rawMobile)
+    if (!normalizedMobile) {
+      alert("لطفاً یک شماره موبایل معتبر ایران وارد کنید (مثال: ۰۹۱۲۳۴۵۶۷۸۹).")
+      return
+    }
+
+    const rawEmail = (formData.get("email") as string) || ""
+    if (!isValidEmail(rawEmail)) {
+      alert("لطفاً یک آدرس ایمیل معتبر وارد کنید.")
+      return
+    }
+
+    const rawTelegram = formData.get("telegram") as string
+    const formattedTelegram = normalizeTelegramHandle(rawTelegram)
+
     // Validate receipt for paid courses
-    const paymentReceipt = receiptFile || ((new FormData(e.currentTarget)).get("paymentReceipt") as File)
+    const paymentReceipt = receiptFile || (formData.get("paymentReceipt") as File)
     if (isPaid) {
       if (!paymentReceipt || paymentReceipt.size === 0) {
         setReceiptError("بارگذاری تصویر فیش واریزی الزامی است.")
@@ -495,8 +544,6 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
     }
 
     setIsSubmitting(true)
-    
-    const formData = new FormData(e.currentTarget)
     
     // Convert and compress file to base64 if exists
     let paymentReceiptBase64 = ""
@@ -509,8 +556,9 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
-      mobile: formData.get("mobile"),
-      email: formData.get("email"),
+      mobile: normalizedMobile,
+      telegram: formattedTelegram,
+      email: rawEmail.trim().toLowerCase(),
       company: formData.get("company"),
       attendance: formData.get("attendance"),
       paymentReceipt: paymentReceiptBase64,
@@ -595,15 +643,32 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">شماره موبایل</label>
-              <input
-                type="tel"
-                name="mobile"
-                className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
-                placeholder="09123456789"
-                required
-              />
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">شماره موبایل</label>
+                <input
+                  type="tel"
+                  name="mobile"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  placeholder="09123456789"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  آیدی تلگرام{" "}
+                  <span className="text-muted-foreground text-xs font-normal">
+
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  name="telegram"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  placeholder="username@"
+                  dir="ltr"
+                />
+              </div>
             </div>
 
             <div>
@@ -658,13 +723,20 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
                       </p>
                     </>
                 ) : (
-                    <div className="flex gap-3">
-                      <label
-                          className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
-                      <input type="radio" name="attendance" value="online" className="w-4 h-4 cursor-pointer" defaultChecked />
-                      <span className="text-sm">آنلاین</span>
-                    </label>
-                  </div>
+                    <>
+                      <div className="flex gap-3">
+                        <label
+                            className="flex items-center gap-2 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 flex-1">
+                          <input type="radio" name="attendance" value="online" className="w-4 h-4 cursor-pointer" defaultChecked />
+                          <span className="text-sm">آنلاین</span>
+                        </label>
+                      </div>
+                      {isWorkshop && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          دسترسی به ویدیو کارگاه روی اسپات پلیر برای شما فراهم خواهد بود
+                        </p>
+                      )}
+                    </>
                 )}
               </div>
             )}
@@ -895,15 +967,29 @@ function ReserveForm({ onClose, course }: { onClose: () => void; course?: Course
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
+    
+    const rawMobile = (formData.get("mobile") as string) || ""
+    const normalizedMobile = normalizeIranianMobile(rawMobile)
+    if (!normalizedMobile) {
+      alert("لطفاً یک شماره موبایل معتبر ایران وارد کنید (مثال: ۰۹۱۲۳۴۵۶۷۸۹).")
+      return
+    }
+
+    const rawEmail = (formData.get("email") as string) || ""
+    if (!isValidEmail(rawEmail)) {
+      alert("لطفاً یک آدرس ایمیل معتبر وارد کنید.")
+      return
+    }
+
+    setIsSubmitting(true)
     const tracking = getTrackingData()
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
-      mobile: formData.get("mobile"),
-      email: formData.get("email"),
+      mobile: normalizedMobile,
+      email: rawEmail.trim().toLowerCase(),
       company: formData.get("company"),
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
@@ -1024,15 +1110,29 @@ function ConsultationForm({ onClose, course }: { onClose: () => void; course?: C
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
+    
+    const rawMobile = (formData.get("mobile") as string) || ""
+    const normalizedMobile = normalizeIranianMobile(rawMobile)
+    if (!normalizedMobile) {
+      alert("لطفاً یک شماره موبایل معتبر ایران وارد کنید (مثال: ۰۹۱۲۳۴۵۶۷۸۹).")
+      return
+    }
+
+    const rawEmail = (formData.get("email") as string) || ""
+    if (!isValidEmail(rawEmail)) {
+      alert("لطفاً یک آدرس ایمیل معتبر وارد کنید.")
+      return
+    }
+
+    setIsSubmitting(true)
     const tracking = getTrackingData()
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
-      email: formData.get("email"),
-      mobile: formData.get("mobile"),
+      email: rawEmail.trim().toLowerCase(),
+      mobile: normalizedMobile,
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
       formType: "consultation",
@@ -1164,15 +1264,29 @@ function CorporateTrainingForm({ onClose, course }: { onClose: () => void; cours
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsSubmitting(true)
     
     const formData = new FormData(e.currentTarget)
+    
+    const rawMobile = (formData.get("mobile") as string) || ""
+    const normalizedMobile = normalizeIranianMobile(rawMobile)
+    if (!normalizedMobile) {
+      alert("لطفاً یک شماره موبایل معتبر ایران وارد کنید (مثال: ۰۹۱۲۳۴۵۶۷۸۹).")
+      return
+    }
+
+    const rawEmail = (formData.get("email") as string) || ""
+    if (!isValidEmail(rawEmail)) {
+      alert("لطفاً یک آدرس ایمیل معتبر وارد کنید.")
+      return
+    }
+
+    setIsSubmitting(true)
     const tracking = getTrackingData()
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
-      email: formData.get("email"),
-      mobile: formData.get("mobile"),
+      email: rawEmail.trim().toLowerCase(),
+      mobile: normalizedMobile,
       company: formData.get("company"),
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
