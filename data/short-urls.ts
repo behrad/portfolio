@@ -26,6 +26,41 @@ export const RESERVED_SLUGS = new Set([
 
 export const shortUrlsList: ShortUrlConfig[] = [
   {
+    code: "li",
+    target: "/courses/ai-assisted-software-engineering?utm_source=linkedin&utm_medium=post&utm_campaign=be",
+    title: "کارگاه Agentic Software Development - لینکدین",
+    description: "لینک کوتاه کارگاه ایجنتیک با سورس LinkedIn و کمپین be",
+    createdAt: "2026-08-31",
+  },
+  {
+    code: "be",
+    target: "/courses/ai-assisted-software-engineering?utm_source=linkedin&utm_medium=post&utm_campaign=be",
+    title: "کارگاه Agentic Software Development - کمپین be لینکدین",
+    description: "لینک کوتاه کارگاه ایجنتیک با سورس LinkedIn و کمپین be",
+    createdAt: "2026-08-31",
+  },
+  {
+    code: "linkedin",
+    target: "/courses/ai-assisted-software-engineering?utm_source=linkedin&utm_medium=post&utm_campaign=be",
+    title: "کارگاه Agentic Software Development - لینکدین",
+    description: "لینک مستقیم کارگاه ایجنتیک با سورس LinkedIn",
+    createdAt: "2026-08-31",
+  },
+  {
+    code: "ag-linkedin",
+    target: "/courses/ai-assisted-software-engineering?utm_source=linkedin&utm_medium=post&utm_campaign=be",
+    title: "کارگاه Agentic Software Development - لینکدین",
+    description: "لینک کوتاه کارگاه ایجنتیک برای پست لینکدین",
+    createdAt: "2026-08-31",
+  },
+  {
+    code: "finnova",
+    target: "/courses/ai-assisted-software-engineering?utm_source=finnova&utm_campaign=finnova&coupon=finnova",
+    title: "کارگاه Agentic Software Development - فینووا",
+    description: "لینک مستقیم کارگاه Agentic ویژه فینووا با اعمال خودکار کد تخفیف",
+    createdAt: "2026-08-31",
+  },
+  {
     code: "dtw",
     target: "/courses/ai-assisted-software-engineering?utm_source=telegram&utm_medium=channel&utm_campaign=DTW",
     title: "کارگاه Agentic Software Development - کمپین DTW",

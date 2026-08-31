@@ -315,16 +315,108 @@ const trackClarityEvent = (eventName: string, eventData?: Record<string, string>
   }
 }
 
-const DISCOUNT_CODES: { [key: string]: number } = {
-  sdlc: 0.30,
-  behrad10: 0.10,
-  behrad25: 0.25,
-  behrad22: 0.22,
-  behrad50: 0.50,
-  "بهراد10": 0.10,
-  "بهراد25": 0.25,
-  "بهراد22": 0.22,
-  "بهراد50": 0.50,
+interface DiscountCodeConfig {
+  percent: number
+  fixedPrice?: number
+  allowedCourses?: string[]
+}
+
+const SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES = [
+  "system-design-1",
+  "system-design-2",
+  "system-design-3",
+  "system-design-4",
+  "system-design-interview",
+  "system_design",
+  "art-of-coding",
+  "clean_code",
+]
+
+const AGENTIC_WORKSHOP_COURSES = [
+  "ai-assisted-software-engineering",
+]
+
+const DISCOUNT_CODES: { [key: string]: DiscountCodeConfig } = {
+  // finnova: Exclusively for the Agentic Software Development Workshop, making the final price 1,500,000 Tomans
+  finnova: {
+    percent: 0.40,
+    fixedPrice: 1500000,
+    allowedCourses: AGENTIC_WORKSHOP_COURSES,
+  },
+  "فینووا": {
+    percent: 0.40,
+    fixedPrice: 1500000,
+    allowedCourses: AGENTIC_WORKSHOP_COURSES,
+  },
+  "فینوا": {
+    percent: 0.40,
+    fixedPrice: 1500000,
+    allowedCourses: AGENTIC_WORKSHOP_COURSES,
+  },
+
+  // Discount codes for System Design and Clean Code courses
+  behrad10: {
+    percent: 0.10,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد10": {
+    percent: 0.10,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  behrad15: {
+    percent: 0.15,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد15": {
+    percent: 0.15,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  behrad20: {
+    percent: 0.20,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد20": {
+    percent: 0.20,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  behrad30: {
+    percent: 0.30,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد30": {
+    percent: 0.30,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+
+  // Existing / backward-compatible codes
+  sdlc: {
+    percent: 0.30,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  behrad22: {
+    percent: 0.22,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد22": {
+    percent: 0.22,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  behrad25: {
+    percent: 0.25,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد25": {
+    percent: 0.25,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  behrad50: {
+    percent: 0.50,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
+  "بهراد50": {
+    percent: 0.50,
+    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+  },
 }
 
 function toEnglishDigits(str: string): string {
@@ -341,6 +433,44 @@ function toEnglishDigits(str: string): string {
 function normalizeDiscountCode(input: string): string {
   let normalized = toEnglishDigits(input.trim().toLowerCase())
   return normalized.replace(/[\s\-_]/g, "")
+}
+
+function validateCoupon(
+  code: string,
+  courseSlug?: string,
+  course?: Course
+): { valid: boolean; discountConfig?: DiscountCodeConfig; errorReason?: "invalid_code" | "course_mismatch" } {
+  const normalized = normalizeDiscountCode(code)
+  if (!normalized) {
+    return { valid: false }
+  }
+
+  const discountConfig = DISCOUNT_CODES[normalized]
+  if (!discountConfig) {
+    return { valid: false, errorReason: "invalid_code" }
+  }
+
+  if (!discountConfig.allowedCourses || discountConfig.allowedCourses.length === 0) {
+    return { valid: true, discountConfig }
+  }
+
+  const slug = courseSlug || ""
+  const coursePath = course?.path || ""
+  const title = course?.title || ""
+
+  const isAllowed =
+    discountConfig.allowedCourses.includes(slug) ||
+    discountConfig.allowedCourses.includes(coursePath) ||
+    (discountConfig.allowedCourses.includes("system_design") && (coursePath === "system_design" || title.includes("سیستم دیزاین"))) ||
+    (discountConfig.allowedCourses.includes("clean_code") && (coursePath === "clean_code" || slug === "art-of-coding" || title.includes("هنر کدنویسی"))) ||
+    (discountConfig.allowedCourses.includes("art-of-coding") && (slug === "art-of-coding" || title.includes("هنر کدنویسی"))) ||
+    (discountConfig.allowedCourses.includes("ai-assisted-software-engineering") && (slug === "ai-assisted-software-engineering" || title.includes("Agentic")))
+
+  if (!isAllowed) {
+    return { valid: false, discountConfig, errorReason: "course_mismatch" }
+  }
+
+  return { valid: true, discountConfig }
 }
 
 function normalizeIranianMobile(input: string): string | null {
@@ -470,16 +600,57 @@ async function compressReceiptImage(file: File): Promise<string> {
 }
 
 // Registration Form Component
-function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () => void; course?: Course; effectiveDiscount?: number }) {
+function RegistrationForm({
+  onClose,
+  course,
+  effectiveDiscount,
+  slug,
+}: {
+  onClose: () => void
+  course?: Course
+  effectiveDiscount?: number
+  slug?: string
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [couponInput, setCouponInput] = useState("")
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; percent: number } | null>(null)
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string
+    percent: number
+    fixedPrice?: number
+  } | null>(null)
   const [couponStatus, setCouponStatus] = useState<"idle" | "success" | "invalid">("idle")
+  const [couponErrorMessage, setCouponErrorMessage] = useState<string>("")
   const [copiedCard, setCopiedCard] = useState(false)
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [receiptError, setReceiptError] = useState<string | null>(null)
   const [isDraggingReceipt, setIsDraggingReceipt] = useState(false)
   const receiptInputRef = useRef<HTMLInputElement>(null)
+
+  const currentSlug =
+    slug ||
+    (typeof window !== "undefined"
+      ? window.location.pathname.split("/").filter(Boolean).pop()
+      : "") ||
+    ""
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const queryCoupon = params.get("coupon") || params.get("discount") || params.get("code")
+    if (queryCoupon) {
+      const result = validateCoupon(queryCoupon, currentSlug, course)
+      if (result.valid && result.discountConfig) {
+        setCouponInput(queryCoupon)
+        setAppliedCoupon({
+          code: queryCoupon.trim(),
+          percent: result.discountConfig.percent,
+          fixedPrice: result.discountConfig.fixedPrice,
+        })
+        setCouponStatus("success")
+        setCouponErrorMessage("")
+      }
+    }
+  }, [currentSlug, course])
 
   const handleCopyCard = () => {
     navigator.clipboard.writeText("6221061052884196")
@@ -493,7 +664,11 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
 
   const baseDiscount = effectiveDiscount ?? course?.discount ?? 0
   const totalDiscount = appliedCoupon ? Math.max(baseDiscount, appliedCoupon.percent) : baseDiscount
-  const finalPrice = course?.priceNumber ? Math.round(course.priceNumber * (1 - totalDiscount)) : 0
+  const finalPrice = course?.priceNumber
+    ? (appliedCoupon?.fixedPrice !== undefined
+        ? appliedCoupon.fixedPrice
+        : Math.round(course.priceNumber * (1 - totalDiscount)))
+    : 0
   const isPaid = !isFree && finalPrice > 0
 
   const handleApplyCoupon = () => {
@@ -501,14 +676,27 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
     if (!normalized) {
       setAppliedCoupon(null)
       setCouponStatus("idle")
+      setCouponErrorMessage("")
       return
     }
-    if (DISCOUNT_CODES[normalized] !== undefined) {
-      setAppliedCoupon({ code: couponInput.trim(), percent: DISCOUNT_CODES[normalized] })
+
+    const result = validateCoupon(couponInput, currentSlug, course)
+    if (result.valid && result.discountConfig) {
+      setAppliedCoupon({
+        code: couponInput.trim(),
+        percent: result.discountConfig.percent,
+        fixedPrice: result.discountConfig.fixedPrice,
+      })
       setCouponStatus("success")
+      setCouponErrorMessage("")
     } else {
       setAppliedCoupon(null)
       setCouponStatus("invalid")
+      if (result.errorReason === "course_mismatch") {
+        setCouponErrorMessage("این کد تخفیف برای این دوره یا کارگاه معتبر نیست.")
+      } else {
+        setCouponErrorMessage("کد تخفیف وارد شده معتبر نیست.")
+      }
     }
   }
 
@@ -781,7 +969,9 @@ function RegistrationForm({ onClose, course, effectiveDiscount }: { onClose: () 
                   </Button>
                 </div>
                 {couponStatus === "invalid" && (
-                  <p className="text-xs text-red-500 font-medium">کد تخفیف وارد شده معتبر نیست.</p>
+                  <p className="text-xs text-red-500 font-medium">
+                    {couponErrorMessage || "کد تخفیف وارد شده معتبر نیست."}
+                  </p>
                 )}
                 {couponStatus === "success" && appliedCoupon && (
                   <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
@@ -1524,7 +1714,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {showRegistrationForm && <RegistrationForm onClose={() => setShowRegistrationForm(false)} course={course} effectiveDiscount={effectiveDiscount} />}
+      {showRegistrationForm && <RegistrationForm onClose={() => setShowRegistrationForm(false)} course={course} effectiveDiscount={effectiveDiscount} slug={slug} />}
       {showReserveForm && <ReserveForm onClose={() => setShowReserveForm(false)} course={course} />}
       {showConsultationForm && <ConsultationForm onClose={() => setShowConsultationForm(false)} course={course} />}
       {showCorporateTrainingForm && <CorporateTrainingForm onClose={() => setShowCorporateTrainingForm(false)} course={course} />}
