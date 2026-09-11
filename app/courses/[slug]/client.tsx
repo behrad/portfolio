@@ -391,7 +391,7 @@ const DISCOUNT_CODES: { [key: string]: DiscountCodeConfig } = {
   // Existing / backward-compatible codes
   sdlc: {
     percent: 0.30,
-    allowedCourses: SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES,
+    allowedCourses: [...SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES, ...AGENTIC_WORKSHOP_COURSES],
   },
   behrad22: {
     percent: 0.22,
