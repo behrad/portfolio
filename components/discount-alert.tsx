@@ -1,27 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-
-// 50% discount runs through 15 Tir 1405; hide from 16 Tir (2026-07-07, Iran is UTC+03:30).
-const DEADLINE = new Date("2026-07-07T00:00:00+03:30").getTime()
-
-// Evaluated in the browser so a static build doesn't freeze the date.
-function useDiscountActive() {
-  const [active, setActive] = useState(false)
-  useEffect(() => {
-    setActive(Date.now() < DEADLINE)
-  }, [])
-  return active
-}
+import { useIsProgrammersDayActive } from "@/lib/promotions"
 
 export function DiscountRibbon() {
-  const active = useDiscountActive()
+  const active = useIsProgrammersDayActive()
   if (!active) return null
 
   return (
     <a
       href="#courses-grid"
-      className="group inline-flex items-center gap-2.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
+      className="group inline-flex items-center gap-2.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--danger)]"
       style={{
         background: "color-mix(in oklch, var(--danger) 12%, transparent)",
         borderColor: "color-mix(in oklch, var(--danger) 38%, transparent)",
@@ -37,21 +25,20 @@ export function DiscountRibbon() {
           style={{ background: "var(--danger)" }}
         />
       </span>
-      <span className="mono text-base font-bold text-[var(--danger)]">50%</span>
       <span className="text-foreground">
-        تخفیف همهٔ دوره‌ها، فقط تا <span className="font-bold">۲۶ تیر</span>
+        تخفیف ویژه روز برنامه‌نویس برای دوره‌های تخصصی فقط تا ۲۵ شهریور
       </span>
     </a>
   )
 }
 
 export function DiscountNote() {
-  const active = useDiscountActive()
+  const active = useIsProgrammersDayActive()
   if (!active) return null
 
   return (
     <p className="mx-auto mt-4 text-sm font-medium text-[var(--danger)]/90">
-      از ۲۶ تیر ماه تخفیف ۵۰ درصدی برداشته می‌شه. فرصت ثبت‌نام با نصف قیمت محدوده.
+      تخفیف ویژه روز برنامه‌نویس فقط تا پایان ۲۵ شهریور معتبر است و پس از آن شهریه به مبلغ قبلی بازمی‌گردد.
     </p>
   )
 }

@@ -38,8 +38,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${course.title} | مسیر رشد مهندسی نرم‌افزار - بهراد زاری`,
     description: course.shortDescription,
     keywords: keywords.join(", "),
-    authors: [{ name: "بهراد زاری" }],
+    authors: [{ name: "Behrad Zari (بهراد زاری)", url: "/about" }],
+    alternates: { canonical: `/courses/${slug}` },
     openGraph: {
+      url: `/courses/${slug}`,
       title: course.title,
       description: course.shortDescription,
       type: "website",

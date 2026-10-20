@@ -45,7 +45,7 @@ const METRO_STATIONS: MetroStationNode[] = [
     ...ROADMAP_NODES.find((n) => n.id === 'functional-ts')!,
     cx: 650,
     cy: 55,
-    lineNameFa: 'برنامه‌نویسی تابعی',
+    lineNameFa: 'برنامه‌نویسی فانکشنال',
     lineColor: '#f59e0b',
   },
   {
@@ -53,13 +53,6 @@ const METRO_STATIONS: MetroStationNode[] = [
     cx: 110,
     cy: 165,
     lineNameFa: 'ورود به بک‌اند',
-    lineColor: '#38bdf8',
-  },
-  {
-    ...ROADMAP_NODES.find((n) => n.id === 'inside-nodejs')!,
-    cx: 285,
-    cy: 165,
-    lineNameFa: 'رانتایم Node.js',
     lineColor: '#38bdf8',
   },
   {
@@ -132,8 +125,7 @@ const METRO_TRACKS = [
   { id: 't-m4-branch', from: 'core-js-ts', to: 'node-backends', color: '#38bdf8', d: 'M 90 55 C 90 110, 100 130, 110 165' },
 
   // M4 Backend Line (Sky)
-  { id: 't-m4-1', from: 'node-backends', to: 'inside-nodejs', color: '#38bdf8', d: 'M 110 165 L 285 165' },
-  { id: 't-m4-2', from: 'inside-nodejs', to: 'nodejs-engineer', color: '#38bdf8', d: 'M 285 165 L 460 165' },
+  { id: 't-m4-1', from: 'node-backends', to: 'nodejs-engineer', color: '#38bdf8', d: 'M 110 165 L 460 165' },
 
   // M2 Architecture Line (Purple)
   { id: 't-m2-1', from: 'advanced-js-ts', to: 'art-of-coding', color: '#818cf8', d: 'M 370 55 C 370 120, 560 165, 645 165' },
@@ -158,7 +150,7 @@ const METRO_LINES = [
     id: 'm4',
     label: 'بک‌اند / Node.js',
     color: '#38bdf8',
-    descFa: 'شامل سه دوره Node.js؛ از کسانی که می‌خواهند وارد Node.js شوند تا کسانی که با Node.js کار می‌کنند و می‌خواهند حرفه‌ای‌تر شوند.',
+    descFa: 'شامل دو دوره Node.js؛ از ساخت اولین سرویس واقعی تا مهندسی پیشرفته، پایداری زیر بار و تصمیم‌گیری در پروداکشن.',
   },
   {
     id: 'm2',
@@ -254,7 +246,7 @@ export function MetroRoadmap() {
       return ['core-js-ts', 'advanced-js-ts', 'functional-ts'].includes(station.id)
     }
     if (activeLine === 'm4') {
-      return ['core-js-ts', 'node-backends', 'inside-nodejs', 'nodejs-engineer'].includes(station.id)
+      return ['core-js-ts', 'node-backends', 'nodejs-engineer'].includes(station.id)
     }
     if (activeLine === 'm2') {
       return ['advanced-js-ts', 'nodejs-engineer', 'art-of-coding'].includes(station.id)

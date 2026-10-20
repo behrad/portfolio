@@ -37,12 +37,32 @@ import {
   Tag,
   Copy,
   Check,
+  Sparkles,
 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { notFound } from "next/navigation"
 import { getTrackingData } from "@/lib/tracking"
 import { VideoChaptersPlayer, type VideoChapter } from "@/components/video-chapters-player"
 import { VideoShareBox } from "@/components/video-share-box"
+import {
+  PROGRAMMERS_DAY_COURSES,
+  PROGRAMMERS_DAY_DEADLINE,
+  PROGRAMMERS_DAY_PRICE,
+  PROGRAMMERS_DAY_PRICE_FORMATTED,
+  PROGRAMMERS_DAY_COURSE_PRICES,
+  getProgrammersDayPrice,
+  getProgrammersDayPriceFormatted,
+  PROGRAMMERS_DAY_PRIMARY_CODE,
+  PROGRAMMERS_DAY_ENGLISH_CODE,
+  isProgrammersDayCourse,
+  useIsProgrammersDayActive,
+  AGENTIC_WORKSHOP_DEADLINE,
+  AGENTIC_WORKSHOP_SLUG,
+  AGENTIC_WORKSHOP_DISCOUNTED_PRICE,
+  AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED,
+  useIsAgenticWorkshopDiscountActive,
+  AgenticCountdownTimer,
+} from "@/lib/promotions"
 import { AgilixWorkshopCta } from "@/components/agilix-workshop-cta"
 
 export type { VideoChapter }
@@ -61,8 +81,9 @@ export type Course = {
   discount: number
   duration: string
   sessionsCount: string
-  schedule: string
-  startDate: string
+  schedule?: string
+  startDate?: string
+  communitySupport?: string
   format: string
   level: string
   language: string
@@ -318,7 +339,9 @@ const trackClarityEvent = (eventName: string, eventData?: Record<string, string>
 interface DiscountCodeConfig {
   percent: number
   fixedPrice?: number
-  allowedCourses?: string[]
+  courseFixedPrices?: Record<string, number>
+  allowedCourses?: readonly string[] | string[]
+  expiresAt?: number | string
 }
 
 const SYSTEM_DESIGN_AND_CLEAN_CODE_COURSES = [
@@ -336,7 +359,45 @@ const AGENTIC_WORKSHOP_COURSES = [
   "ai-assisted-software-engineering",
 ]
 
+const PROGRAMMERS_DAY_COUPON_CONFIG: DiscountCodeConfig = {
+  percent: 0.37,
+  fixedPrice: PROGRAMMERS_DAY_PRICE,
+  courseFixedPrices: PROGRAMMERS_DAY_COURSE_PRICES,
+  allowedCourses: PROGRAMMERS_DAY_COURSES,
+  expiresAt: PROGRAMMERS_DAY_DEADLINE,
+}
+
 const DISCOUNT_CODES: { [key: string]: DiscountCodeConfig } = {
+  // Programmer's Day 1405 (September 2026) Promotion
+  روزممبارک: PROGRAMMERS_DAY_COUPON_CONFIG,
+  "روزم مبارک": PROGRAMMERS_DAY_COUPON_CONFIG,
+  "روزم‌مبارک": PROGRAMMERS_DAY_COUPON_CONFIG,
+  myday: PROGRAMMERS_DAY_COUPON_CONFIG,
+  roozammobarak: PROGRAMMERS_DAY_COUPON_CONFIG,
+  programmerday: PROGRAMMERS_DAY_COUPON_CONFIG,
+  programmersday: PROGRAMMERS_DAY_COUPON_CONFIG,
+  happyprogrammerday: PROGRAMMERS_DAY_COUPON_CONFIG,
+  happyprogrammersday: PROGRAMMERS_DAY_COUPON_CONFIG,
+
+  // wf: Exclusively for the Agentic Software Development Workshop, making the final price 1,500,000 Tomans
+  wf: {
+    percent: 0.50,
+    fixedPrice: AGENTIC_WORKSHOP_DISCOUNTED_PRICE,
+    allowedCourses: AGENTIC_WORKSHOP_COURSES,
+    expiresAt: AGENTIC_WORKSHOP_DEADLINE,
+  },
+  "wf-tg": {
+    percent: 0.50,
+    fixedPrice: AGENTIC_WORKSHOP_DISCOUNTED_PRICE,
+    allowedCourses: AGENTIC_WORKSHOP_COURSES,
+    expiresAt: AGENTIC_WORKSHOP_DEADLINE,
+  },
+  "wf-li": {
+    percent: 0.50,
+    fixedPrice: AGENTIC_WORKSHOP_DISCOUNTED_PRICE,
+    allowedCourses: AGENTIC_WORKSHOP_COURSES,
+    expiresAt: AGENTIC_WORKSHOP_DEADLINE,
+  },
   // finnova: Exclusively for the Agentic Software Development Workshop, making the final price 1,500,000 Tomans
   finnova: {
     percent: 0.40,
@@ -432,14 +493,14 @@ function toEnglishDigits(str: string): string {
 
 function normalizeDiscountCode(input: string): string {
   let normalized = toEnglishDigits(input.trim().toLowerCase())
-  return normalized.replace(/[\s\-_]/g, "")
+  return normalized.replace(/[\s\-_\u200c\u200b]/g, "")
 }
 
 function validateCoupon(
   code: string,
   courseSlug?: string,
   course?: Course
-): { valid: boolean; discountConfig?: DiscountCodeConfig; errorReason?: "invalid_code" | "course_mismatch" } {
+): { valid: boolean; discountConfig?: DiscountCodeConfig; errorReason?: "invalid_code" | "course_mismatch" | "expired" } {
   const normalized = normalizeDiscountCode(code)
   if (!normalized) {
     return { valid: false }
@@ -448,6 +509,16 @@ function validateCoupon(
   const discountConfig = DISCOUNT_CODES[normalized]
   if (!discountConfig) {
     return { valid: false, errorReason: "invalid_code" }
+  }
+
+  if (discountConfig.expiresAt) {
+    const expireTime =
+      typeof discountConfig.expiresAt === "number"
+        ? discountConfig.expiresAt
+        : new Date(discountConfig.expiresAt).getTime()
+    if (Date.now() >= expireTime) {
+      return { valid: false, discountConfig, errorReason: "expired" }
+    }
   }
 
   if (!discountConfig.allowedCourses || discountConfig.allowedCourses.length === 0) {
@@ -459,8 +530,8 @@ function validateCoupon(
   const title = course?.title || ""
 
   const isAllowed =
-    discountConfig.allowedCourses.includes(slug) ||
-    discountConfig.allowedCourses.includes(coursePath) ||
+    (discountConfig.allowedCourses as readonly string[]).includes(slug) ||
+    (discountConfig.allowedCourses as readonly string[]).includes(coursePath) ||
     (discountConfig.allowedCourses.includes("system_design") && (coursePath === "system_design" || title.includes("سیستم دیزاین"))) ||
     (discountConfig.allowedCourses.includes("clean_code") && (coursePath === "clean_code" || slug === "art-of-coding" || title.includes("هنر کدنویسی"))) ||
     (discountConfig.allowedCourses.includes("art-of-coding") && (slug === "art-of-coding" || title.includes("هنر کدنویسی"))) ||
@@ -470,7 +541,22 @@ function validateCoupon(
     return { valid: false, discountConfig, errorReason: "course_mismatch" }
   }
 
-  return { valid: true, discountConfig }
+  let resolvedFixedPrice = discountConfig.fixedPrice
+  if (discountConfig.courseFixedPrices) {
+    if (slug && discountConfig.courseFixedPrices[slug] !== undefined) {
+      resolvedFixedPrice = discountConfig.courseFixedPrices[slug]
+    } else if (coursePath && discountConfig.courseFixedPrices[coursePath] !== undefined) {
+      resolvedFixedPrice = discountConfig.courseFixedPrices[coursePath]
+    }
+  }
+
+  return {
+    valid: true,
+    discountConfig: {
+      ...discountConfig,
+      fixedPrice: resolvedFixedPrice,
+    },
+  }
 }
 
 function normalizeIranianMobile(input: string): string | null {
@@ -605,11 +691,13 @@ function RegistrationForm({
   course,
   effectiveDiscount,
   slug,
+  initialCoupon,
 }: {
   onClose: () => void
   course?: Course
   effectiveDiscount?: number
   slug?: string
+  initialCoupon?: string
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [couponInput, setCouponInput] = useState("")
@@ -636,7 +724,7 @@ function RegistrationForm({
   useEffect(() => {
     if (typeof window === "undefined") return
     const params = new URLSearchParams(window.location.search)
-    const queryCoupon = params.get("coupon") || params.get("discount") || params.get("code")
+    const queryCoupon = params.get("coupon") || params.get("discount") || params.get("code") || initialCoupon
     if (queryCoupon) {
       const result = validateCoupon(queryCoupon, currentSlug, course)
       if (result.valid && result.discountConfig) {
@@ -650,7 +738,7 @@ function RegistrationForm({
         setCouponErrorMessage("")
       }
     }
-  }, [currentSlug, course])
+  }, [currentSlug, course, initialCoupon])
 
   const handleCopyCard = () => {
     navigator.clipboard.writeText("6221061052884196")
@@ -692,7 +780,9 @@ function RegistrationForm({
     } else {
       setAppliedCoupon(null)
       setCouponStatus("invalid")
-      if (result.errorReason === "course_mismatch") {
+      if (result.errorReason === "expired") {
+        setCouponErrorMessage("مهلت استفاده از این کد تخفیف به پایان رسیده است (مهلت تا پایان ۲۵ شهریور بود).")
+      } else if (result.errorReason === "course_mismatch") {
         setCouponErrorMessage("این کد تخفیف برای این دوره یا کارگاه معتبر نیست.")
       } else {
         setCouponErrorMessage("کد تخفیف وارد شده معتبر نیست.")
@@ -938,7 +1028,9 @@ function RegistrationForm({
                   </label>
                   {appliedCoupon && (
                     <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      {(appliedCoupon.percent * 100).toLocaleString("fa-IR")}٪ تخفیف اعمال شد
+                      {appliedCoupon.fixedPrice !== undefined && course?.priceNumber
+                        ? `${Math.round((1 - appliedCoupon.fixedPrice / course.priceNumber) * 100).toLocaleString("fa-IR")}٪ تخفیف اعمال شد`
+                        : `${Math.round(appliedCoupon.percent * 100).toLocaleString("fa-IR")}٪ تخفیف اعمال شد`}
                     </span>
                   )}
                 </div>
@@ -986,7 +1078,7 @@ function RegistrationForm({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
                   <span className="text-sm font-medium text-foreground">مبلغ قابل واریز:</span>
                   <div className="flex items-center gap-2">
-                    {totalDiscount > 0 && course?.priceNumber ? (
+                    {(totalDiscount > 0 || (appliedCoupon?.fixedPrice !== undefined && course?.priceNumber && appliedCoupon.fixedPrice < course.priceNumber)) && course?.priceNumber ? (
                       <>
                         <span className="text-sm text-muted-foreground line-through">
                           {course.price}
@@ -996,7 +1088,9 @@ function RegistrationForm({
                         </span>
                         <span className="text-sm font-bold text-primary">تومان</span>
                         <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
-                          ({Math.round(totalDiscount * 100).toLocaleString("fa-IR")}٪ تخفیف)
+                          ({appliedCoupon?.fixedPrice !== undefined && course?.priceNumber
+                            ? Math.round((1 - finalPrice / course.priceNumber) * 100).toLocaleString("fa-IR")
+                            : Math.round(totalDiscount * 100).toLocaleString("fa-IR")}٪ تخفیف)
                         </span>
                       </>
                     ) : (
@@ -1591,6 +1685,56 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   const [showCorporateTrainingForm, setShowCorporateTrainingForm] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const effectiveDiscount = course?.discount ?? 0;
+  const isProgrammersDayActive = useIsProgrammersDayActive()
+  const isPromoCourse = isProgrammersDayActive && isProgrammersDayCourse(slug)
+  const isAgenticPromoActive = useIsAgenticWorkshopDiscountActive()
+  const isAgenticPromo = slug === AGENTIC_WORKSHOP_SLUG && isAgenticPromoActive
+
+  const cardRef = useRef<HTMLDivElement>(null)
+  const bottomCtaRef = useRef<HTMLElement>(null)
+  const [isCardVisible, setIsCardVisible] = useState(true)
+  const [isBottomCtaVisible, setIsBottomCtaVisible] = useState(false)
+  const [hasScrolledPastHero, setHasScrolledPastHero] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHasScrolledPastHero(window.scrollY > 400)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.IntersectionObserver) return
+
+    const cardEl = cardRef.current
+    const bottomCtaEl = bottomCtaRef.current
+
+    const cardObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsCardVisible(entry.isIntersecting)
+      },
+      { threshold: 0.1 }
+    )
+
+    const bottomObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsBottomCtaVisible(entry.isIntersecting)
+      },
+      { threshold: 0.1 }
+    )
+
+    if (cardEl) cardObserver.observe(cardEl)
+    if (bottomCtaEl) bottomObserver.observe(bottomCtaEl)
+
+    return () => {
+      if (cardEl) cardObserver.unobserve(cardEl)
+      if (bottomCtaEl) bottomObserver.unobserve(bottomCtaEl)
+      cardObserver.disconnect()
+      bottomObserver.disconnect()
+    }
+  }, [course])
 
   if (!course) {
     notFound()
@@ -1714,7 +1858,15 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {showRegistrationForm && <RegistrationForm onClose={() => setShowRegistrationForm(false)} course={course} effectiveDiscount={effectiveDiscount} slug={slug} />}
+      {showRegistrationForm && (
+        <RegistrationForm
+          onClose={() => setShowRegistrationForm(false)}
+          course={course}
+          effectiveDiscount={effectiveDiscount}
+          slug={slug}
+          initialCoupon={isPromoCourse ? PROGRAMMERS_DAY_PRIMARY_CODE : isAgenticPromo ? "wf" : undefined}
+        />
+      )}
       {showReserveForm && <ReserveForm onClose={() => setShowReserveForm(false)} course={course} />}
       {showConsultationForm && <ConsultationForm onClose={() => setShowConsultationForm(false)} course={course} />}
       {showCorporateTrainingForm && <CorporateTrainingForm onClose={() => setShowCorporateTrainingForm(false)} course={course} />}
@@ -1793,7 +1945,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     </div>
                   </div>
 
-                  {course.descriptionVideoId && (
+                  {course.descriptionVideoId ? (
                     <div className="mt-6 flex flex-wrap gap-3">
                       <Button
                         asChild
@@ -1815,6 +1967,52 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           مشاهده آنلاین ویدیو
                         </a>
                       </Button>
+                    </div>
+                  ) : (
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <Button
+                        size="lg"
+                        className="gap-2 rounded-xl text-base px-6 py-5 shadow-lg shadow-primary/20 cursor-pointer bg-white text-slate-950 hover:bg-slate-100 font-semibold"
+                        onClick={() => {
+                          if (course.isFull) {
+                            trackClarityEvent("reserve_button_clicked", { source: "hero" })
+                            setShowReserveForm(true)
+                          } else {
+                            trackClarityEvent("registration_button_clicked", { source: "hero" })
+                            setShowRegistrationForm(true)
+                          }
+                        }}
+                      >
+                        {course.isFull
+                          ? "پیش ثبت‌نام"
+                          : isPromoCourse
+                            ? "ثبت‌نام با تخفیف ویژه روز برنامه‌نویس"
+                            : isAgenticPromo
+                              ? "ثبت‌نام با تخفیف ویژه کارگاه"
+                              : `ثبت‌نام در ${typeLabel}`}
+                      </Button>
+                      {course.modules.length > 0 && (
+                        <Button
+                          asChild
+                          size="lg"
+                          variant="outline"
+                          className="rounded-xl text-base px-6 py-5 border-white/30 text-white hover:bg-white/10 hover:text-white font-medium bg-transparent cursor-pointer"
+                        >
+                          <a
+                            href="#curriculum"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              const el = document.getElementById("curriculum")
+                              if (el) {
+                                el.scrollIntoView({ behavior: "smooth", block: "start" })
+                                window.history.pushState(null, "", "#curriculum")
+                              }
+                            }}
+                          >
+                            سرفصل‌های {typeLabel}
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1889,8 +2087,8 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
             </div>
           </section>
 
-          {/* Only show companies section for specific courses */}
-          {slug && !isWebinar && !["node-backends", "inside-nodejs", "nodejs-engineer", "art-of-coding", "ai-assisted-software-engineering"].includes(slug) && (
+          {/* Only show companies section for specific courses (hidden for JS and Node.js courses) */}
+          {slug && !isWebinar && !["core-js-ts", "advanced-js-ts", "functional-ts", "node-backends", "nodejs-engineer", "art-of-coding", "ai-assisted-software-engineering"].includes(slug) && (
             <section className="bg-muted/30 py-12 border-y">
               <div className="container mx-auto px-4">
                 <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
@@ -1928,7 +2126,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           <div className="container mx-auto px-4 py-12">
             <div className={`grid gap-8 ${course.descriptionVideoId ? "lg:grid-cols-1" : "lg:grid-cols-3"}`}>
               {/* Main content area */}
-              <div className={`space-y-12 ${course.descriptionVideoId ? "" : "lg:col-span-2"}`}>
+              <div className={`space-y-12 order-2 lg:order-1 ${course.descriptionVideoId ? "" : "lg:col-span-2"}`}>
                 <section id="skills" className="scroll-mt-24">
                   <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                     <Target className="w-6 h-6 text-primary" />
@@ -2317,13 +2515,43 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
               </div>
 
               {!course.descriptionVideoId && (
-              <div className="lg:col-span-1">
+              <div ref={cardRef} className="order-1 lg:order-2 lg:col-span-1">
                 <div className="sticky top-4 space-y-4">
                   <Card className="border-2 shadow-lg">
                     <CardContent className="p-6">
                       <div className="mb-6 text-center">
                         <div className="flex flex-col items-center gap-2 mb-2">
-                          {effectiveDiscount > 0 && course.priceNumber > 0 ? (
+                          {isPromoCourse ? (
+                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-center">
+                              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 dark:text-red-400 mb-1">
+                                <span className="relative flex h-2 w-2" aria-hidden="true">
+                                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                                </span>
+                                <span>تخفیف ویژه روز برنامه‌نویس (تا ۲۵ شهریور)</span>
+                              </div>
+                              <div className="flex flex-col items-center gap-0.5 my-1">
+                                <span className="text-sm text-muted-foreground line-through">
+                                  {course.price} تومان
+                                </span>
+                                <span className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-400">
+                                  {getProgrammersDayPriceFormatted(slug) || PROGRAMMERS_DAY_PRICE_FORMATTED} تومان
+                                </span>
+                              </div>
+                            </div>
+                          ) : isAgenticPromo ? (
+                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-center">
+                              <div className="flex flex-col items-center gap-0.5 my-1">
+                                <span className="text-sm text-muted-foreground line-through">
+                                  {course.price} تومان
+                                </span>
+                                <span className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-400">
+                                  {AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED} تومان
+                                </span>
+                              </div>
+                              <AgenticCountdownTimer />
+                            </div>
+                          ) : effectiveDiscount > 0 && course.priceNumber > 0 ? (
                             <>
                               <span className="text-sm text-muted-foreground line-through">
                                 {course.price} تومان
@@ -2344,7 +2572,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       <div className="mb-6">
                         <Button
                           size="lg"
-                          className="w-full text-lg cursor-pointer hover:bg-primary/90"
+                          className="w-full text-base cursor-pointer hover:bg-primary/90"
                           onClick={() => {
                             if (course.isFull) {
                               trackClarityEvent("reserve_button_clicked")
@@ -2355,7 +2583,13 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                             }
                           }}
                         >
-                          {course.isFull ? "پیش ثبت‌نام" : "ثبت‌نام"}
+                          {course.isFull
+                            ? "پیش ثبت‌نام"
+                            : isPromoCourse
+                              ? "ثبت‌نام با تخفیف ویژه روز برنامه‌نویس"
+                              : isAgenticPromo
+                                ? "ثبت‌نام با تخفیف ویژه کارگاه"
+                                : "ثبت‌نام"}
                         </Button>
                       </div>
 
@@ -2375,26 +2609,30 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           </div>
                         ) : (
                           <>
-                            <div className="flex items-center gap-3">
-                              <Clock className="w-5 h-5 text-primary flex-shrink-0" />
-                              <span>{course.schedule}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
-                              <span>شروع: {course.startDate}</span>
-                            </div>
+                            {course.schedule && (
+                              <div className="flex items-center gap-3">
+                                <Clock className="w-5 h-5 text-primary flex-shrink-0" />
+                                <span>{course.schedule}</span>
+                              </div>
+                            )}
+                            {course.startDate && (
+                              <div className="flex items-center gap-3">
+                                <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
+                                <span>شروع: {course.startDate}</span>
+                              </div>
+                            )}
                           </>
                         )}
                         <div className="flex items-center gap-3">
                           <Users className="w-5 h-5 text-primary flex-shrink-0" />
-                          <span>{course.format} {course?.hasVideo ? " یا ویدیو (اسپات پلیر)" : ""}</span>
+                          <span>{course.format} {course?.hasVideo && !course.format.includes("ویدیو") ? " (ویدیو روی اسپات پلیر)" : ""}</span>
                           
                         </div>
                         {!isWebinar && (
                           <>
                             <div className="flex items-center gap-3">
                               <Presentation className="w-5 h-5 text-primary flex-shrink-0" />
-                              <span>تیم‌سازی و جلسات حل تمرین و مرور کد ماهانه</span>
+                              <span>{course.communitySupport || (slug === "ai-assisted-software-engineering" ? "تیم‌سازی، حل تمرین و پرسش‌وپاسخ در گروه خصوصی تلگرام" : "تیم‌سازی و جلسات حل تمرین و مرور کد ماهانه")}</span>
                             </div>
                             <div className="flex items-center gap-3">
                               <Award className="w-5 h-5 text-primary flex-shrink-0" />
@@ -2479,7 +2717,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           </div>
 
           {!course.descriptionVideoId && (
-            <section className="relative overflow-hidden border-t border-border bg-card">
+            <section ref={bottomCtaRef} className="relative overflow-hidden border-t border-border bg-card">
               <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
               <div
                 aria-hidden="true"
@@ -2504,15 +2742,21 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     className="cursor-pointer rounded-lg px-8 text-lg shadow-none"
                     onClick={() => {
                       if (course.isFull) {
-                        trackClarityEvent("reserve_button_clicked")
+                        trackClarityEvent("reserve_button_clicked", { source: "bottom_cta" })
                         setShowReserveForm(true)
                       } else {
-                        trackClarityEvent("final_cta_registration_clicked")
+                        trackClarityEvent("final_cta_registration_clicked", { source: "bottom_cta" })
                         setShowRegistrationForm(true)
                       }
                     }}
                   >
-                    {course.isFull ? "پیش ثبت‌نام" : `ثبت‌نام در ${typeLabel}`}
+                    {course.isFull
+                      ? "پیش ثبت‌نام"
+                      : isPromoCourse
+                        ? "ثبت‌نام با تخفیف ویژه روز برنامه‌نویس"
+                        : isAgenticPromo
+                          ? "ثبت‌نام با تخفیف ویژه کارگاه"
+                          : `ثبت‌نام در ${typeLabel}`}
                   </Button>
                   <Button
                     asChild
@@ -2529,6 +2773,78 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
             </section>
           )}
         </main>
+
+        {/* Mobile Sticky Registration Bar */}
+        {!course.descriptionVideoId && (
+          <aside
+            aria-label="نوار ثبت‌نام سریع"
+            className={`fixed bottom-0 inset-x-0 z-40 border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 shadow-2xl transition-all duration-300 ease-in-out lg:hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))] ${
+              hasScrolledPastHero && !isCardVisible && !isBottomCtaVisible
+                ? "translate-y-0 opacity-100 pointer-events-auto"
+                : "translate-y-full opacity-0 pointer-events-none"
+            }`}
+          >
+            <div className="container mx-auto flex items-center justify-between gap-3">
+              <div className="flex flex-col justify-center">
+                {isPromoCourse ? (
+                  <>
+                    <span className="text-[11px] text-muted-foreground line-through">
+                      {course.price} تومان
+                    </span>
+                    <span className="text-base font-extrabold text-red-600 dark:text-red-400 leading-tight">
+                      {getProgrammersDayPriceFormatted(slug) || PROGRAMMERS_DAY_PRICE_FORMATTED} تومان
+                    </span>
+                  </>
+                ) : isAgenticPromo ? (
+                  <>
+                    <span className="text-[11px] text-muted-foreground line-through">
+                      {course.price} تومان
+                    </span>
+                    <span className="text-base font-extrabold text-red-600 dark:text-red-400 leading-tight">
+                      {AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED} تومان
+                    </span>
+                  </>
+                ) : effectiveDiscount > 0 && course.priceNumber > 0 ? (
+                  <>
+                    <span className="text-[11px] text-muted-foreground line-through">
+                      {course.price} تومان
+                    </span>
+                    <span className="text-base font-bold text-red-600 leading-tight">
+                      {Math.round(course.priceNumber * (1 - effectiveDiscount)).toLocaleString("fa-IR")} تومان
+                    </span>
+                  </>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-lg font-bold text-primary">{course.price}</span>
+                    <span className="text-xs text-muted-foreground">{course.priceNumber === 0 ? "" : "تومان"}</span>
+                  </div>
+                )}
+              </div>
+
+              <Button
+                size="default"
+                className="cursor-pointer px-5 font-bold shadow-md hover:bg-primary/90"
+                onClick={() => {
+                  if (course.isFull) {
+                    trackClarityEvent("reserve_button_clicked", { source: "mobile_sticky_bar" })
+                    setShowReserveForm(true)
+                  } else {
+                    trackClarityEvent("registration_button_clicked", { source: "mobile_sticky_bar" })
+                    setShowRegistrationForm(true)
+                  }
+                }}
+              >
+                {course.isFull
+                  ? "پیش ثبت‌نام"
+                  : isPromoCourse
+                    ? "ثبت‌نام با تخفیف"
+                    : isAgenticPromo
+                      ? "ثبت‌نام با تخفیف"
+                      : "ثبت‌نام"}
+              </Button>
+            </div>
+          </aside>
+        )}
 
         <Footer />
       </div>

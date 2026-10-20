@@ -4,11 +4,11 @@ import { coursesData } from '@/data/courses'
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://behrad.tech'
+  const baseUrl = 'https://behradz.ir'
   
   // Get all course slugs
   const courseUrls = Object.keys(coursesData).map((slug) => ({
-    url: `${baseUrl}/courses/${slug}`,
+    url: `${baseUrl}/courses/${slug}/`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
@@ -16,13 +16,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: baseUrl,
+      url: `${baseUrl}/`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: `${baseUrl}/about`,
+      url: `${baseUrl}/about/`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,

@@ -11,9 +11,11 @@ import { CourseCatalogGrid } from "@/components/courses/course-catalog-grid"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "بهراد زاری | آموزش برنامه نویسی و سیستم دیزاین | بهراد‌ تک",
+  title: "بهراد زاری (Behrad Zari) | آموزش برنامه نویسی و سیستم دیزاین | بهراد‌ تک",
   description: "آموزش برنامه نویسی حرفه‌ای، هنر کد نویسی، کد نویسی تمیز (Clean Code)، طراحی سیستم، سیستم دیزاین، تفکر سیستمی و معماری نرم افزار. دوره‌های عملی با پروژه‌های واقعی.",
   keywords: [
+    "بهراد زاری",
+    "Behrad Zari",
     "آموزش برنامه نویسی",
     "دوره برنامه نویسی",
     "هنر کد نویسی",
@@ -31,6 +33,7 @@ export const metadata: Metadata = {
     "مقیاس پذیری",
     "scalability",
   ],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "دوره‌های آموزش برنامه نویسی و طراحی سیستم",
     description: "آموزش برنامه نویسی، هنر کد نویسی، طراحی سیستم و سیستم دیزاین با بهراد زاری",
@@ -72,6 +75,11 @@ export default function HomePage() {
       <Navigation />
 
       <main className="flex-1">
+        {/* Discount Ribbon Banner */}
+        <div className="container mx-auto px-4 pt-6 text-center">
+          <DiscountRibbon />
+        </div>
+
         {/* Metro Roadmap Section */}
         <MetroRoadmap />
 

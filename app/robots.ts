@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/api/',
     },
-    sitemap: 'https://behrad.tech/sitemap.xml',
+    sitemap: 'https://behradz.ir/sitemap.xml',
   }
 }

@@ -12,6 +12,37 @@ const vazirmatn = Vazirmatn({
   display: "swap",
 })
 
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://behradz.ir/#person",
+      name: "Behrad Zari",
+      alternateName: ["بهراد زاری", "Behrad"],
+      url: "https://behradz.ir/about",
+      image: "https://behradz.ir/images/behrad.jpg",
+      jobTitle: "Software Engineer & Instructor",
+      knowsAbout: ["System Design", "Software Architecture", "Clean Code", "Domain-Driven Design", "Microservices"],
+      sameAs: [
+        "https://www.linkedin.com/in/behradz/",
+        "https://github.com/behrad",
+        "https://www.youtube.com/@BehradZari",
+        "https://t.me/bzari",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://behradz.ir/#website",
+      url: "https://behradz.ir",
+      name: "Behrad Tech",
+      alternateName: ["بهراد تک", "Behrad Zari", "بهراد زاری"],
+      inLanguage: "fa-IR",
+      publisher: { "@id": "https://behradz.ir/#person" },
+    },
+  ],
+}
+
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
@@ -20,8 +51,9 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://behradz.ir"),
   title: "آموزش برنامه نویسی، طراحی سیستم و سیستم دیزاین | مسیر رشد مهندسی نرم‌افزار",
-  description: "دوره‌های آموزش برنامه نویسی، هنر کد نویسی، کد نویسی تمیز، طراحی سیستم، سیستم دیزاین و تفکر سیستمی با بهراد زاری. یاد بگیرید چطور سیستم‌های مقیاس‌پذیر بسازید و کد تمیز بنویسید.",
+  description: "دوره‌های آموزش برنامه نویسی، هنر کد نویسی، کد نویسی تمیز، طراحی سیستم، سیستم دیزاین و تفکر سیستمی با بهراد زاری (Behrad Zari). یاد بگیرید چطور سیستم‌های مقیاس‌پذیر بسازید و کد تمیز بنویسید.",
   keywords: [
     "آموزش برنامه نویسی",
     "هنر کد نویسی",
@@ -38,6 +70,8 @@ export const metadata: Metadata = {
     "دوره تایپ اسکریپت",
     "دوره برنامه نویسی",
     "بهراد زاری",
+    "Behrad Zari",
+    "Behrad Tech",
     "clean code",
     "software architecture",
     "scalability",
@@ -45,9 +79,9 @@ export const metadata: Metadata = {
     "backend development",
     "system design",
   ],
-  authors: [{ name: "بهراد زاری", url: "https://www.linkedin.com/in/behradz/" }],
-  creator: "بهراد زاری",
-  publisher: "بهراد زاری",
+  authors: [{ name: "Behrad Zari (بهراد زاری)", url: "https://behradz.ir/about" }],
+  creator: "Behrad Zari",
+  publisher: "Behrad Zari",
   generator: "v0.app",
   applicationName: "مسیر رشد مهندسی نرم‌افزار",
   referrer: "origin-when-cross-origin",
@@ -79,7 +113,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'fa_IR',
-    url: 'https://behrad.tech',
+    url: 'https://behradz.ir',
     siteName: 'مسیر رشد مهندسی نرم‌افزار',
     title: 'آموزش برنامه نویسی، طراحی سیستم و سیستم دیزاین',
     description: 'دوره‌های آموزش برنامه نویسی، هنر کد نویسی، کد نویسی تمیز، طراحی سیستم و سیستم دیزاین با بهراد زاری',
@@ -97,9 +131,6 @@ export const metadata: Metadata = {
     title: 'آموزش برنامه نویسی، طراحی سیستم و سیستم دیزاین',
     description: 'دوره‌های آموزش برنامه نویسی، هنر کد نویسی و طراحی سیستم با بهراد زاری',
     images: ['/og-image.jpg'],
-  },
-  alternates: {
-    canonical: 'https://behrad.tech',
   },
 }
 
@@ -125,6 +156,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <UtmTracker />
         </Suspense>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
         {children}
         <Analytics />
       </body>

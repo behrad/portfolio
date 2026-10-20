@@ -6,6 +6,14 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { COURSE_LAYERS, ROADMAP_NODES, type CourseLayer, type AudienceRole } from '@/lib/roadmap-data'
 import { Filter, Layers, Clock, GraduationCap, PlayCircle, ArrowLeft, Video, Radio, Wrench, BookOpen } from 'lucide-react'
+import {
+  useIsProgrammersDayActive,
+  isProgrammersDayCourse,
+  PROGRAMMERS_DAY_PRICE_FORMATTED,
+  PROGRAMMERS_DAY_PRIMARY_CODE,
+  getProgrammersDayPriceFormatted,
+  AgenticCountdownTimer,
+} from '@/lib/promotions'
 
 export interface CourseGridItem {
   id: string
@@ -85,6 +93,7 @@ function courseHref(course: CourseGridItem) {
 }
 
 export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
+  const isProgrammersDayActive = useIsProgrammersDayActive()
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<AudienceRole | 'all'>('all')
   const [selectedLayerFilter, setSelectedLayerFilter] = useState<CourseLayer | 'all'>('all')
   const [onlyFreeFilter, setOnlyFreeFilter] = useState(false)
@@ -252,6 +261,7 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
               const node = nodeMap.get(course.id)
               const layerCfg = node ? COURSE_LAYERS[node.layer] : null
               const kind = contentKind(course)
+              const isEligiblePromo = isProgrammersDayActive && isProgrammersDayCourse(course.id)
 
               return (
                 <article
@@ -344,7 +354,19 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
                   {/* Price & CTA */}
                   <div className="flex shrink-0 items-center justify-between gap-4 border-t border-border px-5 py-4 sm:w-[200px] sm:flex-col sm:items-stretch sm:justify-center sm:gap-4 sm:border-s sm:border-t-0 sm:px-5 sm:py-6 lg:w-[220px]">
                     <div className="sm:text-center">
-                      {course.hasDiscount ? (
+                      {isEligiblePromo ? (
+                        <div className="flex items-baseline gap-2 sm:flex-col sm:items-center sm:gap-0.5">
+                          <span className="text-lg font-bold text-red-500 lg:text-xl">
+                            {getProgrammersDayPriceFormatted(course.id) || PROGRAMMERS_DAY_PRICE_FORMATTED} تومان
+                          </span>
+                          <span className="text-xs text-muted-foreground line-through">
+                            {course.price}
+                          </span>
+                          <span className="text-[10px] text-red-500/80 font-medium">
+                            تخفیف روز برنامه‌نویس
+                          </span>
+                        </div>
+                      ) : course.hasDiscount ? (
                         <div className="flex items-baseline gap-2 sm:flex-col sm:items-center sm:gap-0.5">
                           <span className="text-lg font-bold text-primary lg:text-xl">
                             {course.discountedPrice} تومان
@@ -352,6 +374,9 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
                           <span className="text-xs text-muted-foreground line-through">
                             {course.price}
                           </span>
+                          {course.id === "ai-assisted-software-engineering" && (
+                            <AgenticCountdownTimer compact className="mt-1" />
+                          )}
                         </div>
                       ) : (
                         <span

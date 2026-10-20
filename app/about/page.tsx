@@ -4,6 +4,22 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Behrad Zari | بهراد زاری - مهندس نرم‌افزار و مدرس طراحی سیستم",
+  description:
+    "Behrad Zari (بهراد زاری) — software engineer, former CTO, and instructor of system design, software architecture, and clean code. درباره بهراد زاری، سوابق و تجربه‌ها.",
+  keywords: ["Behrad Zari", "بهراد زاری", "Behrad Tech", "software engineer", "system design instructor"],
+  alternates: { canonical: "https://behradz.ir/about" },
+  openGraph: {
+    title: "Behrad Zari | بهراد زاری",
+    description: "Software engineer, former CTO, and instructor of system design and software architecture.",
+    url: "https://behradz.ir/about",
+    type: "profile",
+    images: ["/images/behrad.jpg"],
+  },
+}
 
 export default function AboutPage() {
   const experiences = [
@@ -137,7 +153,7 @@ export default function AboutPage() {
             <div className="flex flex-col items-center gap-8 md:flex-row">
               <div className="flex-shrink-0">
                 <div className="relative h-44 w-44 overflow-hidden rounded-full ring-1 ring-[var(--accent-border)] ring-offset-4 ring-offset-background">
-                  <Image src="/images/behrad.jpg" alt="بهراد زاری" fill className="object-cover" />
+                  <Image src="/images/behrad.jpg" alt="Behrad Zari - بهراد زاری" fill className="object-cover" />
                 </div>
               </div>
               <div className="flex-1 text-center md:text-right">
@@ -148,6 +164,9 @@ export default function AboutPage() {
                 <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
                   بهراد زاری
                 </h1>
+                <p className="mt-2 text-lg text-muted-foreground" dir="ltr" lang="en">
+                  Behrad Zari
+                </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm md:justify-start">
                   <Link
                     href="https://www.linkedin.com/in/behradz/"
