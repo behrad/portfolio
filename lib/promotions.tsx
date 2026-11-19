@@ -174,3 +174,38 @@ export function AgenticCountdownTimer({
     </div>
   )
 }
+
+/**
+ * System Design Courses 1 to 4 Special Promotion (until 27 Aban 1405)
+ * 5,500,000 Tomans instead of 7,900,000 Tomans
+ * Active through end of 27 Aban 1405: 2026-11-18T23:59:59+03:30 (Tehran timezone)
+ */
+export const SYSTEM_DESIGN_PROMO_DEADLINE = new Date("2026-11-18T23:59:59+03:30").getTime()
+export const SYSTEM_DESIGN_COURSES = [
+  "system-design-1",
+  "system-design-2",
+  "system-design-3",
+  "system-design-4",
+] as const
+
+export const SYSTEM_DESIGN_PROMO_PRICE = 5500000
+export const SYSTEM_DESIGN_PROMO_PRICE_FORMATTED = "۵,۵۰۰,۰۰۰"
+export const SYSTEM_DESIGN_ORIGINAL_PRICE = 7900000
+export const SYSTEM_DESIGN_ORIGINAL_PRICE_FORMATTED = "۷,۹۰۰,۰۰۰"
+
+export function isSystemDesignCourse(slugOrId?: string): boolean {
+  if (!slugOrId) return false
+  return (
+    (SYSTEM_DESIGN_COURSES as readonly string[]).includes(slugOrId) ||
+    slugOrId.startsWith("system-design-")
+  )
+}
+
+export function useIsSystemDesignPromoActive(): boolean {
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    setActive(Date.now() < SYSTEM_DESIGN_PROMO_DEADLINE)
+  }, [])
+  return active
+}
+

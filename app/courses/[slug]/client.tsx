@@ -359,6 +359,16 @@ const AGENTIC_WORKSHOP_COURSES = [
   "ai-assisted-software-engineering",
 ]
 
+const CORE_JSTS_AND_NODE_BACKENDS_COURSES = [
+  "core-js-ts",
+  "node-backends",
+]
+
+const CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG: DiscountCodeConfig = {
+  percent: 0.25,
+  allowedCourses: CORE_JSTS_AND_NODE_BACKENDS_COURSES,
+}
+
 const PROGRAMMERS_DAY_COUPON_CONFIG: DiscountCodeConfig = {
   percent: 0.37,
   fixedPrice: PROGRAMMERS_DAY_PRICE,
@@ -368,6 +378,16 @@ const PROGRAMMERS_DAY_COUPON_CONFIG: DiscountCodeConfig = {
 }
 
 const DISCOUNT_CODES: { [key: string]: DiscountCodeConfig } = {
+  // 25% discount codes for Core JS/TS and Node.js Backend (mindful, gocasts, tondotiz)
+  mindful: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  مایندفول: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  gocasts: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  گوکست: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  گوکستس: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  tondotiz: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  تندوتیز: CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+  "تند و تیز": CORE_JSTS_AND_NODE_BACKENDS_25_CONFIG,
+
   // Programmer's Day 1405 (September 2026) Promotion
   روزممبارک: PROGRAMMERS_DAY_COUPON_CONFIG,
   "روزم مبارک": PROGRAMMERS_DAY_COUPON_CONFIG,
@@ -535,7 +555,9 @@ function validateCoupon(
     (discountConfig.allowedCourses.includes("system_design") && (coursePath === "system_design" || title.includes("سیستم دیزاین"))) ||
     (discountConfig.allowedCourses.includes("clean_code") && (coursePath === "clean_code" || slug === "art-of-coding" || title.includes("هنر کدنویسی"))) ||
     (discountConfig.allowedCourses.includes("art-of-coding") && (slug === "art-of-coding" || title.includes("هنر کدنویسی"))) ||
-    (discountConfig.allowedCourses.includes("ai-assisted-software-engineering") && (slug === "ai-assisted-software-engineering" || title.includes("Agentic")))
+    (discountConfig.allowedCourses.includes("ai-assisted-software-engineering") && (slug === "ai-assisted-software-engineering" || title.includes("Agentic"))) ||
+    (discountConfig.allowedCourses.includes("core-js-ts") && (slug === "core-js-ts" || title.includes("جاوااسکریپت و تایپ‌اسکریپت عمیق") || title.includes("Core JS") || title.includes("CoreJSTS"))) ||
+    (discountConfig.allowedCourses.includes("node-backends") && (slug === "node-backends" || title.includes("برنامه‌نویسی بک‌اند با Node.js") || title.includes("بک‌اند با Node.js")))
 
   if (!isAllowed) {
     return { valid: false, discountConfig, errorReason: "course_mismatch" }
@@ -608,6 +630,46 @@ function getRegistrationSuccessMessage(course?: Course): string {
   }
 
   return "اطلاعات شروع برگزاری دوره، برای شما از طریق ایمیل ارسال خواهد شد."
+}
+
+function renderFormattedDescription(content?: string): React.ReactNode {
+  if (!content) return null
+
+  const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|([^\s()]+)\s*\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s)]+)/g
+  const parts: React.ReactNode[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(content.slice(lastIndex, match.index))
+    }
+
+    const label = match[1] || match[3] || match[5]
+    const url = match[2] || match[4] || match[5]
+    const isLtr = label.startsWith("@") || /^[a-zA-Z0-9.:/_\-]+$/.test(label)
+
+    parts.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-primary underline underline-offset-4 hover:opacity-80 transition-opacity"
+        dir={isLtr ? "ltr" : undefined}
+      >
+        {label}
+      </a>
+    )
+
+    lastIndex = match.index + match[0].length
+  }
+
+  if (lastIndex < content.length) {
+    parts.push(content.slice(lastIndex))
+  }
+
+  return parts
 }
 
 // Helper to compress uploaded receipt image to stay safely under server payload limits (< 100KB)
@@ -749,6 +811,13 @@ function RegistrationForm({
   const isWebinar = course?.type === "webinar"
   const isWorkshop = course?.type === "workshop"
   const isFree = !course?.priceNumber || course.priceNumber === 0
+  const isSystemDesign =
+    currentSlug === "system-design-1" ||
+    currentSlug === "system-design-2" ||
+    currentSlug === "system-design-3" ||
+    currentSlug === "system-design-4" ||
+    currentSlug.startsWith("system-design-") ||
+    course?.path === "system_design"
 
   const baseDiscount = effectiveDiscount ?? course?.discount ?? 0
   const totalDiscount = appliedCoupon ? Math.max(baseDiscount, appliedCoupon.percent) : baseDiscount
@@ -843,6 +912,8 @@ function RegistrationForm({
       paymentReceiptName: paymentReceipt?.name || (receiptFile ? receiptFile.name : ""),
       courseName: course?.title || "",
       courseSlug: typeof window !== "undefined" ? window.location.pathname.split("/").pop() : "",
+      courseType: course?.type || "course",
+      isWebinar: Boolean(isWebinar),
       discountCode: appliedCoupon ? appliedCoupon.code : "",
       finalPrice: finalPrice,
       formType: "registration",
@@ -895,7 +966,7 @@ function RegistrationForm({
                 <a href="https://ble.ir/join/A6HiDuie9S" target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline underline-offset-4 hover:opacity-80">
                   @system-design
                 </a>{" "}
-                یا با پر کردن این فرم و از طریق پیامک برای شما ارسال خواهد شد.
+                یا با پر کردن این فرم و از طریق ایمیل برای شما ارسال خواهد شد (چند ساعت بعد ارسال می‌شود؛ در صورت عدم دریافت و بررسی پوشه اسپم، تا یک روز بعد صبور باشید).
               </p>
             )}
             <div className="grid md:grid-cols-2 gap-4">
@@ -1684,7 +1755,40 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
   const [showConsultationForm, setShowConsultationForm] = useState(false)
   const [showCorporateTrainingForm, setShowCorporateTrainingForm] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
-  const effectiveDiscount = course?.discount ?? 0;
+  const [appliedUrlCoupon, setAppliedUrlCoupon] = useState<{
+    code: string
+    percent: number
+    fixedPrice?: number
+  } | null>(null)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const queryCoupon = params.get("coupon") || params.get("discount") || params.get("code")
+    if (queryCoupon) {
+      const result = validateCoupon(queryCoupon, slug, course)
+      if (result.valid && result.discountConfig) {
+        setAppliedUrlCoupon({
+          code: queryCoupon.trim(),
+          percent: result.discountConfig.percent,
+          fixedPrice: result.discountConfig.fixedPrice,
+        })
+      }
+    }
+  }, [slug, course])
+
+  const baseDiscount = course?.discount ?? 0
+  const effectiveDiscount = appliedUrlCoupon
+    ? Math.max(baseDiscount, appliedUrlCoupon.percent)
+    : baseDiscount
+  const hasFixedPrice = appliedUrlCoupon?.fixedPrice !== undefined
+  const finalPriceNumber = course?.priceNumber
+    ? (hasFixedPrice
+        ? appliedUrlCoupon!.fixedPrice!
+        : Math.round(course.priceNumber * (1 - effectiveDiscount)))
+    : 0
+  const hasPageDiscount = (effectiveDiscount > 0 || hasFixedPrice) && Boolean(course?.priceNumber && course.priceNumber > 0)
+
   const isProgrammersDayActive = useIsProgrammersDayActive()
   const isPromoCourse = isProgrammersDayActive && isProgrammersDayCourse(slug)
   const isAgenticPromoActive = useIsAgenticWorkshopDiscountActive()
@@ -1864,7 +1968,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
           course={course}
           effectiveDiscount={effectiveDiscount}
           slug={slug}
-          initialCoupon={isPromoCourse ? PROGRAMMERS_DAY_PRIMARY_CODE : isAgenticPromo ? "wf" : undefined}
+          initialCoupon={appliedUrlCoupon?.code || (isPromoCourse ? PROGRAMMERS_DAY_PRIMARY_CODE : isAgenticPromo ? "wf" : undefined)}
         />
       )}
       {showReserveForm && <ReserveForm onClose={() => setShowReserveForm(false)} course={course} />}
@@ -1876,15 +1980,17 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
         <main className="flex-1">
           <section className="relative bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white">
-            <div
-              className="absolute inset-0 opacity-30"
-              style={{
-                backgroundImage: `url('${course.heroImage || '/classroom-training-session.jpg'}')`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "blur(2px)",
-              }}
-            />
+            {!isWebinar && !isWorkshop && (
+              <div
+                className="absolute inset-0 opacity-30"
+                style={{
+                  backgroundImage: `url('${course.heroImage || '/classroom-training-session.jpg'}')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  filter: "blur(2px)",
+                }}
+              />
+            )}
             <div className="relative container mx-auto px-4 py-12">
               <div className="flex items-center gap-2 mb-6 text-sm">
                 <Link href="/" className="hover:underline opacity-80 cursor-pointer">
@@ -1940,7 +2046,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       className="rounded-full"
                     />
                     <div>
-                      <p className="font-medium">مدرس: {course.instructor.name}</p>
+                      <p className="font-medium">{isWebinar ? course.instructor.name : `مدرس: ${course.instructor.name}`}</p>
                       <p className="text-sm opacity-80">{course.instructor.title}</p>
                     </div>
                   </div>
@@ -2248,15 +2354,17 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     </div>
                   )}
 
-                  {/* AgiliX Workshop CTA Card for Webinar Pages */}
-                  {(slug === "agentic-software-development" || isWebinar) && (
+                  {/* AgiliX Workshop CTA Card - only for Agentic Software Development */}
+                  {slug === "agentic-software-development" && (
                     <div className="mb-10">
                       <AgilixWorkshopCta source="webinar_video" />
                     </div>
                   )}
 
                   <div className="prose prose-lg max-w-none">
-                    <div className="text-foreground leading-relaxed text-pretty text-lg whitespace-pre-line space-y-4">{course.description}</div>
+                    <div className="text-foreground leading-relaxed text-pretty text-lg whitespace-pre-line space-y-4">
+                      {renderFormattedDescription(course.description)}
+                    </div>
                   </div>
 
                   <div className="mt-8">
@@ -2551,15 +2659,30 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                               </div>
                               <AgenticCountdownTimer />
                             </div>
-                          ) : effectiveDiscount > 0 && course.priceNumber > 0 ? (
-                            <>
-                              <span className="text-sm text-muted-foreground line-through">
-                                {course.price} تومان
-                              </span>
-                              <span className="text-4xl md:text-4xl font-bold text-red-600">
-                                {Math.round(course.priceNumber * (1 - effectiveDiscount)).toLocaleString("fa-IR")} تومان
-                              </span>
-                            </>
+                          ) : hasPageDiscount && course.priceNumber > 0 ? (
+                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-center">
+                              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 dark:text-red-400 mb-1">
+                                <span className="relative flex h-2 w-2" aria-hidden="true">
+                                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                                </span>
+                                <span>
+                                  {appliedUrlCoupon
+                                    ? `تخفیف ویژه ${(appliedUrlCoupon.percent * 100).toLocaleString("fa-IR")}٪ با کد ${appliedUrlCoupon.code}`
+                                    : slug?.startsWith("system-design-")
+                                    ? "تخفیف ویژه تا ۲۷ آبان"
+                                    : "تخفیف ویژه"}
+                                </span>
+                              </div>
+                              <div className="flex flex-col items-center gap-0.5 my-1">
+                                <span className="text-sm text-muted-foreground line-through">
+                                  {course.price} تومان
+                                </span>
+                                <span className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-400">
+                                  {finalPriceNumber.toLocaleString("fa-IR")} تومان
+                                </span>
+                              </div>
+                            </div>
                           ) : (
                             <>
                               <span className="text-5xl font-bold text-primary">{course.price}</span>
@@ -2642,6 +2765,33 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         )}
 
                       </div>
+
+                      {/* Installment Notice for System Design courses */}
+                      {(slug?.startsWith("system-design-") || course?.path === "system_design") && (
+                        <div className="mb-5 rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 text-sm">
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 rounded-full bg-blue-500/20 p-1.5 text-blue-600 dark:text-blue-400 shrink-0">
+                              <Send className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 space-y-1">
+                              <div className="font-semibold text-foreground text-sm">
+                                پرداخت اقساطی
+                              </div>
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                اگه قصد دارید شهریه دوره رو به صورت قسطی پرداخت کنید،{" "}
+                                <a
+                                  href="https://t.me/bzari"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-bold text-primary underline underline-offset-2 hover:text-primary/80 inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  در تلگرام به من پیام دهید
+                                </a>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="mb-4">
                         <Button
@@ -2804,13 +2954,13 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       {AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED} تومان
                     </span>
                   </>
-                ) : effectiveDiscount > 0 && course.priceNumber > 0 ? (
+                ) : hasPageDiscount && course.priceNumber > 0 ? (
                   <>
                     <span className="text-[11px] text-muted-foreground line-through">
                       {course.price} تومان
                     </span>
                     <span className="text-base font-bold text-red-600 leading-tight">
-                      {Math.round(course.priceNumber * (1 - effectiveDiscount)).toLocaleString("fa-IR")} تومان
+                      {finalPriceNumber.toLocaleString("fa-IR")} تومان
                     </span>
                   </>
                 ) : (
