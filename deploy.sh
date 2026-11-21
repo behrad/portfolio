@@ -5,8 +5,13 @@ set -e  # اگر خطایی رخ دهد، اسکریپت متوقف می‌شو�
 REMOTE_HOST="behrad"
 PROJECT_DIR="behrad"
 
-echo "==> Building project with pnpm..."
-pnpm build
+if command -v pnpm &> /dev/null; then
+    echo "==> Building project with pnpm..."
+    pnpm build
+else
+    echo "==> Building project with npm..."
+    npm run build
+fi
 
 echo "==> Syncing out directory using rsync..."
 rsync -avz --delete out/ $REMOTE_HOST:$PROJECT_DIR/out/
