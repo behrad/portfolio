@@ -2669,8 +2669,6 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                                 <span>
                                   {appliedUrlCoupon
                                     ? `تخفیف ویژه ${(appliedUrlCoupon.percent * 100).toLocaleString("fa-IR")}٪ با کد ${appliedUrlCoupon.code}`
-                                    : slug?.startsWith("system-design-")
-                                    ? "تخفیف ویژه تا ۲۷ آبان"
                                     : "تخفیف ویژه"}
                                 </span>
                               </div>

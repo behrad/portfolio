@@ -374,11 +374,6 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
                           <span className="text-xs text-muted-foreground line-through">
                             {course.price}
                           </span>
-                          {course.id.startsWith("system-design-") && (
-                            <span className="text-[10px] text-red-500/80 font-medium">
-                              تخفیف تا ۲۷ آبان
-                            </span>
-                          )}
                           {course.id === "ai-assisted-software-engineering" && (
                             <AgenticCountdownTimer compact className="mt-1" />
                           )}
