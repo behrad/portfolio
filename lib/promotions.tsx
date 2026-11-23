@@ -85,20 +85,16 @@ export function useIsProgrammersDayActive(): boolean {
  * Active through Wednesday night, 30 September 2026 (Tehran time, UTC+03:30).
  * Deadline: 2026-09-30T23:59:59+03:30.
  */
-export const AGENTIC_WORKSHOP_DEADLINE = new Date("2026-09-30T23:59:59+03:30").getTime()
+export const AGENTIC_WORKSHOP_DEADLINE = 0
 export const AGENTIC_WORKSHOP_SLUG = "ai-assisted-software-engineering"
 export const AGENTIC_WORKSHOP_DISCOUNTED_PRICE = 1500000
 export const AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED = "۱,۵۰۰,۰۰۰"
-export const AGENTIC_WORKSHOP_ORIGINAL_PRICE = 2500000
-export const AGENTIC_WORKSHOP_ORIGINAL_PRICE_FORMATTED = "۲,۵۰۰,۰۰۰"
-export const AGENTIC_WORKSHOP_DISCOUNT = 0.4
+export const AGENTIC_WORKSHOP_ORIGINAL_PRICE = 1500000
+export const AGENTIC_WORKSHOP_ORIGINAL_PRICE_FORMATTED = "۱,۵۰۰,۰۰۰"
+export const AGENTIC_WORKSHOP_DISCOUNT = 0
 
 export function useIsAgenticWorkshopDiscountActive(): boolean {
-  const [active, setActive] = useState(false)
-  useEffect(() => {
-    setActive(Date.now() < AGENTIC_WORKSHOP_DEADLINE)
-  }, [])
-  return active
+  return false
 }
 
 export function getAgenticWorkshopRemainingTime(): {
