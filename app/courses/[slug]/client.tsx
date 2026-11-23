@@ -1980,7 +1980,40 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
         <Navigation />
 
         <main className="flex-1">
-          <section className="relative bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white">
+          <section className="relative overflow-hidden bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white">
+            {!isWebinar && !isWorkshop && (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 overflow-hidden"
+              >
+                {/* Desktop: classroom photo on the left, softly fading out to 100% solid blue where the text column sits */}
+                <div
+                  className="hidden lg:block absolute inset-0 bg-cover bg-no-repeat"
+                  style={{
+                    backgroundImage: `url('${course.heroImage || "/classroom-training-session.jpg"}')`,
+                    backgroundPosition: "left center",
+                    opacity: 0.35,
+                    maskImage:
+                      "linear-gradient(to left, transparent 0%, transparent 48%, rgba(0,0,0,0.85) 80%, black 100%)",
+                    WebkitMaskImage:
+                      "linear-gradient(to left, transparent 0%, transparent 48%, rgba(0,0,0,0.85) 80%, black 100%)",
+                  }}
+                />
+                {/* Mobile: classroom photo on the bottom, fading to 100% solid blue where the top text sits */}
+                <div
+                  className="block lg:hidden absolute inset-0 bg-cover bg-no-repeat"
+                  style={{
+                    backgroundImage: `url('${course.heroImage || "/classroom-training-session.jpg"}')`,
+                    backgroundPosition: "center bottom",
+                    opacity: 0.25,
+                    maskImage:
+                      "linear-gradient(to bottom, transparent 0%, transparent 42%, rgba(0,0,0,0.85) 80%, black 100%)",
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, transparent 0%, transparent 42%, rgba(0,0,0,0.85) 80%, black 100%)",
+                  }}
+                />
+              </div>
+            )}
             <div className="relative container mx-auto px-4 py-12">
               <nav aria-label="مسیر صفحه" className="flex items-center gap-2 mb-6 text-xs text-slate-300">
                 <Link href="/" className="hover:text-white transition-colors">
