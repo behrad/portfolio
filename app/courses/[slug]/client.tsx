@@ -1980,36 +1980,36 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
         <Navigation />
 
         <main className="flex-1">
-          <section className="relative overflow-hidden bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white">
+          <section className="relative overflow-hidden bg-gradient-to-br from-[#0a1b2e] via-[#143963] to-[#0b1c2e] text-white border-b border-white/10">
             {!isWebinar && !isWorkshop && (
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 overflow-hidden"
               >
-                {/* Desktop: classroom photo on the left, softly fading out to 100% solid blue where the text column sits */}
+                {/* Desktop: right 36% is pure classy midnight blue, cleanly and smoothly fading into the classroom photo on the left */}
                 <div
                   className="hidden lg:block absolute inset-0 bg-cover bg-no-repeat"
                   style={{
                     backgroundImage: `url('${course.heroImage || "/classroom-training-session.jpg"}')`,
                     backgroundPosition: "left center",
-                    opacity: 0.35,
+                    opacity: 0.42,
                     maskImage:
-                      "linear-gradient(to left, transparent 0%, transparent 48%, rgba(0,0,0,0.85) 80%, black 100%)",
+                      "linear-gradient(to left, transparent 0%, transparent 36%, rgba(0,0,0,0.06) 42%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.55) 62%, rgba(0,0,0,0.85) 75%, black 88%, black 100%)",
                     WebkitMaskImage:
-                      "linear-gradient(to left, transparent 0%, transparent 48%, rgba(0,0,0,0.85) 80%, black 100%)",
+                      "linear-gradient(to left, transparent 0%, transparent 36%, rgba(0,0,0,0.06) 42%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.55) 62%, rgba(0,0,0,0.85) 75%, black 88%, black 100%)",
                   }}
                 />
-                {/* Mobile: classroom photo on the bottom, fading to 100% solid blue where the top text sits */}
+                {/* Mobile: top 35% is pure blue, smoothly fading down into the photo */}
                 <div
                   className="block lg:hidden absolute inset-0 bg-cover bg-no-repeat"
                   style={{
                     backgroundImage: `url('${course.heroImage || "/classroom-training-session.jpg"}')`,
                     backgroundPosition: "center bottom",
-                    opacity: 0.25,
+                    opacity: 0.28,
                     maskImage:
-                      "linear-gradient(to bottom, transparent 0%, transparent 42%, rgba(0,0,0,0.85) 80%, black 100%)",
+                      "linear-gradient(to bottom, transparent 0%, transparent 35%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0.5) 60%, black 85%, black 100%)",
                     WebkitMaskImage:
-                      "linear-gradient(to bottom, transparent 0%, transparent 42%, rgba(0,0,0,0.85) 80%, black 100%)",
+                      "linear-gradient(to bottom, transparent 0%, transparent 35%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0.5) 60%, black 85%, black 100%)",
                   }}
                 />
               </div>
