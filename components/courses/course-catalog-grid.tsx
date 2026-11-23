@@ -275,7 +275,7 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
                       alt=""
                       fill
                       sizes="(min-width: 1024px) 330px, (min-width: 640px) 268px, 100vw"
-                      className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                      className="object-cover object-center transition-opacity duration-300 group-hover:opacity-90"
                     />
                     {/* Scrim keeps the overlaid badges legible over any cover */}
                     <div
@@ -356,10 +356,10 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
                     <div className="sm:text-center">
                       {isEligiblePromo ? (
                         <div className="flex items-baseline gap-2 sm:flex-col sm:items-center sm:gap-0.5">
-                          <span className="text-lg font-bold text-red-500 lg:text-xl">
+                          <span className="text-lg font-bold text-red-500 lg:text-xl tabular-nums">
                             {getProgrammersDayPriceFormatted(course.id) || PROGRAMMERS_DAY_PRICE_FORMATTED} تومان
                           </span>
-                          <span className="text-xs text-muted-foreground line-through">
+                          <span className="text-xs text-muted-foreground line-through tabular-nums">
                             {course.price}
                           </span>
                           <span className="text-[10px] text-red-500/80 font-medium">
@@ -368,10 +368,10 @@ export function CourseCatalogGrid({ initialCourses }: CourseCatalogGridProps) {
                         </div>
                       ) : course.hasDiscount ? (
                         <div className="flex items-baseline gap-2 sm:flex-col sm:items-center sm:gap-0.5">
-                          <span className="text-lg font-bold text-primary lg:text-xl">
+                          <span className="text-lg font-bold text-primary lg:text-xl tabular-nums">
                             {course.discountedPrice} تومان
                           </span>
-                          <span className="text-xs text-muted-foreground line-through">
+                          <span className="text-xs text-muted-foreground line-through tabular-nums">
                             {course.price}
                           </span>
                           {course.id === "ai-assisted-software-engineering" && (

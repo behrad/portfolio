@@ -12,10 +12,11 @@ import {
   type RoadmapNode,
 } from '@/lib/roadmap-data'
 import {
-  Sparkles,
+  UserCheck,
   Layers,
   ArrowLeft,
   Map,
+  Compass,
 } from 'lucide-react'
 
 // Enhanced SVG coordinates for responsive 760x340 viewBox (Zero horizontal scroll)
@@ -287,7 +288,7 @@ export function MetroRoadmap() {
           {/* Role Selection */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-semibold text-muted-foreground me-1 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <UserCheck className="h-3.5 w-3.5 text-primary" />
               <span>انتخاب نقش:</span>
             </span>
 
@@ -426,9 +427,9 @@ export function MetroRoadmap() {
 
                     {/* Muted Compact Entry Point Badge */}
                     {station.isEntryPoint && isMatched && (
-                      <g transform={`translate(${station.cx - 21}, ${station.cy - 38})`}>
+                      <g transform={`translate(${station.cx - 28}, ${station.cy - 38})`}>
                         <rect
-                          width="42"
+                          width="56"
                           height="15"
                           rx="4"
                           fill="#0f172a"
@@ -436,14 +437,14 @@ export function MetroRoadmap() {
                           strokeWidth="1"
                         />
                         <text
-                          x="21"
+                          x="28"
                           y="10.5"
                           textAnchor="middle"
                           fill="#e2e8f0"
-                          fontSize="8.5"
-                          fontWeight="600"
+                          fontSize="8"
+                          fontWeight="500"
                         >
-                          🚀 شروع
+                          نقطه شروع
                         </text>
                       </g>
                     )}
@@ -572,8 +573,8 @@ export function MetroRoadmap() {
                     {/* Station Header Badges */}
                     <div className="flex flex-wrap items-center gap-1.5">
                       {activeStation.isEntryPoint && (
-                        <span className="rounded bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold text-slate-200 border border-slate-700">
-                          🚀 شروع
+                        <span className="rounded bg-slate-800/80 px-2 py-0.5 text-[10px] font-medium text-slate-200 border border-slate-700">
+                          نقطه شروع
                         </span>
                       )}
 
@@ -606,8 +607,9 @@ export function MetroRoadmap() {
 
                     {/* Target Audience Note */}
                     {activeStation.targetAudienceFa && (
-                      <div className="rounded-xl bg-teal-500/10 border border-teal-500/20 p-2.5 text-xs font-medium text-teal-300 leading-5">
-                        <span>💡 {activeStation.targetAudienceFa}</span>
+                      <div className="rounded-xl bg-teal-500/10 border border-teal-500/20 p-2.5 text-xs font-medium text-teal-300 leading-5 flex items-start gap-1.5">
+                        <Compass className="h-3.5 w-3.5 text-teal-400 mt-0.5 shrink-0" />
+                        <span>{activeStation.targetAudienceFa}</span>
                       </div>
                     )}
                   </div>

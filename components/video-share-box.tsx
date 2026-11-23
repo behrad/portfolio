@@ -7,7 +7,7 @@ import {
   Copy,
   Check,
   Share2,
-  Sparkles,
+  BookOpen,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -192,7 +192,7 @@ export function VideoShareBox({
                 variant="outline"
                 className="inline-flex items-center gap-1.5 rounded-lg border-primary/30 bg-primary/5 px-2.5 py-0.5 text-[11px] font-medium text-primary"
               >
-                <Sparkles className="h-3 w-3" />
+                <BookOpen className="h-3 w-3" />
                 <span>
                   {chapterId ? `سرفصل ${toPersianDigits(chapterId)}: ` : ""}
                   {chapterTitle}

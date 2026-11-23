@@ -88,14 +88,6 @@ export default function HomePage() {
 
         {/* CTA */}
         <section className="relative overflow-hidden border-t border-border bg-card">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-48 opacity-50"
-            style={{
-              background:
-                "radial-gradient(60% 100% at 50% 100%, var(--accent-soft), transparent 70%)",
-            }}
-          />
           <div className="container relative mx-auto max-w-2xl px-4 py-20 text-center">
             <h2 className="mb-4 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               سوال یا نیاز به مشاوره دارید؟

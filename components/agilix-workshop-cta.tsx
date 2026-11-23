@@ -3,7 +3,6 @@
 import React from "react"
 import Link from "next/link"
 import {
-  Sparkles,
   ArrowLeft,
   CheckCircle2,
   Cpu,
@@ -38,24 +37,13 @@ export function AgilixWorkshopCta({ source = "webinar_video", className = "" }: 
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-card via-card/95 to-primary/5 p-6 sm:p-8 md:p-10 shadow-2xl backdrop-blur-md transition-all duration-300 hover:border-primary/50 ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 md:p-10 transition-colors hover:border-[var(--border-strong)] ${className}`}
     >
-      {/* Decorative ambient background glows */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/15 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl"
-      />
-
       <div className="relative space-y-6">
         {/* Top Badge & Header */}
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2.5">
-            <Badge className="bg-primary text-primary-foreground font-semibold px-3 py-1 text-xs gap-1.5 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" />
+            <Badge className="bg-primary text-primary-foreground font-medium px-3 py-1 text-xs shadow-none">
               گام بعدی: اجرای کاملاً عملی در پروژه واقعی
             </Badge>
             <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-xs py-1 px-2.5">

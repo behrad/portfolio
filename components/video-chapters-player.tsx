@@ -8,7 +8,6 @@ import {
   ChevronRight,
   ChevronLeft,
   BookOpen,
-  Sparkles,
   Layers,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"

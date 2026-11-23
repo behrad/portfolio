@@ -37,7 +37,7 @@ import {
   Tag,
   Copy,
   Check,
-  Sparkles,
+  AlertCircle,
 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { notFound } from "next/navigation"
@@ -1137,8 +1137,9 @@ function RegistrationForm({
                   </p>
                 )}
                 {couponStatus === "success" && appliedCoupon && (
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                    ✓ کد تخفیف با موفقیت اعمال شد و مبلغ نهایی به‌روزرسانی شد.
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 shrink-0" />
+                    <span>کد تخفیف با موفقیت اعمال شد و مبلغ نهایی به‌روزرسانی شد.</span>
                   </p>
                 )}
               </div>
@@ -1283,8 +1284,8 @@ function RegistrationForm({
                     />
                   </div>
                   {receiptError && (
-                    <p className="text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1">
-                      <span>⚠️</span>
+                    <p className="text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       <span>{receiptError}</span>
                     </p>
                   )}
@@ -1980,59 +1981,40 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
         <main className="flex-1">
           <section className="relative bg-gradient-to-br from-[#0f2942] via-[#1b4173] to-[#0f2942] text-white">
-            {!isWebinar && !isWorkshop && (
-              <div
-                className="absolute inset-0 opacity-30"
-                style={{
-                  backgroundImage: `url('${course.heroImage || '/classroom-training-session.jpg'}')`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  filter: "blur(2px)",
-                }}
-              />
-            )}
             <div className="relative container mx-auto px-4 py-12">
-              <div className="flex items-center gap-2 mb-6 text-sm">
-                <Link href="/" className="hover:underline opacity-80 cursor-pointer">
+              <nav aria-label="مسیر صفحه" className="flex items-center gap-2 mb-6 text-xs text-slate-300">
+                <Link href="/" className="hover:text-white transition-colors">
                   خانه
                 </Link>
-                <span className="opacity-60">/</span>
-                <Link href="/" className="hover:underline opacity-80 cursor-pointer">
+                <span className="opacity-40">/</span>
+                <Link href="/" className="hover:text-white transition-colors">
                   {isWorkshop ? "کارگاه‌ها" : isWebinar ? "وبینارها" : "دوره‌ها"}
                 </Link>
-                <span className="opacity-60">/</span>
-                <span>{course.title}</span>
-              </div>
+                <span className="opacity-40">/</span>
+                <span className="text-white font-medium">{course.title}</span>
+              </nav>
 
               <div className="grid lg:grid-cols-2 gap-8 items-start">
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <h1 className="text-4xl md:text-5xl font-bold text-balance leading-tight">{course.title}</h1>
+                  <div className="flex items-center gap-3 mb-3">
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-balance leading-tight tracking-tight">{course.title}</h1>
                     {course.isFull && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-500 text-white whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/90 text-white whitespace-nowrap">
                         تکمیل ظرفیت
                       </span>
                     )}
                   </div>
                   {course.subtitle && (
-                    <p className="text-xl mb-4 opacity-90 leading-relaxed">{course.subtitle}</p>
+                    <p className="text-lg md:text-xl text-slate-200 mt-2 font-medium leading-relaxed">{course.subtitle}</p>
                   )}
-                  <p className="text-xl font-semibold mb-6 opacity-95 leading-relaxed">{course.shortDescription}</p>
+                  <p className="text-sm md:text-base text-slate-300/90 mt-3 mb-6 leading-relaxed max-w-[65ch]">{course.shortDescription}</p>
 
                   {course.rating != null && course.reviewCount != null && course.rating > 0 && course.reviewCount > 0 ? (
                     <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
                       <div className="flex items-center gap-2">
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <span className="font-bold">{course.rating}</span>
+                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        <span className="font-bold tabular-nums">{course.rating}</span>
                         <span className="opacity-80">({course.reviewCount} نظر)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {/* <Users className="w-5 h-5" /> */}
-                        {/* <span>150+ دانشجو</span> */}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {/* <Award className="w-5 h-5" /> */}
-                        {/* <span>گواهینامه معتبر</span> */}
                       </div>
                     </div>
                   ) : null}
@@ -2043,11 +2025,11 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       alt={course.instructor.name}
                       width={48}
                       height={48}
-                      className="rounded-full"
+                      className="rounded-full ring-2 ring-white/10"
                     />
                     <div>
-                      <p className="font-medium">{isWebinar ? course.instructor.name : `مدرس: ${course.instructor.name}`}</p>
-                      <p className="text-sm opacity-80">{course.instructor.title}</p>
+                      <p className="font-medium text-white">{isWebinar ? course.instructor.name : `مدرس: ${course.instructor.name}`}</p>
+                      <p className="text-xs text-slate-300">{course.instructor.title}</p>
                     </div>
                   </div>
 
@@ -2056,7 +2038,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                       <Button
                         asChild
                         size="lg"
-                        className="gap-2 rounded-xl text-base px-6 py-5 shadow-lg shadow-primary/20 cursor-pointer bg-white text-slate-950 hover:bg-slate-100 font-semibold"
+                        className="gap-2 rounded-lg text-sm sm:text-base px-6 py-3 cursor-pointer bg-white text-slate-950 hover:bg-slate-100 font-medium shadow-sm transition-colors"
                       >
                         <a
                           href="#video"
@@ -2069,7 +2051,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                             }
                           }}
                         >
-                          <Play className="w-5 h-5 fill-current text-primary" />
+                          <Play className="w-4 h-4 fill-current text-primary" />
                           مشاهده آنلاین ویدیو
                         </a>
                       </Button>
@@ -2078,7 +2060,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     <div className="mt-6 flex flex-wrap gap-3">
                       <Button
                         size="lg"
-                        className="gap-2 rounded-xl text-base px-6 py-5 shadow-lg shadow-primary/20 cursor-pointer bg-white text-slate-950 hover:bg-slate-100 font-semibold"
+                        className="gap-2 rounded-lg text-sm sm:text-base px-6 py-3 cursor-pointer bg-white text-slate-950 hover:bg-slate-100 font-medium shadow-sm transition-colors"
                         onClick={() => {
                           if (course.isFull) {
                             trackClarityEvent("reserve_button_clicked", { source: "hero" })
@@ -2102,7 +2084,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           asChild
                           size="lg"
                           variant="outline"
-                          className="rounded-xl text-base px-6 py-5 border-white/30 text-white hover:bg-white/10 hover:text-white font-medium bg-transparent cursor-pointer"
+                          className="rounded-lg text-sm sm:text-base px-6 py-3 border-white/20 text-white hover:bg-white/10 hover:text-white font-medium bg-transparent cursor-pointer transition-colors"
                         >
                           <a
                             href="#curriculum"
@@ -2124,7 +2106,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 </div>
 
                 <div className="relative">
-                  <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl border-4 border-white/20 group">
+                  <div className="relative aspect-video rounded-xl overflow-hidden border border-white/15 bg-black/40 group shadow-md">
                     {course.sampleVideo ? (
                       <>
                         <video
@@ -2143,8 +2125,8 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           مرورگر شما از ویدیو پشتیبانی نمی‌کند.
                         </video>
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-[.is-playing]:hidden">
-                          <div className="bg-primary/80 text-white rounded-full p-4 pl-5 backdrop-blur-sm shadow-lg border-2 border-white/20 group-hover:bg-primary transition-colors">
-                            <Play className="w-12 h-12" fill="currentColor" />
+                          <div className="bg-primary text-primary-foreground rounded-full p-3.5 pl-4 shadow-sm group-hover:bg-primary/90 transition-colors">
+                            <Play className="w-8 h-8" fill="currentColor" />
                           </div>
                         </div>
                       </>
@@ -2166,11 +2148,11 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                           src={course.image || "/placeholder.svg"}
                           alt={course.title}
                           fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover transition-opacity duration-300 group-hover:opacity-90"
                         />
                         <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                          <div className="bg-primary text-white rounded-full p-4 pl-5 shadow-xl border-2 border-white/30 group-hover:scale-110 transition-transform">
-                            <Play className="w-12 h-12" fill="currentColor" />
+                          <div className="bg-primary text-primary-foreground rounded-full p-3.5 pl-4 shadow-sm group-hover:bg-primary/90 transition-colors">
+                            <Play className="w-8 h-8" fill="currentColor" />
                           </div>
                         </div>
                         <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-1.5 font-medium">
@@ -2238,7 +2220,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     <Target className="w-6 h-6 text-primary" />
                     مهارت‌هایی که کسب می‌کنید
                   </h2>
-                  <Card className="border-2 shadow-md">
+                  <Card className="border border-border bg-card shadow-none">
                     <CardContent className="pt-6">
                       <div className="grid md:grid-cols-2 gap-4">
                         {course.skills.map((skill, index) => (
@@ -2384,7 +2366,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                 </section>
 
                 <section id="audience" className="scroll-mt-24">
-                  <Card className="border-2 shadow-md">
+                  <Card className="border border-border bg-card shadow-none">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-3 text-2xl">
                         <Users className="w-7 h-7 text-primary" />
@@ -2415,18 +2397,18 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                         <>
                           <button
                             onClick={prevTestimonial}
-                            className="group absolute right-0 sm:-right-4 md:-right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-card/85 hover:bg-primary border border-border/80 hover:border-primary text-muted-foreground hover:text-primary-foreground shadow-md hover:shadow-lg hover:shadow-primary/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            className="group absolute right-0 sm:-right-4 md:-right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card hover:bg-muted border border-border hover:border-[var(--border-strong)] text-muted-foreground hover:text-foreground shadow-sm flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             aria-label="نظر قبلی"
                           >
-                            <ChevronRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                            <ChevronRight className="w-5 h-5" />
                           </button>
 
                           <button
                             onClick={nextTestimonial}
-                            className="group absolute left-0 sm:-left-4 md:-left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-card/85 hover:bg-primary border border-border/80 hover:border-primary text-muted-foreground hover:text-primary-foreground shadow-md hover:shadow-lg hover:shadow-primary/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            className="group absolute left-0 sm:-left-4 md:-left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-card hover:bg-muted border border-border hover:border-[var(--border-strong)] text-muted-foreground hover:text-foreground shadow-sm flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             aria-label="نظر بعدی"
                           >
-                            <ChevronLeft className="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-0.5" />
+                            <ChevronLeft className="w-5 h-5" />
                           </button>
                         </>
                       )}
@@ -2492,7 +2474,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     <User className="w-6 h-6 text-primary" />
                     درباره من
                   </h2>
-                  <Card className="border-2 shadow-md">
+                  <Card className="border border-border bg-card shadow-none">
                     <CardContent className="pt-6">
                       <div className="flex flex-col md:flex-row items-start gap-6">
                         <Image
@@ -2530,11 +2512,11 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     تضمین و امتیازات ویژه
                   </h2>
                   <div className="flex flex-col gap-6">
-                    <Card className="border-2 border-[#dfbc92]/30 bg-[#dfbc92]/10 shadow-sm">
+                    <Card className="border border-border bg-card/60 shadow-none">
                       <CardContent className="pt-6">
                         <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-full bg-[#dfbc92]/20 flex items-center justify-center flex-shrink-0">
-                            <Shield className="w-6 h-6 text-[#dfbc92]" />
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Shield className="w-5 h-5 text-primary" />
                           </div>
                           <div>
                             <h3 className="font-bold text-lg mb-2">گارانتی بازگشت وجه</h3>
@@ -2591,7 +2573,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                               alt={relatedCourse.title}
                               fill
                               sizes="(min-width: 768px) 50vw, 100vw"
-                              className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                              className="object-cover object-top transition-opacity duration-300 group-hover:opacity-90"
                             />
                             <div
                               aria-hidden="true"
@@ -2625,47 +2607,41 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
               {!course.descriptionVideoId && (
               <div ref={cardRef} className="order-1 lg:order-2 lg:col-span-1">
                 <div className="sticky top-4 space-y-4">
-                  <Card className="border-2 shadow-lg">
+                  <Card className="border border-border bg-card shadow-none">
                     <CardContent className="p-6">
                       <div className="mb-6 text-center">
                         <div className="flex flex-col items-center gap-2 mb-2">
                           {isPromoCourse ? (
-                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-center">
-                              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 dark:text-red-400 mb-1">
-                                <span className="relative flex h-2 w-2" aria-hidden="true">
-                                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
-                                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-                                </span>
+                            <div className="w-full rounded-xl border border-red-500/20 bg-red-500/5 p-3.5 text-center">
+                              <div className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 mb-1">
+                                <span className="inline-flex h-2 w-2 rounded-full bg-red-500" aria-hidden="true" />
                                 <span>تخفیف ویژه روز برنامه‌نویس (تا ۲۵ شهریور)</span>
                               </div>
                               <div className="flex flex-col items-center gap-0.5 my-1">
-                                <span className="text-sm text-muted-foreground line-through">
+                                <span className="text-sm text-muted-foreground line-through tabular-nums">
                                   {course.price} تومان
                                 </span>
-                                <span className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-400">
+                                <span className="text-3xl font-bold text-red-400 tabular-nums">
                                   {getProgrammersDayPriceFormatted(slug) || PROGRAMMERS_DAY_PRICE_FORMATTED} تومان
                                 </span>
                               </div>
                             </div>
                           ) : isAgenticPromo ? (
-                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-center">
+                            <div className="w-full rounded-xl border border-red-500/20 bg-red-500/5 p-3.5 text-center">
                               <div className="flex flex-col items-center gap-0.5 my-1">
-                                <span className="text-sm text-muted-foreground line-through">
+                                <span className="text-sm text-muted-foreground line-through tabular-nums">
                                   {course.price} تومان
                                 </span>
-                                <span className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-400">
+                                <span className="text-3xl font-bold text-red-400 tabular-nums">
                                   {AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED} تومان
                                 </span>
                               </div>
                               <AgenticCountdownTimer />
                             </div>
                           ) : hasPageDiscount && course.priceNumber > 0 ? (
-                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-center">
-                              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 dark:text-red-400 mb-1">
-                                <span className="relative flex h-2 w-2" aria-hidden="true">
-                                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
-                                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-                                </span>
+                            <div className="w-full rounded-xl border border-red-500/20 bg-red-500/5 p-3.5 text-center">
+                              <div className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 mb-1">
+                                <span className="inline-flex h-2 w-2 rounded-full bg-red-500" aria-hidden="true" />
                                 <span>
                                   {appliedUrlCoupon
                                     ? `تخفیف ویژه ${(appliedUrlCoupon.percent * 100).toLocaleString("fa-IR")}٪ با کد ${appliedUrlCoupon.code}`
@@ -2673,19 +2649,19 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                                 </span>
                               </div>
                               <div className="flex flex-col items-center gap-0.5 my-1">
-                                <span className="text-sm text-muted-foreground line-through">
+                                <span className="text-sm text-muted-foreground line-through tabular-nums">
                                   {course.price} تومان
                                 </span>
-                                <span className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-400">
+                                <span className="text-3xl font-bold text-red-400 tabular-nums">
                                   {finalPriceNumber.toLocaleString("fa-IR")} تومان
                                 </span>
                               </div>
                             </div>
                           ) : (
-                            <>
-                              <span className="text-5xl font-bold text-primary">{course.price}</span>
-                              <span className="text-xl text-muted-foreground">{course.priceNumber === 0 ? "" : "تومان"}</span>
-                            </>
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="text-3xl md:text-4xl font-bold text-foreground tabular-nums">{course.price}</span>
+                              <span className="text-sm text-muted-foreground">{course.priceNumber === 0 ? "" : "تومان"}</span>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -2766,9 +2742,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                       {/* Installment Notice for System Design courses */}
                       {(slug?.startsWith("system-design-") || course?.path === "system_design") && (
-                        <div className="mb-5 rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 text-sm">
+                        <div className="mb-5 rounded-xl border border-border bg-card/60 p-4 text-sm">
                           <div className="flex items-start gap-3">
-                            <div className="mt-0.5 rounded-full bg-blue-500/20 p-1.5 text-blue-600 dark:text-blue-400 shrink-0">
+                            <div className="mt-0.5 rounded-full bg-muted p-1.5 text-muted-foreground shrink-0">
                               <Send className="w-4 h-4" />
                             </div>
                             <div className="flex-1 space-y-1">
@@ -2793,9 +2769,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                       <div className="mb-4">
                         <Button
-                          size="lg"
+                          size="default"
                           variant="outline"
-                          className="w-full text-lg bg-transparent cursor-pointer hover:bg-primary hover:text-white"
+                          className="w-full text-xs font-medium bg-transparent cursor-pointer hover:bg-muted hover:text-foreground border border-border/80"
                           onClick={() => {
                             trackClarityEvent("corporate_training_button_clicked")
                             setShowCorporateTrainingForm(true)
@@ -2807,9 +2783,9 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
                       <div className="mb-6">
                         <Button
-                          size="lg"
+                          size="default"
                           variant="outline"
-                          className="w-full text-lg bg-transparent cursor-pointer hover:bg-primary hover:text-white"
+                          className="w-full text-xs font-medium bg-transparent cursor-pointer hover:bg-muted hover:text-foreground border border-border/80"
                           onClick={() => {
                             trackClarityEvent("consultation_button_clicked")
                             setShowConsultationForm(true)
@@ -2866,28 +2842,15 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
           {!course.descriptionVideoId && (
             <section ref={bottomCtaRef} className="relative overflow-hidden border-t border-border bg-card">
-              <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-70"
-                style={{
-                  background:
-                    "radial-gradient(55% 100% at 50% 0%, var(--accent-soft), transparent 70%)",
-                }}
-              />
               <div className="container relative mx-auto px-4 py-20 text-center">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-border)] bg-[var(--accent-soft)] px-3.5 py-1.5 text-xs font-medium text-primary">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
-                  قول می‌دم
-                </span>
-                <p className="mx-auto mb-8 mt-5 max-w-[60ch] text-lg leading-8 text-muted-foreground">
+                <p className="mx-auto mb-8 max-w-[60ch] text-lg leading-8 text-muted-foreground">
                   بعد از این {typeLabel} نگاه و طرز فکرتون نسبت به کارهایی که تا الان
                   میکردید تغییر می‌کنه
                 </p>
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <Button
                     size="lg"
-                    className="cursor-pointer rounded-lg px-8 text-lg shadow-none"
+                    className="cursor-pointer rounded-lg px-8 text-base shadow-none"
                     onClick={() => {
                       if (course.isFull) {
                         trackClarityEvent("reserve_button_clicked", { source: "bottom_cta" })
@@ -2910,7 +2873,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
                     asChild
                     size="lg"
                     variant="outline"
-                    className="cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-lg text-foreground hover:border-primary hover:text-primary"
+                    className="cursor-pointer rounded-lg border-[var(--border-strong)] bg-transparent px-8 text-base text-foreground hover:border-primary hover:text-primary"
                   >
                     <Link href="/" onClick={() => trackClarityEvent("view_other_courses_clicked")}>
                       {isWorkshop ? "مشاهده سایر کارگاه‌ها و دوره‌ها" : isWebinar ? "مشاهده سایر وبینارها" : "مشاهده سایر دوره‌ها"}
@@ -2926,7 +2889,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
         {!course.descriptionVideoId && (
           <aside
             aria-label="نوار ثبت‌نام سریع"
-            className={`fixed bottom-0 inset-x-0 z-40 border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 shadow-2xl transition-all duration-300 ease-in-out lg:hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))] ${
+            className={`fixed bottom-0 inset-x-0 z-40 border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 shadow-md transition-all duration-300 ease-in-out lg:hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))] ${
               hasScrolledPastHero && !isCardVisible && !isBottomCtaVisible
                 ? "translate-y-0 opacity-100 pointer-events-auto"
                 : "translate-y-full opacity-0 pointer-events-none"
@@ -2936,34 +2899,34 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
               <div className="flex flex-col justify-center">
                 {isPromoCourse ? (
                   <>
-                    <span className="text-[11px] text-muted-foreground line-through">
+                    <span className="text-[11px] text-muted-foreground line-through tabular-nums">
                       {course.price} تومان
                     </span>
-                    <span className="text-base font-extrabold text-red-600 dark:text-red-400 leading-tight">
+                    <span className="text-base font-bold text-red-400 tabular-nums leading-tight">
                       {getProgrammersDayPriceFormatted(slug) || PROGRAMMERS_DAY_PRICE_FORMATTED} تومان
                     </span>
                   </>
                 ) : isAgenticPromo ? (
                   <>
-                    <span className="text-[11px] text-muted-foreground line-through">
+                    <span className="text-[11px] text-muted-foreground line-through tabular-nums">
                       {course.price} تومان
                     </span>
-                    <span className="text-base font-extrabold text-red-600 dark:text-red-400 leading-tight">
+                    <span className="text-base font-bold text-red-400 tabular-nums leading-tight">
                       {AGENTIC_WORKSHOP_DISCOUNTED_PRICE_FORMATTED} تومان
                     </span>
                   </>
                 ) : hasPageDiscount && course.priceNumber > 0 ? (
                   <>
-                    <span className="text-[11px] text-muted-foreground line-through">
+                    <span className="text-[11px] text-muted-foreground line-through tabular-nums">
                       {course.price} تومان
                     </span>
-                    <span className="text-base font-bold text-red-600 leading-tight">
+                    <span className="text-base font-bold text-red-400 tabular-nums leading-tight">
                       {finalPriceNumber.toLocaleString("fa-IR")} تومان
                     </span>
                   </>
                 ) : (
                   <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold text-primary">{course.price}</span>
+                    <span className="text-lg font-bold text-foreground tabular-nums">{course.price}</span>
                     <span className="text-xs text-muted-foreground">{course.priceNumber === 0 ? "" : "تومان"}</span>
                   </div>
                 )}
@@ -2971,7 +2934,7 @@ export default function CoursePageClient({ course, slug }: { course: Course | un
 
               <Button
                 size="default"
-                className="cursor-pointer px-5 font-bold shadow-md hover:bg-primary/90"
+                className="cursor-pointer px-5 font-medium shadow-sm"
                 onClick={() => {
                   if (course.isFull) {
                     trackClarityEvent("reserve_button_clicked", { source: "mobile_sticky_bar" })
